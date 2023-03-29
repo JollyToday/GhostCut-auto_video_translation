@@ -1,3 +1,5 @@
+## [中文](https://github.com/JollyToday/GhostCut/blob/main/README.md "鬼手剪辑中文介绍")     ---- [English](https://github.com/JollyToday/GhostCut/blob/main/README_en.md "GhostCut English info") 
+
 ### 最新产品更新
 * 03.23-#鬼手剪辑语音更新：接入剪映（抖音）、CapCut的常用声音，如东北老铁，广西壮汉，英文活力Ariana，欢迎体验;
 * 03.15-#鬼手剪辑API更新：开放了去重、去文字、视频文字翻译、视频语音翻译等多项独家产品的API，欢迎咨询;
