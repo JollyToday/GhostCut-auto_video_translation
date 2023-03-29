@@ -1,3 +1,5 @@
+## [中文](https://github.com/JollyToday/GhostCut/blob/main/README.md "鬼手剪辑中文介绍")     ---- [English](https://github.com/JollyToday/GhostCut/blob/main/README_en.md "GhostCut English info") 
+
 ### Latest Product Updates
 * 03.23-#GhostCut TTS Update: Access to commonly used voices from editing apps such as Jianying (Douyin) and CapCut, such as Northeastern Iron, Guangxi Zhuanghan, English vitality Ariana;
 * 03.15-#GhostCut API Update: Opened APIs for multiple exclusive products such as deduplication, text removal, video text translation, and video voice translation;
