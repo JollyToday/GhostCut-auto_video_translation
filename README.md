@@ -34,7 +34,7 @@
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595885.png" width="720">
 
 ### 自动翻译视频文字-案例
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595888.jpg" width="720">
+<img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480">
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595887.jpg" width="720">
 
 翻译后的视频文字样式保持不变, 视频效果请点此查看
@@ -108,5 +108,5 @@
 [飞书接口文档](https://jollytoday.feishu.cn/docx/T971dwGEko0Q6PxN24DcWQOKnQf "鬼手剪辑接口文档")
 
 ## 8.联系我们
-微信：360254 ，请备注github
-邮箱：niumo#izhaoli.com（#换成@）
+* 微信：360254 ，请备注github
+* 邮箱：niumo#izhaoli.com（#换成@）
