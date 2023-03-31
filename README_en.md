@@ -32,7 +32,7 @@ please click here to view the video samples in YouTube
 
 **What kind of  texts can GhostCut automatically remove ?**
 Specifically as follows 
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595885.png" width="720">
+<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1680243681313.png" width="720">
 
 ### Video Text Auto Translation-video samples
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595888.jpg" width="720"> 
