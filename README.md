@@ -1,4 +1,4 @@
-## [English](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info") [中文] ---- (https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
+## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文版](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
 
 ### Latest Product Updates
