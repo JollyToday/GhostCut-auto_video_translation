@@ -1,7 +1,7 @@
 ## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文版](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
 ### Auto video translation：from left to right
-GhostCut translate the video subtitles and voice automatically.
+GhostCut translate the video subtitles and voice automatically.It can achieve style restoration and audio-visual alignment, the following is a real case.
 
 <img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480"> 
 
