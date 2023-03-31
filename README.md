@@ -35,7 +35,7 @@
 
 ### 自动翻译视频文字-案例
 <img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480">
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595887.jpg" width="720">
+<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595888.jpg" width="720">
 
 翻译后的视频文字样式保持不变, 视频效果请点此查看
 [YouTube视频文字翻译案例](https://youtu.be/VDXR6y7-pBg "鬼手剪辑视频文字翻译案例")
