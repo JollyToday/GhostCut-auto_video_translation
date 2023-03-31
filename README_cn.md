@@ -1,5 +1,6 @@
 ## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文版](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
+<img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480">
 
 ### 最新产品更新
 * 03.23-#鬼手剪辑语音更新：接入剪映（抖音）、CapCut的常用声音，如东北老铁，广西壮汉，英文活力Ariana，欢迎体验;
@@ -35,8 +36,8 @@
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595885.png" width="720">
 
 ### 自动翻译视频文字-案例
-<img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480">
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595888.jpg" width="720">
+<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595887.jpg" width="720">
 
 翻译后的视频文字样式保持不变, 视频效果请点此查看
 [YouTube视频文字翻译案例](https://youtu.be/VDXR6y7-pBg "鬼手剪辑视频文字翻译案例")
