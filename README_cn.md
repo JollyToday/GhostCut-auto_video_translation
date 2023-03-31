@@ -1,5 +1,8 @@
 ## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文版](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
+
+### 视频文字翻译示例：从做到右全自动翻译并剪辑完成
+鬼手剪辑能自动翻译视频内的文字和语音，做到样式还原和音画对齐，以下是真实案例。
 <img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480">
 
 ### 最新产品更新
