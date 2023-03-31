@@ -106,4 +106,4 @@ The translated video comes with synchronized voiceover, please click here to vie
 
 ## 8. Contact Us
 * WeChat: 360254, please indicate GitHub in the remark.
-* Email：niumoz#izhaoli.com（#替换成@）
+* Email：niumoz#izhaoli.com（#-->@）
