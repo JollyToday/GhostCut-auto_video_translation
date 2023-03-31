@@ -35,7 +35,7 @@ Specifically as follows
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1680243681313.png" width="720">
 
 ### Video Text Auto Translation-video samples
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595888.jpg" width="720"> 
+<img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480"> 
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595887.jpg" width="720">
 
 The style of the translated video text remains unchanged, please click here to view the video effect YouTube Video Text Translation Case
@@ -105,5 +105,5 @@ The translated video comes with synchronized voiceover, please click here to vie
 * 4.[API documents](https://jollytoday.feishu.cn/docx/T971dwGEko0Q6PxN24DcWQOKnQf "GhostCut API documents")
 
 ## 8. Contact Us
-WeChat: 360254, please indicate GitHub in the remark.
-Email：niumoz#izhaoli.com（#替换成@）
+* WeChat: 360254, please indicate GitHub in the remark.
+* Email：niumoz#izhaoli.com（#替换成@）
