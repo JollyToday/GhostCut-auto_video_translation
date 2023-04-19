@@ -29,6 +29,7 @@ GhostCut is an intelligent video editing software. Its core purpose is to help c
 There are Chinese and English versions. Mainland users can access product in  WeChat mini program, search GhostCut.
 
 ### Video Text Auto Removal- video samples
+<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/subtitles%20remove%20demo320.GIF?raw=true" width="480"> 
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595877.jpg" width="720"> 
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595884.jpg" width="720">
 
