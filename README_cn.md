@@ -28,7 +28,8 @@
 有中英文版本。大陆用户可以访问微信小程序，鬼手剪辑。
 
 ### 智能去文字-案例
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595877.jpg" width="720">
+<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/subtitles%20remove%20demo320.GIF?raw=true" width="480"> 
+<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595877.jpg" width="720"> 
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595884.jpg" width="720">
 
 自动OCR检测文字并去除, 视频效果请点此查看
