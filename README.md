@@ -1,7 +1,9 @@
 ## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文介绍](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
-### Auto video translation：from left to right
-GhostCut translate the video subtitles and voice automatically.It can achieve style restoration and audio-visual alignment, the following is a real case.
+### Auto video text translation：
+GhostCut translate the video subtitles and voice automatically.
+
+Here are some translation cases.
 
 <img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480"> 
 
@@ -16,9 +18,11 @@ GhostCut translate the video subtitles and voice automatically.It can achieve st
 ## 1. GhostCut - AI Video Editing Tool
 GhostCut is an intelligent video editing software. Its core purpose is to help customers improve the processing speed of materials and the quality of video creativity. We have used a lot of AI capabilities in various audio and video processing details to improve the processing efficiency of many videos.
 
+These are some of our exclusive features.
+
 1. **[Video Text auto Removal]** Automatically detect all text/subtitles in the video through OCR and perform video inpainting to restore the erased video parts as much as possible;
 2. **[Video Text Auto Translation]** Automatically detect the text/subtitles in the video through OCR, calculate and extract text position, style, size in the video, and then use ChatGPT to translate the subtitles and paste them back according to the original text style and position, while performing inpainting on the original text area;
-3. **[Video Voice Auto Translation]** Automatically extract the voice in the video through ASR and translate it, while using TTS to synthesize the translated text into voice. In this process, the position of the original picture, voice, and subtitles is calculated, and the newly synthesized voice, subtitles, and original picture are automatically aligned to ensure the consistency of sound and picture. You can choose whether to perform inpainting smudging on the original text and whether to retain the original sound. The effect of retaining the original sound is to automatically separate the human voice and background music of the original video and retain the background music.
+3. **[Video Voice Auto Translation and dubbing]** Automatically extract the voice in the video through ASR and translate it, while using TTS to synthesize the translated text into voice. In this process, the position of the original picture, voice, and subtitles is calculated, and the newly synthesized voice, subtitles, and original picture are automatically aligned to ensure the consistency of sound and picture. You can choose whether to perform inpainting smudging on the original text and whether to retain the original sound. The effect of retaining the original sound is to automatically separate the human voice and background music of the original video and retain the background music.
 4. **[Auto Video Deduplication]** Automatically make minor modifications to the video, and automatically complete the following operations, including but not limited to modifying md5, removing video fingerprints, superimposing picture-in-picture in the video, minor cropping, using Gaussian blur, automatic cover clipping, slightly tilting the picture, using sharpening, using acceleration and deceleration, and other transitions, filters, scaling, etc. Generally used for quick secondary creation for **short video**.
 
 ## 2. Product Features
