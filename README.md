@@ -1,4 +1,4 @@
-## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文版](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
+## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文介绍](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
 ### Auto video translation：from left to right
 GhostCut translate the video subtitles and voice automatically.It can achieve style restoration and audio-visual alignment, the following is a real case.
@@ -6,9 +6,11 @@ GhostCut translate the video subtitles and voice automatically.It can achieve st
 <img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480"> 
 
 ### Latest Product Updates
-* 03.23-#GhostCut TTS Update: Update commonly used voices from editing apps such as Jianying (Douyin) and CapCut, such as Northeastern Iron, Guangxi Zhuanghan, English vitality Ariana;
-* 03.15-#GhostCut API Update: Opened APIs for multiple exclusive products such as video deduplication, video text removal, video text translation, and video voice translation;
-* 03.09-#GhostCut Translation Product Update: All translation engines used ChatGPT API, with higher accuracy, especially for translation between small  country languages;
+* 04.17-#GhostCut Translation Update: Video speech translation segmental speed adjustment is now available, fully guaranteeing alignment between speech, picture, and subtitles. More precise alignment and stable pronunciation are achieved；
+* 03.28-#GhostCut Website Update: Video text translation feature launched on the web version, with the ability to simultaneously translate video text and add intelligent background music in one go；
+* 03.23-#GhostCut TTS Update: Update commonly used voices from editing apps such as Jianying (Douyin) and CapCut, such as Northeastern Iron, Guangxi Zhuanghan, English vitality Ariana；
+* 03.15-#GhostCut API Update: Opened APIs for multiple exclusive products such as video deduplication, video text removal, video text translation, and video voice translation；
+* 03.09-#GhostCut Translation Product Update: All translation engines used ChatGPT API, with higher accuracy, especially for translation between small  country languages；
 * 01.16-#GhostCut Translation Product Update:  Video Text Auto Translation product launched.
 
 ## 1. GhostCut - AI Video Editing Tool
