@@ -79,7 +79,7 @@ The translated video comes with synchronized voiceover, please click here to vie
 * Support removal of moving text/moving text watermark
 * Support automatic detection of video subject and upper and lower edges, and refill the background outside the video main subject
 
-### Video Voice Translation Details
+### Video Voice Translation And Dubbing Details
 * Support ASR to extract video voice and translate
 * When ASR extracts video sound, separate human voice and background sound, and only translate human voice
 * Support mute after translation, or retain background sound, or algorithmic music matching or specified music matching
