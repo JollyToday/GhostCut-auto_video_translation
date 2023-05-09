@@ -1,7 +1,7 @@
 ## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文介绍](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
-### Auto video text translation：
-GhostCut translate the video subtitles and voice automatically.
+### Auto Video Hard Sub Translation：
+GhostCut translate the video hardcode subtitles automatically.
 
 Here are some translation cases.
 
@@ -9,20 +9,20 @@ Here are some translation cases.
 
 ### Latest Product Updates
 * 04.17-#GhostCut Translation Update: Video speech translation segmental speed adjustment is now available, fully guaranteeing alignment between speech, picture, and subtitles. More precise alignment and stable pronunciation are achieved；
-* 03.28-#GhostCut Website Update: Video text translation feature launched on the web version, with the ability to simultaneously translate video text and add intelligent background music in one go；
+* 03.28-#GhostCut Website Update: Video Hard Sub Translation feature launched on the web version, with the ability to simultaneously translate video text and add intelligent background music in one go；
 * 03.23-#GhostCut TTS Update: Update commonly used voices from editing apps such as Jianying (Douyin) and CapCut, such as Northeastern Iron, Guangxi Zhuanghan, English vitality Ariana；
-* 03.15-#GhostCut API Update: Opened APIs for multiple exclusive products such as video deduplication, video text removal, video text translation, and video voice translation；
+* 03.15-#GhostCut API Update: Opened APIs for multiple exclusive products such as video deduplication, video text removal, Video Hard Sub Translation, and video translation and dubbing；
 * 03.09-#GhostCut Translation Product Update: All translation engines used ChatGPT API, with higher accuracy, especially for translation between small  country languages；
-* 01.16-#GhostCut Translation Product Update:  Video Text Auto Translation product launched.
+* 01.16-#GhostCut Translation Product Update:  Video Hard Sub Translation product launched.
 
 ## 1. GhostCut - AI Video Editing Tool
 GhostCut is an intelligent video editing software. Its core purpose is to help customers improve the processing speed of materials and the quality of video creativity. We have used a lot of AI capabilities in various audio and video processing details to improve the processing efficiency of many videos.
 
 These are some of our exclusive features.
 
-1. **[Video Text auto Removal]** Automatically detect all text/subtitles in the video through OCR and perform video inpainting to restore the erased video parts as much as possible;
-2. **[Video Text Auto Translation]** Automatically detect the text/subtitles in the video through OCR, calculate and extract text position, style, size in the video, and then use ChatGPT to translate the subtitles and paste them back according to the original text style and position, while performing inpainting on the original text area;
-3. **[Video Voice Auto Translation and dubbing]** Automatically extract the voice in the video through ASR and translate it, while using TTS to synthesize the translated text into voice. In this process, the position of the original picture, voice, and subtitles is calculated, and the newly synthesized voice, subtitles, and original picture are automatically aligned to ensure the consistency of sound and picture. You can choose whether to perform inpainting smudging on the original text and whether to retain the original sound. The effect of retaining the original sound is to automatically separate the human voice and background music of the original video and retain the background music.
+1. **[Smart Text Removal]** Automatically detect all text/subtitles in the video through OCR and perform video inpainting to restore the erased video parts as much as possible;
+2. **[Video Hard Sub Translation]** Automatically detect the text/subtitles in the video through OCR, calculate and extract text position, style, size in the video, and then use ChatGPT to translate the subtitles and paste them back according to the original text style and position, while performing inpainting on the original text area;
+3. **[Auto Translation and dubbing]** Automatically extract the voice in the video through ASR and translate it, while using TTS to synthesize the translated text into voice. In this process, the position of the original picture, voice, and subtitles is calculated, and the newly synthesized voice, subtitles, and original picture are automatically aligned to ensure the consistency of sound and picture. You can choose whether to perform inpainting smudging on the original text and whether to retain the original sound. The effect of retaining the original sound is to automatically separate the human voice and background music of the original video and retain the background music.
 4. **[Auto Video Deduplication]** Automatically make minor modifications to the video, and automatically complete the following operations, including but not limited to modifying md5, removing video fingerprints, superimposing picture-in-picture in the video, minor cropping, using Gaussian blur, automatic cover clipping, slightly tilting the picture, using sharpening, using acceleration and deceleration, and other transitions, filters, scaling, etc. Generally used for quick secondary creation for **short video**.
 
 ## 2. Product Features
@@ -34,7 +34,7 @@ These are some of our exclusive features.
 [GhostCut products Test](https://ghostcut.jollytoday.com/index/cn?redirect=%2Fhome/cn&code=th741 "GhostCut test")
 There are Chinese and English versions. Mainland users can access product in  WeChat mini program, search GhostCut.
 
-### Video Text Auto Removal- video samples
+### Smart Text Removal- video samples
 <img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/subtitles%20remove%20demo320.GIF?raw=true" width="480"> 
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595877.jpg" width="720"> 
 
@@ -45,14 +45,14 @@ please click here to view the video samples in YouTube
 Specifically as follows 
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1680243681313.png" width="720">
 
-### Video Text Auto Translation-video samples
+### Video Hardcode subtitles Translation-video samples
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595888.jpg" width="720">
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595887.jpg" width="720">
 
-The style of the translated video text remains unchanged, please click here to view the video effect YouTube Video Text Translation Case
+The style of the translated video text remains unchanged, please click here to view the video effect YouTube Hard Subtitles Translation Case
 [YouTube -Video Text Auto Translation](https://youtu.be/VDXR6y7-pBg "GhostCut translate the video text automatically")
 
-### Video Voice Auto Translation-video samples
+### Video Translation and Dubbing-video samples
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595889.jpg" width="720">
 
 The translated video comes with synchronized voiceover, please click here to view the video effect YouTube Video Voice Translation Case
@@ -79,14 +79,14 @@ The translated video comes with synchronized voiceover, please click here to vie
 * Support removal of moving text/moving text watermark
 * Support automatic detection of video subject and upper and lower edges, and refill the background outside the video main subject
 
-### Video Voice Translation And Dubbing Details
+### Video Translation And Dubbing Details
 * Support ASR to extract video voice and translate
 * When ASR extracts video sound, separate human voice and background sound, and only translate human voice
 * Support mute after translation, or retain background sound, or algorithmic music matching or specified music matching
 * Support only generate translated subtitles (without TTS synthesis)
 * Support translation subtitles and TTS voice synthesis (automatically calculate the position of subtitles, pictures, and sound during synthesis)
 
-### Video Text Translation Details
+### Video Hard subtitles Translation Details
 * Support OCR to extract video text and translate
 * When OCR extracts video text, support text position and style extraction
 * TTS synthesis for translated text will be supported soon.
@@ -96,9 +96,9 @@ The translated video comes with synchronized voiceover, please click here to vie
 * Translation: Comprehensive use of iFlytek, Deepl, ChatGPT translation, etc.;
 
 ## 6. Supported Languages for Translation
-* Intelligent Video Text Removal: Remove both Chinese and English at the same time, or remove Chinese, English, Japanese, Korean, and Arabic separately; 
-* Auto Video Text Translation: Source language: Chinese or English; Target language: Chinese/English/Japanese/Indonesian/Portuguese/French/Spanish/Hindi/Arabic/Vietnamese/Thai/German/Russian/Turkish/Italian/Philippines/Malaysia/Khmer 
-* Auto Video Voice Translation: Source language: Chinese/English/Japanese/Korean/Spanish/Italian/Russian/French/Portuguese/Vietnamese/Thai, etc.; Target language: Chinese/English/Japanese/Indonesian/Portuguese/French/Spanish/Hindi/Arabic/Vietnamese/Thai/German/Russian/Turkish/Italian/Vietnamese
+* Smart Text Removal: Remove both Chinese and English at the same time, or remove Chinese, English, Japanese, Korean, and Arabic separately; 
+* Auto Video Hard Sub Translation: Source language: Chinese or English; Target language: Chinese/English/Japanese/Indonesian/Portuguese/French/Spanish/Hindi/Arabic/Vietnamese/Thai/German/Russian/Turkish/Italian/Philippines/Malaysia/Khmer 
+* Auto Video Translation and Dubbing: Source language: Chinese/English/Japanese/Korean/Spanish/Italian/Russian/French/Portuguese/Vietnamese/Thai, etc.; Target language: Chinese/English/Japanese/Indonesian/Portuguese/French/Spanish/Hindi/Arabic/Vietnamese/Thai/German/Russian/Turkish/Italian/Vietnamese
 
 ## 7. API Interface Support
 * 1.Provides output for all the above capabilities, including video deduplication and editing, automatic text removal, video erasure, video subtitle translation, video voice translation (including dubbing), and other interfaces. Multiple capabilities can be stacked and selected together;
