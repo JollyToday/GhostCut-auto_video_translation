@@ -114,6 +114,7 @@ The translated video comes with synchronized voiceover, please click here to vie
 
 * 3.Video translation can be used together with multiple editing capabilities: One-click completion: video deduplication + automatic text removal + video translation + video music matching and other operations (including translated dubbing)
 * 4.[API documents](https://jollytoday.feishu.cn/docx/T971dwGEko0Q6PxN24DcWQOKnQf "GhostCut API documents")
+* 5.[GhostCut User Guides](https://ghostcut.notion.site/5df83fa6726747b39bd4272a052c1bc1?v=7afb54a3dc70455a949d3945bb0c4221 "GhostCut User Guides")
 
 ## 8. Contact Us
 * WeChat: 360254, please indicate GitHub in the remark.
