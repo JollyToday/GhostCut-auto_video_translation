@@ -5,7 +5,7 @@ GhostCut translate the video hardcode subtitles automatically.
 
 Here are some translation cases.
 
-<img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480"> 
+<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/1F0B7143-A92C-4C52-BB16-82EEA231DFD4.GIF" width="720"> 
 
 ### Latest Product Updates
 * 04.17-#GhostCut Translation Update: Video speech translation segmental speed adjustment is now available, fully guaranteeing alignment between speech, picture, and subtitles. More precise alignment and stable pronunciation are achieved；
