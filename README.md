@@ -31,7 +31,7 @@ These are some of our exclusive features.
 3.All APIs and intermediate products are open for easy integration.
 
 ## 3. Video Demos
-[GhostCut products Test](https://ghostcut.jollytoday.com/index/cn?redirect=%2Fhome/cn&code=th741 "GhostCut test")
+[Free Try GhostCut](https://ghostcut.jollytoday.com/index/cn?redirect=%2Fhome/cn&code=th741 "Free Try GhostCut")
 There are Chinese and English versions. Mainland users can access product in  WeChat mini program, search GhostCut.
 
 ### Smart Text Removal- video samples
