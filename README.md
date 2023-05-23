@@ -30,12 +30,12 @@ These are some of our exclusive features.
 2.Adopt automated and intelligent design concepts, end-to-end problem solving, and deliver finished products as much as possible;
 3.All APIs and intermediate products are open for easy integration.
 
-## 3. Video Cases
+## 3. Video Demos
 [GhostCut products Test](https://ghostcut.jollytoday.com/index/cn?redirect=%2Fhome/cn&code=th741 "GhostCut test")
 There are Chinese and English versions. Mainland users can access product in  WeChat mini program, search GhostCut.
 
 ### Smart Text Removal- video samples
-<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/subtitles%20remove%20demo320.GIF?raw=true" width="480"> 
+<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/4AF80FA6-B2CE-44A0-9123-CEE40423CC60.GIF" width="720"> 
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595877.jpg" width="720"> 
 
 [YouTube automatically detect and remove text](https://youtu.be/uFBkMXQokMk "GhostCut can remove the video text automatically"),
