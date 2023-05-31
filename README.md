@@ -10,6 +10,8 @@ Here are some video demos.
 <img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/FEAF76B7-CA91-42A0-9C95-905157295980.GIF" width="720"> 
 
 ### Latest Product Updates
+* 05.14-#Translation product update: GhostCut has launched an online hard subtitle editing feature, which allows users to adjust the text content of hard subtitle translation on their computer.
+* 04.18-#Translation product update: The mobile version of GhostCut has added the function to translate video sound and text, as well as adjust subtitle translation directly within the mobile app. Users can modify the text and style of their translated works without using a computer, and can also compare and adjust the copy of new and old videos.
 * 04.17-#GhostCut Translation Update: Video speech translation segmental speed adjustment is now available, fully guaranteeing alignment between speech, picture, and subtitles. More precise alignment and stable pronunciation are achieved；
 * 03.28-#GhostCut Website Update: Video Hard Sub Translation feature launched on the web version, with the ability to simultaneously translate video text and add intelligent background music in one go；
 * 03.23-#GhostCut TTS Update: Update commonly used voices from editing apps such as Jianying (Douyin) and CapCut, such as Northeastern Iron, Guangxi Zhuanghan, English vitality Ariana；
