@@ -3,15 +3,19 @@
 
 ### 视频文字翻译示例：从做到右全自动翻译并剪辑完成
 鬼手剪辑能自动翻译视频内的文字和语音，做到样式还原和音画对齐，以下是真实案例。
-<img src="https://github.com/JollyToday/GhostCut/blob/main/auto%20video%20translation%20demo.GIF?raw=true" width="480">
+支持多种语言。
+
+<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/FEAF76B7-CA91-42A0-9C95-905157295980.GIF" width="720"> 
 
 ### 最新产品更新
-* 04.17-#鬼手剪辑翻译更新：视频语音翻译上线分段变速，全面保证【语音-画面-字幕】的对齐，对齐更准，发音更稳定；
-* 03.28-#鬼手剪辑网站更新：翻译视频文字产品上线网页版，同时支持一次性完成视频文字翻译+视频去重+智能配乐等；
-* 03.23-#鬼手剪辑语音更新：接入剪映（抖音）、CapCut的常用声音，如东北老铁，广西壮汉，英文活力Ariana，欢迎体验；
-* 03.15-#鬼手剪辑API更新：开放了自动去字幕、自动视频文字翻译、自动视频语音翻译、自动视频去重等多项独家产品的API，欢迎咨询；
-* 03.09-#鬼手剪辑翻译产品更新：所有翻译引擎调用ChatGPT，准确度更高，尤其是小语种之间的翻译效果，欢迎体验；
-* 01.16-#鬼手剪辑翻译产品更新：翻译视频文字产品上线。
+* 05.14-#翻译产品更新：鬼手剪辑上线硬字幕在线编辑，可以在电脑端调整硬字幕翻译的文字内容；
+* 04.18-#翻译产品更新：鬼手剪辑手机版【翻译视频声音】&【翻译视频文字】功能新增翻译字幕调整功能，用户可以在手机端小程序内直接对翻译后的作品文字和样式，进行调整修改，不需要在电脑端也可以完成纠错流程，同时也可以对比查看新老视频，调整文案；
+* 04.17-#翻译产品更新：视频语音翻译上线分段变速，全面保证【语音-画面-字幕】的对齐，对齐更准，发音更稳定；
+* 03.28-#翻译产品更新：翻译视频文字产品上线网页版，同时支持一次性完成视频文字翻译+视频去重+智能配乐等；
+* 03.23-#语音更新：接入剪映（抖音）、CapCut的常用声音，如东北老铁，广西壮汉，英文活力Ariana，欢迎体验；
+* 03.15-#API更新：开放了自动去字幕、自动视频文字翻译、自动视频语音翻译、自动视频去重等多项独家产品的API，欢迎咨询；
+* 03.09-#翻译产品更新：所有翻译引擎调用ChatGPT，准确度更高，尤其是小语种之间的翻译效果，欢迎体验；
+* 01.16-#翻译产品更新：翻译视频文字产品上线。
 
 ## 1.鬼手剪辑GhostCut-AI视频剪辑工具
 鬼手剪辑是一款智能的视频剪辑软件，他的核心用途是帮助客户提高素材的处理速度和视频创意的生产的质量，我们用了大量的AI的能力在各个音视频的处理细节上，提高了对于很多视频的处理效率。
@@ -30,29 +34,28 @@
 有中英文版本。大陆用户可以访问微信小程序，鬼手剪辑。
 
 ### 智能去文字-案例
-<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/subtitles%20remove%20demo320.GIF?raw=true" width="480"> 
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595877.jpg" width="720"> 
-
 自动OCR检测文字并去除, 视频效果请点此查看
-[YouTube去文字视频案例](https://youtu.be/uFBkMXQokMk "鬼手剪辑视频自动去文字案例")
+
+<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/4AF80FA6-B2CE-44A0-9123-CEE40423CC60.GIF" width="720"> 
+
+[去水印/去文字/视频擦除教程](https://jollytoday.feishu.cn/docx/OKPVdDPzkogpCmxCFD2c4GBMnLd "鬼手剪辑视频自动去文字教程")
 
 
 **鬼手剪辑能自动去除哪些案例？具体如下**
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595885.png" width="720">
 
 ### 自动翻译视频文字-案例
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595888.jpg" width="720">
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595887.jpg" width="720">
+<img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/1F0B7143-A92C-4C52-BB16-82EEA231DFD4.GIF" width="720"> 
 
 翻译后的视频文字样式保持不变, 视频效果请点此查看
 [YouTube视频文字翻译案例](https://youtu.be/VDXR6y7-pBg "鬼手剪辑视频文字翻译案例")
 
 
 ### 自动翻译视频语音-案例
-<img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1679900595889.jpg" width="720">
 
-翻译后的视频是带有语音同步解说的, 视频效果请点此查看
-[YouTube视频语音翻译案例](https://youtu.be/3w7GJjg5C0Q?t=80 "鬼手剪辑视频语音翻译案例")
+翻译后的视频是带有语音同步解说的，自动音画同步，视频效果请点此查看
+
+[YouTube视频语音翻译案例](https://youtu.be/6CCI5ZA-3JE "鬼手剪辑视频语音翻译案例")
 
 
 ## 4.具体AI剪辑能力说明
