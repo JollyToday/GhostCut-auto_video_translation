@@ -73,7 +73,7 @@ The translated video comes with synchronized voiceover, please click here to vie
 [GhostCut translate the video with both voice and text](https://youtu.be/6CCI5ZA-3JE "GhostCut translate the video with both voice and text")
 
 ## 4. Specific AI Editing Capabilities
-### Video Micro-Editing/Video Re-creation Details
+### [Video Micro-Editing/Video Re-creation Details](https://github.com/JollyToday/GhostCut_Recreate_Video/blob/main/README_en.md "GhostCut Video Recreation info")
 * Support basic Video Re-creation, one-time basic micro-cropping
 * Support overlay video special effects
 1.Scan light effects
@@ -87,8 +87,10 @@ The translated video comes with synchronized voiceover, please click here to vie
 * Support overlay random transitions, random scaling, random borders, mirror reversal
 * Support algorithmic automatic music matching, calculate the rhythm of the original video and *automatically match music with similar rhythm
 * Support matching specified music
+* Support re-write the captions and AI dubbing
+* Support change the subtitles fonts and style
 
-### Text Removal and Video Inpainting Details
+### [Text Removal and Video Inpainting Details](https://github.com/JollyToday/GhostCut_Remove_Video_Text/blob/main/README.md "GhostCut remove video text info")
 * Support automatic text removal, first mark the area and only automatically remove the text in marked area, remove all after marking the area, adjust the protection or erasure area and re-synthesize
 * Support removal of moving text/moving text watermark
 * Support automatic detection of video subject and upper and lower edges, and refill the background outside the video main subject
@@ -105,7 +107,7 @@ The translated video comes with synchronized voiceover, please click here to vie
 * When OCR extracts video text, support text position and style extraction
 * TTS synthesis for translated text will be supported soon.
 
-### Image translation Details
+### [Image translation Details](https://github.com/JollyToday/AI_Image_Translator_Translate_Images/blob/main/README-EN.md "GhostCut Image Transltor info")
 * Clean erasure
 * Neat typography
 * Picture Clarity
