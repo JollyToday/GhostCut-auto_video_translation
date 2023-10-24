@@ -11,8 +11,8 @@ Here are some video demos.
 
 ### Latest Product Updates
 * 10.12-# AI image tool launchend: Image Text Removal and Image Translator . Excellent effect, global leading, free to use.
-* 09.26-#GhostCut Video Remaker update : new [advanced re-creation] - support short drama re-creation / commentary re-creation
-- Support AI one-click rewriting, regenerate copy, dubbing and subtitles according to the original content, and flexibly match deduplicate to greatly improve re-creation ;
+* 09.26-#GhostCut Video Remaker update : new [advanced remaker] - support short drama remaker / commentary remaker
+- Support AI one-click rewriting, regenerate copy, dubbing and subtitles according to the original content, and flexibly match deduplicate to greatly improve remaker ;
 - Add subtitle position inference to effectively avoid erasure of scene text.
 * 9.13- #GhostCuit and TiKTok Auto post release:
 - Deduplicate function update : add a variety of deduplicate methods, random mirroring, random acceleration, color matching, etc., open head and tail, frame extraction and other operation options, users can customize deduplicate operation
@@ -27,7 +27,7 @@ Here are some video demos.
 * 04.17-#GhostCut Translation Update: Video speech translation segmental speed adjustment is now available, fully guaranteeing alignment between speech, picture, and subtitles. More precise alignment and stable pronunciation are achieved；
 * 03.28-#GhostCut Website Update: Video Hard Sub Translation feature launched on the web version, with the ability to simultaneously translate video text and add intelligent background music in one go；
 * 03.23-#GhostCut TTS Update: Update commonly used voices from editing apps such as Jianying (Douyin) and CapCut, such as Northeastern Iron, Guangxi Zhuanghan, English vitality Ariana；
-* 03.15-#GhostCut API Update: Opened APIs for multiple exclusive products such as Video Re-creation, video text removal, Video Hard Sub Translation, and video translation and dubbing；
+* 03.15-#GhostCut API Update: Opened APIs for multiple exclusive products such as Video remaker, video text removal, Video Hard Sub Translation, and video translation and dubbing；
 * 03.09-#GhostCut Translation Product Update: All translation engines used ChatGPT API, with higher accuracy, especially for translation between small  country languages；
 * 01.16-#GhostCut Translation Product Update:  Video Hard Sub Translation product launched.
 
@@ -38,7 +38,7 @@ These are some of our exclusive features.
 1. **[Smart Text Removal]** Automatically detect all text/subtitles in the video through OCR and perform video inpainting to restore the erased video parts as much as possible;
 2. **[Auto Hard Sub Translation]** Automatically detect the text/subtitles in the video through OCR, calculate and extract text position, style, size in the video, and then use ChatGPT to translate the subtitles and paste them back according to the original text style and position, while performing inpainting on the original text area;
 3. **[Auto Translation and dubbing]** Automatically extract the voice in the video through ASR and translate it, while using TTS to synthesize the translated text into voice. In this process, the position of the original picture, voice, and subtitles is calculated, and the newly synthesized voice, subtitles, and original picture are automatically aligned to ensure the consistency of sound and picture. You can choose whether to perform inpainting smudging on the original text and whether to retain the original sound. The effect of retaining the original sound is to automatically separate the human voice and background music of the original video and retain the background music.
-4. **[Auto Video Re-creation]** Automatically make minor modifications to the video, and automatically complete the following operations, including but not limited to modifying md5, removing video fingerprints, superimposing picture-in-picture in the video, minor cropping, using Gaussian blur, automatic cover clipping, slightly tilting the picture, using sharpening, using acceleration and deceleration, and other transitions, filters, scaling, etc. Generally used for quick secondary creation for **short video**.
+4. **[Auto Video remaker]** Automatically make minor modifications to the video, and automatically complete the following operations, including but not limited to modifying md5, removing video fingerprints, superimposing picture-in-picture in the video, minor cropping, using Gaussian blur, automatic cover clipping, slightly tilting the picture, using sharpening, using acceleration and deceleration, and other transitions, filters, scaling, etc. Generally used for quick secondary creation for **short video**.
 5. **[Image Translator and text removal]** GhostCut image translation service is a newly launched. It’s an AI image translation product. It integrates multiple latest AI models, optimizes the translation quality, style layout and text backfilling as a whole, and improves the quality of picture translation to a new level.
 
 ## 2. Product Features
@@ -73,8 +73,8 @@ The translated video comes with synchronized voiceover, please click here to vie
 [GhostCut translate the video with both voice and text](https://youtu.be/6CCI5ZA-3JE "GhostCut translate the video with both voice and text")
 
 ## 4. Specific AI Editing Capabilities
-### [Video Micro-Editing/Video Re-creation Details](https://github.com/JollyToday/GhostCut_Recreate_Video/blob/main/README_en.md "GhostCut Video Recreation info")
-* Support basic Video Re-creation, one-time basic micro-cropping
+### [Video Micro-Editing/Video remaker Details](https://github.com/JollyToday/GhostCut_remake_Video/blob/main/README_en.md "GhostCut Video remaker info")
+* Support basic Video remaker, one-time basic micro-cropping
 * Support overlay video special effects
 1.Scan light effects
 2.Glare opening effects
@@ -130,7 +130,7 @@ The translated video comes with synchronized voiceover, please click here to vie
 * Image Translation:100+ languages
 
 ## 7. API Interface Support
-* 1.Provides output for all the above capabilities, including Video Re-creation and editing, automatic text removal, video erasure, video subtitle translation, video voice translation (including dubbing), and other interfaces. Multiple capabilities can be stacked and selected together;
+* 1.Provides output for all the above capabilities, including Video remaker and editing, automatic text removal, video erasure, video subtitle translation, video voice translation (including dubbing), and other interfaces. Multiple capabilities can be stacked and selected together;
 * 2.Text removal supports the following four modes, and you can customize the protection area or specify the deletion area:
 
 > a. Automatic text removal
@@ -141,7 +141,7 @@ The translated video comes with synchronized voiceover, please click here to vie
 
 > d. After removing the text, adjust the specified area later
 
-* 3.Video translation can be used together with multiple editing capabilities: One-click completion: Video Re-creation + automatic text removal + video translation + video music matching and other operations (including translated dubbing)
+* 3.Video translation can be used together with multiple editing capabilities: One-click completion: Video remaker + automatic text removal + video translation + video music matching and other operations (including translated dubbing)
 * 4.[API documents](https://jollytoday.feishu.cn/docx/LSNzdoGtOoTSqsxM4K8cooc7nAc "GhostCut API documents")
 * 5.[GhostCut User Guides](https://ghostcut.notion.site/5df83fa6726747b39bd4272a052c1bc1?v=7afb54a3dc70455a949d3945bb0c4221 "GhostCut User Guides")
 
