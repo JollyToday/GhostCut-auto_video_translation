@@ -1,15 +1,17 @@
 ## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文介绍](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
-## Welcome to GhostCut
+> **International users:** Use [Weydub Video Translator](https://weydub.com/video-translator/) and the [Weydub API docs](https://weydub.com/docs/api/). Weydub is the international version of GhostCut; this repository keeps the historical GhostCut project name for compatibility, and older screenshots/GIFs may still show the original domestic brand.
+
+## Welcome to Weydub
 
 ### Auto video localization tool, AI based, translate everything
-GhostCut is an automatic localization tool allowing you to translate videos into 40+ languages efficiently. With "Smart-Text/Watermark-Removal" and "Hard-Sub-Translation" functions, you can easily handle hard subtitles and improve efficiency by 100 times.
+Weydub is an automatic localization tool allowing you to translate videos into 40+ languages efficiently. With smart text/watermark removal and hard-subtitle translation, you can handle hard subtitles and improve efficiency by 100 times. GhostCut is the original domestic brand behind this repository.
 
 Here are some video demos.
 
 <img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/FEAF76B7-CA91-42A0-9C95-905157295980.GIF" width="720"> 
 
-### Latest Product Updates
+### Historical Product Updates
 * 10.12-# AI image tool launchend: Image Text Removal and Image Translator . Excellent effect, global leading, free to use.
 * 09.26-#GhostCut Video Remaker update : new [advanced remaker] - support short drama remaker / commentary remaker
 - Support AI one-click rewriting, regenerate copy, dubbing and subtitles according to the original content, and flexibly match deduplicate to greatly improve remaker ;
@@ -31,46 +33,46 @@ Here are some video demos.
 * 03.09-#GhostCut Translation Product Update: All translation engines used ChatGPT API, with higher accuracy, especially for translation between small  country languages；
 * 01.16-#GhostCut Translation Product Update:  Video Hard Sub Translation product launched.
 
-## 1. GhostCut - AI Video Editing Tool
-GhostCut is an intelligent video editing software. Its core purpose is to help customers improve the processing speed of materials and the quality of video creativity. We have used a lot of AI capabilities in various audio and video processing details to improve the processing efficiency of many videos. It has several unique features, including automatic video translation and dubbing, automatic hard subtitle translation, automatic hard sub/text removal, intelligent video inpainting, and more. Every detail of this product is a combination of AI and automation.
+## 1. Weydub - AI Video Localization Tool
+Weydub, the international version of GhostCut, is an intelligent video localization and editing tool. Its core purpose is to help customers improve the processing speed of materials and the quality of video creative production. We use AI capabilities across audio and video processing details to improve efficiency for many video workflows. It has several unique features, including automatic video translation and dubbing, automatic hard subtitle translation, automatic hard sub/text removal, intelligent video inpainting, and more. Every detail of this product is a combination of AI and automation.
 
 These are some of our exclusive features.
 1. **[Smart Text Removal]** Automatically detect all text/subtitles in the video through OCR and perform video inpainting to restore the erased video parts as much as possible;
 2. **[Auto Hard Sub Translation]** Automatically detect the text/subtitles in the video through OCR, calculate and extract text position, style, size in the video, and then use ChatGPT to translate the subtitles and paste them back according to the original text style and position, while performing inpainting on the original text area;
 3. **[Auto Translation and dubbing]** Automatically extract the voice in the video through ASR and translate it, while using TTS to synthesize the translated text into voice. In this process, the position of the original picture, voice, and subtitles is calculated, and the newly synthesized voice, subtitles, and original picture are automatically aligned to ensure the consistency of sound and picture. You can choose whether to perform inpainting smudging on the original text and whether to retain the original sound. The effect of retaining the original sound is to automatically separate the human voice and background music of the original video and retain the background music.
 4. **[Auto Video remaker]** Automatically make minor modifications to the video, and automatically complete the following operations, including but not limited to modifying md5, removing video fingerprints, superimposing picture-in-picture in the video, minor cropping, using Gaussian blur, automatic cover clipping, slightly tilting the picture, using sharpening, using acceleration and deceleration, and other transitions, filters, scaling, etc. Generally used for quick secondary creation for **short video**.
-5. **[Image Translator and text removal]** GhostCut image translation service is a newly launched. It’s an AI image translation product. It integrates multiple latest AI models, optimizes the translation quality, style layout and text backfilling as a whole, and improves the quality of picture translation to a new level.
+5. **[Image Translator and text removal]** Weydub image translation service is an AI image translation product. It integrates multiple latest AI models, optimizes translation quality, style layout, and text backfilling as a whole, and improves picture translation quality to a new level.
 
 ## 2. Product Features
-1.GhostCut Use lots of the latest AI technologies + audio and video processing algorithms to improve processing effects as much as possible;
+1.Weydub uses the latest AI technologies plus audio and video processing algorithms to improve processing effects as much as possible;
 
 2.Adopt automated and intelligent design concepts, end-to-end problem solving, and deliver finished products as much as possible;
 
 3.All APIs and intermediate products are open for easy integration.
 
 ## 3. Video Demos
-[Free Try GhostCut](https://weydub.com/video-translator/ "Free Try GhostCut")
-There are Chinese and English versions. Mainland users can access product in  WeChat mini program, search GhostCut.
+[Try Weydub Video Translator](https://weydub.com/video-translator/ "Try Weydub Video Translator")
+For international users, use Weydub on the web. Mainland China users can still access the domestic GhostCut product in the WeChat mini program.
 
 ### Smart Text Removal- video demos
 <img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/4AF80FA6-B2CE-44A0-9123-CEE40423CC60.GIF" width="720"> 
 
-This is Smart Text Removal and Video Inpainting demo video. If you need to learn about video inpainting, please to visit the video inpainting introduction. Compared to other text removal software, such as Runway's Inpainting feature, GhostCut's text removal（Inpainting） is simpler, smarter, and more affordable. You can check the specific differences between GhostCut and Runway in Video Inpainting here: [Difference between GhostCut and Runway in Video Inpainting](https://weydub.com/subtitle-removal/ "Difference between GhostCut and Runway in Video Inpainting")。
+This is a smart text removal and video inpainting demo. Compared to other text removal software, such as Runway's inpainting feature, Weydub/GhostCut text removal is designed to be simple, smart, and cost effective. You can start from [Weydub Subtitle Removal](https://weydub.com/subtitle-removal/ "Weydub Subtitle Removal").
 
 
-**What kind of  texts can GhostCut automatically remove ?**
+**What kind of text can Weydub automatically remove?**
 Specifically as follows 
 <img src="https://gc100.cdn.izhaoli.cn/ve_material_image/a0b03034fcbd457c/1680243681313.png" width="720">
 
 ### Video Hardcode subtitles Translation-video samples
 <img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/1F0B7143-A92C-4C52-BB16-82EEA231DFD4.GIF" width="720"> 
 
-GhostCut hard Subtitle Translation recognizes the "text" in the original video by OCR and generates translated text. It also uses AI to remove the original video text, and then re-pastes the translated text back into the original text position, while trying to retain the original text's size, color, and layout as much as possible. Compared with using multiple editing and translation software, the Specialty of GhostCut are: fully automatic, one-click removal of original text, and retention of the original video text layout. 
+Weydub hard subtitle translation recognizes the text in the original video by OCR and generates translated text. It also uses AI to remove the original video text, and then re-pastes the translated text back into the original text position, while trying to retain the original text size, color, and layout as much as possible. Compared with using multiple editing and translation tools, Weydub focuses on automation, one-click original text removal, and preserving the original video text layout.
 
 ### Video Translation and Dubbing-video samples
 The translated video comes with synchronized voiceover, please click here to view the video effect YouTube Video Voice Translation Case
 
-[GhostCut translate the video with both voice and text](https://youtu.be/6CCI5ZA-3JE "GhostCut translate the video with both voice and text")
+[Weydub/GhostCut video translation with both voice and text](https://youtu.be/6CCI5ZA-3JE "Weydub/GhostCut video translation with both voice and text")
 
 ## 4. Specific AI Editing Capabilities
 ### [Video Micro-Editing/Video remaker Details](https://github.com/JollyToday/GhostCut_remake_Video/blob/main/README_en.md "GhostCut Video remaker info")
@@ -142,10 +144,10 @@ The translated video comes with synchronized voiceover, please click here to vie
 > d. After removing the text, adjust the specified area later
 
 * 3.Video translation can be used together with multiple editing capabilities: One-click completion: Video remaker + automatic text removal + video translation + video music matching and other operations (including translated dubbing)
-* 4.[API documents](https://weydub.com/docs/api/video-translation.html "GhostCut API documents")
-* 5.[GhostCut User Guides](https://weydub.com/docs/api/ "GhostCut User Guides")
+* 4.[Weydub Video Translation API documents](https://weydub.com/docs/api/video-translation.html "Weydub Video Translation API documents")
+* 5.[Weydub API and automation guides](https://weydub.com/docs/api/ "Weydub API and automation guides")
 
 ## 8. Contact Us
+* For international product access, start from [Weydub](https://weydub.com/).
 * WeChat: 360254, please indicate GitHub in the remark.
 * Email：niumoz#izhaoli.com（#-->@）
-
