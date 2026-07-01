@@ -49,13 +49,13 @@ These are some of our exclusive features.
 3.All APIs and intermediate products are open for easy integration.
 
 ## 3. Video Demos
-[Free Try GhostCut](https://ghostcut.jollytoday.com/index/cn?redirect=%2Fhome/cn&code=th741 "Free Try GhostCut")
+[Free Try GhostCut](https://weydub.com/video-translator/ "Free Try GhostCut")
 There are Chinese and English versions. Mainland users can access product in  WeChat mini program, search GhostCut.
 
 ### Smart Text Removal- video demos
 <img src="https://github.com/JollyToday/GhostCut-auto_video_translation/blob/main/4AF80FA6-B2CE-44A0-9123-CEE40423CC60.GIF" width="720"> 
 
-This is Smart Text Removal and Video Inpainting demo video. If you need to learn about video inpainting, please to visit the video inpainting introduction. Compared to other text removal software, such as Runway's Inpainting feature, GhostCut's text removal（Inpainting） is simpler, smarter, and more affordable. You can check the specific differences between GhostCut and Runway in Video Inpainting here: [Difference between GhostCut and Runway in Video Inpainting](https://ghostcut.notion.site/Difference-between-GhostCut-and-Runway-in-Video-Inpainting-f5764304757f4bb995aff2c48fb148a7 "Difference between GhostCut and Runway in Video Inpainting")。
+This is Smart Text Removal and Video Inpainting demo video. If you need to learn about video inpainting, please to visit the video inpainting introduction. Compared to other text removal software, such as Runway's Inpainting feature, GhostCut's text removal（Inpainting） is simpler, smarter, and more affordable. You can check the specific differences between GhostCut and Runway in Video Inpainting here: [Difference between GhostCut and Runway in Video Inpainting](https://weydub.com/subtitle-removal/ "Difference between GhostCut and Runway in Video Inpainting")。
 
 
 **What kind of  texts can GhostCut automatically remove ?**
@@ -142,8 +142,8 @@ The translated video comes with synchronized voiceover, please click here to vie
 > d. After removing the text, adjust the specified area later
 
 * 3.Video translation can be used together with multiple editing capabilities: One-click completion: Video remaker + automatic text removal + video translation + video music matching and other operations (including translated dubbing)
-* 4.[API documents](https://jollytoday.feishu.cn/docx/LSNzdoGtOoTSqsxM4K8cooc7nAc "GhostCut API documents")
-* 5.[GhostCut User Guides](https://ghostcut.notion.site/5df83fa6726747b39bd4272a052c1bc1?v=7afb54a3dc70455a949d3945bb0c4221 "GhostCut User Guides")
+* 4.[API documents](https://weydub.com/docs/api/video-translation.html "GhostCut API documents")
+* 5.[GhostCut User Guides](https://weydub.com/docs/api/ "GhostCut User Guides")
 
 ## 8. Contact Us
 * WeChat: 360254, please indicate GitHub in the remark.
