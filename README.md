@@ -1,4 +1,6 @@
-> **国内用户请使用[鬼手剪辑官网](https://cn.jollytoday.com/video-translator/)。** 本仓库是产品说明与历史项目名，不是可运行的开源算法。API 与 Skill：https://cn.jollytoday.com/api/## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文介绍](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
+> **国内用户请使用[鬼手剪辑官网](https://cn.jollytoday.com/video-translator/)。** 本仓库是产品说明与历史项目名，不是可运行的开源算法。API 与 Skill：https://cn.jollytoday.com/api/
+
+## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文介绍](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
 
 > **International users:** Use [Weydub Video Translator](https://weydub.com/video-translator/) and the [Weydub API docs](https://weydub.com/docs/api/). Weydub is the international version of GhostCut; this repository keeps the historical GhostCut project name for compatibility, and older screenshots/GIFs may still show the original domestic brand.
 
