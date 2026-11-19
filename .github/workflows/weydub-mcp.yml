@@ -1,0 +1,46 @@
+name: Release Weydub MCP
+on:
+  push:
+    tags: ['weydub-mcp-v*']
+permissions: {}
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test and assemble the local MCP server
+        run: |
+          set -eu
+          test "$GITHUB_REF_NAME" = "weydub-mcp-v$(jq -r .version mcp/server.json)"
+          npm ci --prefix mcp --ignore-scripts --omit=dev
+          node mcp/check.mjs
+          # Bundle server code and dependencies; copy only public client files.
+          mkdir -p "$RUNNER_TEMP/bundle/mcp" "$RUNNER_TEMP/bundle/examples"
+          cp mcp/manifest.json "$RUNNER_TEMP/bundle/"
+          cp -r mcp/server.mjs mcp/node_modules "$RUNNER_TEMP/bundle/mcp/"
+          cp examples/media.mjs examples/Weydub.postman_collection.json "$RUNNER_TEMP/bundle/examples/"
+          cd "$RUNNER_TEMP/bundle"
+          zip -qr "$GITHUB_WORKSPACE/weydub-media.mcpb" manifest.json mcp examples -x '*/.bin/*'
+      - name: Publish downloadable extension
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "Weydub Media MCP $GITHUB_REF_NAME" \
+            --notes 'Install the MCPB in a compatible desktop client and enter your own Weydub API credentials. Each processing tool previews by default. https://weydub.com/docs/api/' weydub-media.mcpb
+      - name: Register with the official MCP Registry
+        run: |
+          set -eu
+          curl -fsSL -o "$RUNNER_TEMP/publisher.tgz" https://github.com/modelcontextprotocol/registry/releases/download/v1.8.9/mcp-publisher_linux_amd64.tar.gz
+          echo "4d527ca8f1ced0394c962dc925c2a4a4addef441cbefd62501c875e9481823a8  $RUNNER_TEMP/publisher.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/publisher.tgz" -C "$RUNNER_TEMP" mcp-publisher
+          jq --arg sha "$(sha256sum weydub-media.mcpb | cut -d' ' -f1)" '.packages[0].fileSha256=$sha' mcp/server.json > server.json
+          "$RUNNER_TEMP/mcp-publisher" login github-oidc
+          "$RUNNER_TEMP/mcp-publisher" publish
