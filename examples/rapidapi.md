@@ -21,6 +21,19 @@ Select your application and call **Open Account** once for the current RapidAPI 
 
 For a first image, open **Translate Image** and use the public product photo in its example. `downloadInfo` is a JSON string containing a `url`, with `srcLang: "zh"`, `tgtLang: "en"`, `translateOn: 1` and `synthesisOn: 1`. For a video, replace the placeholder URL with a direct HTTPS link to a clip you control. The URL must serve the file without a website login. The v1 video translation example uses `sourceLang: "cn"` for Chinese speech.
 
+### What to test on your first clip
+
+If your [Weydub material library](https://weydub.com/material/) contains **Sample video.mp4**, preview it first: the tea tutorial has Chinese captions and narration and lasts about seven seconds. There is also a longer clip with an aircraft wing and the same filename. Use the tea clip, or your own clip with a few visible captions and clear speech. Supply the **media file URL** you are authorized to use; the library page itself is not an API input.
+
+| Goal | Set up the first run | Check the download |
+| --- | --- | --- |
+| Remove the Chinese captions | In **Remove Subtitles**, set `videoInpaintLang` to `zh`. | Pause at about one second, when the first caption is visible in the original. Compare the same frame in the output, then play through the other two captions. |
+| Dub the Chinese narration into English | In **Video Translation**, use `sourceLang: "cn"`, `lang: "en"`, `removeBgAudio: "0"` and `needText: 0`. Use speech you have permission to dub. | Listen through the last line, about the color of the tea. Turning new captions off does not remove the Chinese words already in the picture. |
+| Recover the captions as an SRT | Use the **direct Weydub OCR** example, choose `zh`, and scan the full frame. | In our direct API test the tea clip returned three cues. The first ran from `00:00:00,167` to `00:00:01,767`. OCR follows the words on screen, even if the audio is muted. |
+| Translate the text on a product image | Use the **Translate Image** sample with `zh` to `en`; keep both translation and rendering enabled. | Open `output_url` and look for English labels. A direct API test of the sample rendered “One-click 3D conversion”. The optional `inpaint_url` is the background with the original labels removed. |
+
+The OCR cue times and image label are observations from the **direct Weydub API**. They identify what to inspect; they do not establish an allowance or a successful paid run on a RapidAPI plan.
+
 ## Retrieve the right file
 
 | Job | Save this from the create response | Send to **Get Result** | Download on success |
