@@ -1,0 +1,16 @@
+/* Light semantic colors: shared/ghostcut-design-system/GhostCut-Design-Token-Light.md */
+.gradio-container {max-width:1040px !important;margin:auto !important;}
+.media-view {color:var(--body-text-color);padding:12px 0;}
+.media-view h2 {font-size:24px;line-height:1.25;margin:0 0 6px;}
+.media-view p {max-width:76ch;line-height:1.5;margin:8px 0;}
+.media-view .legend,.media-view figcaption {font-size:14px;}
+.media-view a {text-decoration:underline;}
+.media-view video {max-width:100%;height:auto;display:block;margin-top:14px;}
+.media-view figure {margin:0;}
+.media-view .pair {display:grid;grid-template-columns:repeat(2,minmax(0,220px));gap:16px;margin:12px 0;}
+.media-view .pair img,.media-view .photo img {height:220px;width:100%;object-fit:contain;background:var(--background-fill-secondary);border:1px solid var(--border-color-primary);border-radius:8px;}
+.media-view .photo {max-width:320px;margin:12px 0;}
+.media-view .cues {border-block:1px solid var(--border-color-primary);margin:16px 0;}
+.cues>div {display:grid;grid-template-columns:minmax(150px,1fr) 3fr;align-items:baseline;gap:16px;padding:8px 0;}
+.cues time {font-family:monospace;color:var(--body-text-color-subdued);}
+@media(max-width:550px){.cues>div{grid-template-columns:1fr;gap:0}.media-view .pair img{height:155px;}.media-view h2{font-size:21px;}}

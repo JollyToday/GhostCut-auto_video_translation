@@ -23,6 +23,8 @@ For MCP clients, [download the Weydub desktop extension](https://raw.githubuserc
 
 The [Pipedream Connect action source](integrations/pipedream/) and offline tests are available for developers. The app has been submitted for registry review and is not yet available in Pipedream's public catalog.
 
+To explore the four operations in a browser, [build the Gradio sample lab](integrations/huggingface/). It previews requests without credits and can run in a personal Hugging Face Space with owner-only processing.
+
 OCR reads the full frame; choose the language visible on screen. The Lite removal example targets the bottom 18% of the picture. Dubbing translates speech and adds captions; original burned-in captions remain unless you remove them first. [API documentation](https://weydub.com/docs/api/) · [Credit rates](https://weydub.com/vip/pricing-detail/).
 
 ### Auto video localization tool, AI based, translate everything
