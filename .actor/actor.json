@@ -6,5 +6,16 @@
   "version": "1.0",
   "dockerfile": "./Dockerfile",
   "input": "./input_schema.json",
+  "output": {
+    "actorOutputSchemaVersion": 1,
+    "title": "Weydub media job",
+    "properties": {
+      "results": {
+        "type": "string",
+        "title": "Preview, job ID or completed media links",
+        "template": "{{links.apiDefaultDatasetUrl}}/items"
+      }
+    }
+  },
   "readme": "./README.md"
 }
