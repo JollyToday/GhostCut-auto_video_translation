@@ -1,0 +1,12 @@
+{
+  "name":"Weydub: read burned-in subtitles",
+  "id":"WeydubOcrPreview",
+  "active":false,
+  "nodes":[
+    {"id":"f3302f8e-20a5-4271-ab66-a14510185c43","name":"Start","type":"n8n-nodes-base.manualTrigger","typeVersion":1,"position":[0,0],"parameters":{}},
+    {"id":"598c5b0b-00f4-4d2d-b2c1-99e81c2ef4c5","name":"Preview full-frame OCR","type":"n8n-nodes-weydub.weydub","typeVersion":1,"position":[240,0],"parameters":{"operation":"ocr","mediaUrl":"https://example.org/replace-with-your-video.mp4","source":"zh","submit":false}}
+  ],
+  "connections":{"Start":{"main":[[{"node":"Preview full-frame OCR","type":"main","index":0}]]}},
+  "settings":{"executionOrder":"v1"},
+  "pinData":{}
+}

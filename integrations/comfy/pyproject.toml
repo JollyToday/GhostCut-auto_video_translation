@@ -1,0 +1,17 @@
+[project]
+name = "weydub-media"
+version = "0.1.0"
+description = "Remove video text, extract timed OCR subtitles, dub speech and translate images using Weydub."
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/JollyToday/GhostCut-auto_video_translation"
+Homepage = "https://weydub.com/"
+Documentation = "https://weydub.com/docs/api/"
+
+[tool.comfy]
+PublisherId = "weydub"
+DisplayName = "Weydub Media Localization"
