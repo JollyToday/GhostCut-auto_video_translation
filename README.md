@@ -21,6 +21,8 @@ Set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` locally for live calls. Save the re
 
 For MCP clients, [download the Weydub desktop extension](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/weydub-mcp-v1.0.1/mcp/dist/weydub-media.mcpb) and enter your own Weydub credentials in a compatible client. For a source installation, clone this repository, run `cd mcp`, `npm ci --ignore-scripts` and `node check.mjs`, then configure the stdio command `node /absolute/path/to/mcp/server.mjs`. The four processing tools preview by default; `check_job` retrieves results.
 
+The [Pipedream Connect action source](integrations/pipedream/) and offline tests are available for developers. The app has been submitted for registry review and is not yet available in Pipedream's public catalog.
+
 OCR reads the full frame; choose the language visible on screen. The Lite removal example targets the bottom 18% of the picture. Dubbing translates speech and adds captions; original burned-in captions remain unless you remove them first. [API documentation](https://weydub.com/docs/api/) · [Credit rates](https://weydub.com/vip/pricing-detail/).
 
 ### Auto video localization tool, AI based, translate everything

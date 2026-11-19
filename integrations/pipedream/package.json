@@ -1,0 +1,7 @@
+{
+  "name": "@pipedream/weydub",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test check.test.mjs" }
+}

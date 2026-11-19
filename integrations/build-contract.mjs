@@ -13,8 +13,11 @@ for (const [i,item] of collection.item.entries()) {
 }
 assert.equal(collection.item.length,ids.length);
 const wire=JSON.stringify(operations,null,2)+'\n';
-for (const dir of ['comfy','n8n']) {
-  const url=new URL(`./${dir}/contract.json`,import.meta.url);
-  if(process.argv.includes('--check')) assert.equal(await readFile(url,'utf8'),wire,dir);
-  else await writeFile(url,wire);
+for (const [file,content] of [
+  ['comfy/contract.json',wire],['n8n/contract.json',wire],
+  ['pipedream/contract.mjs',`export default ${wire.trimEnd()};\n`],
+]) {
+  const url=new URL(`./${file}`,import.meta.url);
+  if(process.argv.includes('--check')) assert.equal(await readFile(url,'utf8'),content,file);
+  else await writeFile(url,content);
 }
