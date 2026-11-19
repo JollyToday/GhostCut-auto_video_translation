@@ -2,7 +2,7 @@
   "$schema":"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name":"io.github.JollyToday/weydub-media","title":"Weydub Media Localization",
   "description":"Erase video text, extract OCR subtitles, dub speech and translate images using your Weydub account.",
-  "version":"1.0.0","websiteUrl":"https://weydub.com/docs/api/",
+  "version":"1.0.1","websiteUrl":"https://weydub.com/docs/api/",
   "repository":{"url":"https://github.com/JollyToday/GhostCut-auto_video_translation","source":"github"},
-  "packages":[{"registryType":"mcpb","identifier":"https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-mcp-v1.0.0/weydub-media.mcpb","transport":{"type":"stdio"}}]
+  "packages":[{"registryType":"mcpb","identifier":"https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/weydub-mcp-v1.0.1/mcp/dist/weydub-media.mcpb","fileSha256":"0b020b2267e6f847cdb6706ebd03066470a4e6a73ca34e2249f2aaf6cf894e77","transport":{"type":"stdio"}}]
 }

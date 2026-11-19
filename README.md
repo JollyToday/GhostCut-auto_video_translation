@@ -19,7 +19,7 @@ node examples/media.mjs image "$IMAGE_URL" --source zh --target en
 
 Set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` locally for live calls. Save the returned job ID; use `video-status` for OCR, removal and dubbing, or `image-status` for images. Querying an existing ID does not submit a second processing job.
 
-For MCP clients, clone this repository, run `npm ci --prefix mcp --ignore-scripts`, then run `node mcp/check.mjs` to check the installation without spending credits. Configure a local stdio server with `node /absolute/path/to/mcp/server.mjs` and your own Weydub credentials. The four processing tools preview by default; `check_job` retrieves results.
+For MCP clients, [download the Weydub desktop extension](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/weydub-mcp-v1.0.1/mcp/dist/weydub-media.mcpb) and enter your own Weydub credentials in a compatible client. For a source installation, clone this repository, run `cd mcp`, `npm ci --ignore-scripts` and `node check.mjs`, then configure the stdio command `node /absolute/path/to/mcp/server.mjs`. The four processing tools preview by default; `check_job` retrieves results.
 
 OCR reads the full frame; choose the language visible on screen. The Lite removal example targets the bottom 18% of the picture. Dubbing translates speech and adds captions; original burned-in captions remain unless you remove them first. [API documentation](https://weydub.com/docs/api/) · [Credit rates](https://weydub.com/vip/pricing-detail/).
 

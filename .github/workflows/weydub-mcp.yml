@@ -16,19 +16,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test and assemble the local MCP server
+      - name: Test the exact archive to be published
         run: |
           set -eu
           test "$GITHUB_REF_NAME" = "weydub-mcp-v$(jq -r .version mcp/server.json)"
-          npm ci --prefix mcp --ignore-scripts --omit=dev
-          node mcp/check.mjs
-          # Bundle server code and dependencies; copy only public client files.
-          mkdir -p "$RUNNER_TEMP/bundle/mcp" "$RUNNER_TEMP/bundle/examples"
-          cp mcp/manifest.json "$RUNNER_TEMP/bundle/"
-          cp -r mcp/server.mjs mcp/node_modules "$RUNNER_TEMP/bundle/mcp/"
-          cp examples/media.mjs examples/Weydub.postman_collection.json "$RUNNER_TEMP/bundle/examples/"
-          cd "$RUNNER_TEMP/bundle"
-          zip -qr "$GITHUB_WORKSPACE/weydub-media.mcpb" manifest.json mcp examples -x '*/.bin/*'
+          cp mcp/dist/weydub-media.mcpb weydub-media.mcpb
+          mkdir -p "$RUNNER_TEMP/bundle"
+          unzip -q weydub-media.mcpb -d "$RUNNER_TEMP/bundle"
+          node "$RUNNER_TEMP/bundle/mcp/check.mjs"
       - name: Publish downloadable extension
         env:
           GH_TOKEN: ${{ github.token }}

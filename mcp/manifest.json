@@ -1,5 +1,5 @@
 {
-  "manifest_version":"0.3","name":"weydub-media","display_name":"Weydub Media Localization","version":"1.0.0",
+  "manifest_version":"0.3","name":"weydub-media","display_name":"Weydub Media Localization","version":"1.0.1",
   "description":"Remove video captions, extract full-frame OCR subtitles, dub speech and translate product images with Weydub.",
   "author":{"name":"Weydub","url":"https://weydub.com/"},"homepage":"https://weydub.com/docs/api/",
   "server":{"type":"node","entry_point":"mcp/server.mjs","mcp_config":{"command":"node","args":["${__dirname}/mcp/server.mjs"],

@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 
 const run=promisify(execFile);
 const cli=fileURLToPath(new URL('../examples/media.mjs',import.meta.url));
-const server=new McpServer({name:'weydub-media',version:'1.0.0'});
+const server=new McpServer({name:'weydub-media',version:'1.0.1'});
 const lang=z.string().regex(/^[a-z]{2,3}(?:-[a-zA-Z]{2,4})?$/);
 const common={
   url:z.string().url().startsWith('https://').describe('Downloadable HTTPS link to media you may process.'),
