@@ -1,0 +1,10 @@
+{
+  "actorSpecification": 1,
+  "name": "weydub-media-localization",
+  "title": "Weydub Video and Image Localization",
+  "description": "Remove burned-in video captions, extract timed SRT subtitles, dub speech or translate text in images using your Weydub API account.",
+  "version": "1.0",
+  "dockerfile": "./Dockerfile",
+  "input": "./input_schema.json",
+  "readme": "./README.md"
+}

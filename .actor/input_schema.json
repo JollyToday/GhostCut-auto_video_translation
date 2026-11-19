@@ -1,0 +1,39 @@
+{
+  "title": "Process media with Weydub",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "operation": {
+      "title":"Operation","type":"string","editor":"select","default":"image",
+      "enum":["erase","ocr","dub","image","video-status","image-status"],
+      "enumTitles":["Remove burned-in subtitles (Lite)","Extract subtitles from the full frame (OCR)","Translate and dub speech","Translate text in an image","Check a video or subtitle job","Check an image job"],
+      "description":"Choose what to produce or check a job you already submitted."
+    },
+    "input": {
+      "title":"Media URL or job ID","type":"string","editor":"textfield",
+      "prefill":"https://gc100.cdn.izhaoli.cn/ve_material_image/A-00b4943646344cfc/e2d6dd82903f4059bd94c9b660f5f7b6/1782789120948.webp",
+      "description":"For a new job, supply a directly downloadable HTTPS media URL. To check an existing job, enter only its numeric ID."
+    },
+    "source": {
+      "title":"Source language","type":"string","editor":"textfield","default":"zh",
+      "description":"OCR: language visible in the frame. Dubbing: spoken language. Image translation: language printed on the image."
+    },
+    "target": {
+      "title":"Target language","type":"string","editor":"textfield","default":"en",
+      "description":"Used for dubbing and image translation. Ignored for erasure, OCR and status checks."
+    },
+    "submit": {
+      "title":"Submit a billable media job","type":"boolean","default":false,
+      "description":"Off previews a creation request without sending it. Status checks only retrieve the existing job."
+    },
+    "appKey": {
+      "title":"Your Weydub AppKey","type":"string","editor":"textfield","isSecret":true,
+      "description":"Required when submitting or checking a job. Not needed for preview."
+    },
+    "appSecret": {
+      "title":"Your Weydub AppSecret","type":"string","editor":"textfield","isSecret":true,
+      "description":"Use the secret for your own Weydub API account. Never put this in the media URL."
+    }
+  },
+  "required":["operation","input"]
+}
