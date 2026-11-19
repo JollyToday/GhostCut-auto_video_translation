@@ -51,7 +51,18 @@ jq 'if .code != 1000 then {code, msg, trace}
     end'
 ```
 
-For a video, open **Get Result** in the *same* listing where you created the job and copy its generated snippet. All three video listings use `/work/status`, but each has its own RapidAPI host. To retrieve one clip, send `{"idWorks":[12345]}` with your work ID. A successful status request can still return a clip that is processing; download only when its `processStatus` is `1`.
+### Check a video or image job with Node.js
+
+From this repository, run **one** command for the listing where you submitted your file. Set `RAPIDAPI_KEY` locally. Replace `12345` with your **work ID** for a video, or your **image job ID** for a photo. The [lookup script](rapidapi-result.mjs) uses Node.js 20+ with no packages to install.
+
+| Your original request | Command |
+| --- | --- |
+| Remove burned-in subtitles | `node examples/rapidapi-result.mjs remove 12345` |
+| Translate and dub speech | `node examples/rapidapi-result.mjs dub 12345` |
+| Create a mirrored or trimmed edit | `node examples/rapidapi-result.mjs edit 12345` |
+| Translate a product image | `node examples/rapidapi-result.mjs image 12345` |
+
+Each invocation makes **one result query** and can count toward the listing's request quota. It never submits your media. `ready` includes the download URL; treat that link as private. `not_ready` means there is no final file yet. For `needs_attention`, stop polling and keep the job ID, status and response `trace` for support. In particular, an image status greater than `1` means the image failed to render. `no_match` means the requested item was not returned: check that you used the right listing and a work ID rather than a project ID. To query a whole project, use **Get Result** in the Playground with `idProjects`.
 
 ## HTTP 200, but no job ID
 
