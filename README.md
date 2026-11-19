@@ -4,6 +4,21 @@
 
 ## Welcome to Weydub
 
+### Try the media API
+
+Use [the Postman collection](examples/Weydub.postman_collection.json) or Node.js 20+ with no packages to install. Supply a video or image URL you control. The repository GIFs illustrate the product; they are not test inputs. The CLI previews a creation request by default. Add `--submit` only when you want to spend your own API credits:
+
+```sh
+node examples/media.mjs ocr "$VIDEO_URL" --source zh
+node examples/media.mjs erase "$VIDEO_URL"
+node examples/media.mjs dub "$VIDEO_URL" --source zh --target en
+node examples/media.mjs image "$IMAGE_URL" --source zh --target en
+```
+
+Set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` locally for live calls. Save the returned job ID; use `video-status` for OCR, removal and dubbing, or `image-status` for images. Querying an existing ID does not submit a second processing job.
+
+OCR reads the full frame; choose the language visible on screen. The Lite removal example targets the bottom 18% of the picture. Dubbing translates speech and adds captions; original burned-in captions remain unless you remove them first. [API documentation](https://weydub.com/docs/api/) · [Credit rates](https://weydub.com/vip/pricing-detail/).
+
 ### Auto video localization tool, AI based, translate everything
 Weydub is an automatic localization tool allowing you to translate videos into 40+ languages efficiently. With smart text/watermark removal and hard-subtitle translation, you can handle hard subtitles and improve efficiency by 100 times. GhostCut is the original domestic brand behind this repository.
 

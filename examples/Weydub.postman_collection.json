@@ -1,0 +1,265 @@
+{
+  "info": {
+    "name": "Weydub Media Localization API · BYO credentials",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "For existing Weydub API customers. Choose an environment. In your local Postman Vault add weydub-app-key and weydub-app-secret. Set video_url or image_url to media you may process and choose the languages. Send only the desired operation: each creation can consume credits. Then send the corresponding status request. Do not run the entire collection as a first test. Docs: https://weydub.com/docs/api/ · Rates: https://weydub.com/vip/pricing-detail/"
+  },
+  "variable": [
+    {
+      "key": "video_url",
+      "value": ""
+    },
+    {
+      "key": "image_url",
+      "value": ""
+    },
+    {
+      "key": "source_language",
+      "value": "zh"
+    },
+    {
+      "key": "target_language",
+      "value": "en"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "try {",
+          "if(pm.request.url.toString().split('/').slice(0,3).join('/')!=='https://api.zhaoli.com')throw Error('Unexpected API host');",
+          "const body=pm.variables.replaceIn(pm.request.body.raw); const p=JSON.parse(body);",
+          "if(body.includes('{{'))throw Error('Set all referenced variables in your selected environment');",
+          "for(const url of p.urls || (p.downloadInfo?[JSON.parse(p.downloadInfo).url]:[])){if(!/^https:\\/\\/[^\\s]+$/.test(url))throw Error('Set a downloadable HTTPS media URL');}",
+          "if(p.id!==undefined&&(!Number.isSafeInteger(p.id)||p.id<=0))throw Error('Provide a valid image job ID');",
+          "const wire=body;",
+          "const key=await pm.vault.get('weydub-app-key'), secret=await pm.vault.get('weydub-app-secret');",
+          "if(!key||!secret)throw Error('Set your own credentials in Postman Vault');",
+          "const crypto=pm.require('npm:crypto-js@4.2.0');const md5=x=>crypto.MD5(x).toString();",
+          "pm.request.headers.upsert({key:'AppKey',value:key});pm.request.headers.upsert({key:'AppSign',value:md5(md5(wire)+secret)});",
+          "}catch(e){pm.execution.skipRequest();throw e;}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Remove burned-in subtitles · Lite",
+      "request": {
+        "method": "POST",
+        "url": "https://api.zhaoli.com/v-w-c/gateway/ve/work/free",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "For captions in the bottom 18% of the picture. Adjust the region for differently positioned captions. Poll Check video job and download videoUrl.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"urls\": [\n    \"{{video_url}}\"\n  ],\n  \"needChineseOcclude\": 2,\n  \"videoInpaintLang\": \"all\",\n  \"videoInpaintMasks\": \"[{\\\"type\\\":\\\"remove_only_ocr\\\",\\\"start\\\":0,\\\"end\\\":99999,\\\"region\\\":[[0,0.82],[1,0.82],[1,1],[0,1]]}]\",\n  \"extraOptions\": \"{\\\"extra_inpaint_config\\\":{\\\"model\\\":\\\"advanced_lite\\\"}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r=pm.response.json();",
+              "pm.test('Weydub accepted this request',()=>{pm.response.to.have.status(200);pm.expect(r.code).to.eql(1000);});",
+              "if(r.code===1000){const id=r.body.dataList?.[0]?.id; pm.expect(id).to.exist; pm.environment.set('video_work_id',String(id));}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Extract subtitles · Full-screen OCR",
+      "request": {
+        "method": "POST",
+        "url": "https://api.zhaoli.com/v-w-c/gateway/ve/work/free",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Select the language of the on-screen text. Full-frame recognition can include signs or labels as well as dialogue. Download srcSrtUrl from the finished video job.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"urls\": [\n    \"{{video_url}}\"\n  ],\n  \"needChineseOcclude\": 14,\n  \"videoInpaintLang\": \"{{source_language}}\",\n  \"lang\": \"{{source_language}}\",\n  \"videoInpaintMasks\": \"[{\\\"type\\\":\\\"remove_only_ocr\\\",\\\"start\\\":0,\\\"end\\\":99999,\\\"region\\\":[[0,0],[1,0],[1,1],[0,1]]}]\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r=pm.response.json();",
+              "pm.test('Weydub accepted this request',()=>{pm.response.to.have.status(200);pm.expect(r.code).to.eql(1000);});",
+              "if(r.code===1000){const id=r.body.dataList?.[0]?.id; pm.expect(id).to.exist; pm.environment.set('video_work_id',String(id));}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Translate speech · High-emotion dubbing",
+      "request": {
+        "method": "POST",
+        "url": "https://api.zhaoli.com/v-w-c/gateway/ve/work/voice/incorporate",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Use speech you are authorized to dub. Includes translated captions; existing burned-in text remains. Poll Check video job for the finished MP4.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"urls\": [\n    \"{{video_url}}\"\n  ],\n  \"sourceLang\": \"{{source_language}}\",\n  \"lang\": \"{{target_language}}\",\n  \"incorporatePro\": true,\n  \"wyNeedText\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r=pm.response.json();",
+              "pm.test('Weydub accepted this request',()=>{pm.response.to.have.status(200);pm.expect(r.code).to.eql(1000);});",
+              "if(r.code===1000){const id=r.body.dataList?.[0]?.id; pm.expect(id).to.exist; pm.environment.set('video_work_id',String(id));}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Translate text in an image",
+      "request": {
+        "method": "POST",
+        "url": "https://api.zhaoli.com/v-w-c/gateway/ve/image/translate",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Provide a downloadable image URL. Use Check image job to retrieve the translated image.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"downloadInfo\": \"{\\\"url\\\":\\\"{{image_url}}\\\"}\",\n  \"translateOn\": 1,\n  \"srcLang\": \"{{source_language}}\",\n  \"tgtLang\": \"{{target_language}}\",\n  \"commodityFilterOn\": 0,\n  \"synthesisOn\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r=pm.response.json();",
+              "pm.test('Weydub accepted this request',()=>{pm.response.to.have.status(200);pm.expect(r.code).to.eql(1000);});",
+              "if(r.code===1000){pm.expect(r.body).to.exist; pm.environment.set('image_job_id',String(r.body));}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Check video job",
+      "request": {
+        "method": "POST",
+        "url": "https://api.zhaoli.com/v-w-c/gateway/ve/work/status",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Reads an existing job; it does not create another. On processStatus 1, use videoUrl for video or srcSrtUrl for OCR.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"idWorks\": [\n    \"{{video_work_id}}\"\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r=pm.response.json();",
+              "pm.test('Weydub accepted this request',()=>{pm.response.to.have.status(200);pm.expect(r.code).to.eql(1000);});",
+              "if(r.code===1000){pm.test('Result status is present',()=>pm.expect(r.body.content?.[0]?.processStatus).to.exist);}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Check image job",
+      "request": {
+        "method": "POST",
+        "url": "https://api.zhaoli.com/v-w-c/gateway/ve/image/translate/query",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "description": "Reads an existing image job. On status 1, read output_url from result (which may be JSON text).",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"id\": {{image_job_id}}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const r=pm.response.json();",
+              "pm.test('Weydub accepted this request',()=>{pm.response.to.have.status(200);pm.expect(r.code).to.eql(1000);});",
+              "if(r.code===1000){pm.test('Result status is present',()=>pm.expect(r.body.status).to.exist);}"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
