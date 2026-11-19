@@ -24,7 +24,8 @@ function payload(op) {
   if (op === "image-status") return {id:"{{parameters.jobId}}"};
   if (op === "video-status") return {idWorks:["{{parameters.jobId}}"]};
   const body = structuredClone(contract[op].body);
-  if (op === "image") body.downloadInfo = '{{createJSON(set(emptycollection, "url", parameters.mediaUrl))}}';
+  // The image API expects a JSON-encoded string, not a nested Make collection.
+  if (op === "image") body.downloadInfo = JSON.stringify({url:"{{parameters.mediaUrl}}"});
   for (const [key,value] of Object.entries(body)) {
     if (key === "urls") body.urls = ["{{parameters.mediaUrl}}"];
     else if (typeof value === "string" && /^\{\{\w+\}\}$/.test(value)) body[key] = expr(`parameters.${text(value.slice(2,-2))}`);
@@ -44,7 +45,7 @@ export function makeModule(op) {
   const [name, label, description] = names[op];
   const lookup = op.endsWith("-status"), img = op.startsWith("image");
   const mappable = lookup ? [{name: "jobId", type: "uinteger", label: "Job ID", required: true, validate: {min: 1}}] :
-    [{...string("mediaUrl", img ? "Image URL" : "Video URL", "Use a direct HTTPS link to a file you have permission to process."), type: "url", validate: {pattern: "^https://"}},
+    [{...string("mediaUrl", img ? "Image URL" : "Video URL", img ? "Use a direct HTTPS link to a file you have permission to process. Percent-encode spaces, quotes and backslashes." : "Use a direct HTTPS link to a file you have permission to process."), type: "url", validate: {pattern: img ? '^https://[^\\s"\\\\]+$' : "^https://"}},
       ...(op !== "erase" ? [string("source", op === "dub" ? "Spoken language" : "Visible text language", "Enter the source language code, for example zh or en.")] : []),
       ...(op === "image" || op === "dub" ? [string("target", "Target language", "Enter the output language code, for example en.")] : []),
       {name:"submit", type:"boolean", label:"Submit billable job", default:false, help:"Leave off for a preview. Turn on to process one file with this connection's Weydub credits."}];
@@ -65,11 +66,12 @@ export function makeModule(op) {
     fields = ["videoUrl","sourceSrtUrl","translatedSrtUrl"];
     communication.response.output = {jobId:"{{parameters.jobId}}",status:"{{temp.work.processStatus}}",...Object.fromEntries(fields.map((f,i)=>[f,expr(`if(temp.work.processStatus === 1, temp.work.${["videoUrl","srcSrtUrl","tgtSrtUrl"][i]}, null)`) ]))};
   } else {
-    communication.condition = {condition:"{{parameters.submit === true}}",default:{state:"preview"}};
+    communication.condition = {condition:"{{parameters.submit === true}}",default:{state:"preview",...(img ? {requestPreview:payload(op)} : {})}};
     communication.response.output = {state:"accepted",jobId:img?"{{body.body}}":"{{get(first(body.body.dataList), 'id')}}"};
     fields = [];
   }
   const output = [{name:"jobId",type:"number",label:"Job ID"}, lookup ? {name:"status",type:"number",label:"Processing status"} : {name:"state",type:"text",label:"Submission state"}, ...(lookup && img ? [{name:"statusMessage",type:"text",label:"Processing message"},{name:"trace",type:"text",label:"Support trace"}] : []), ...fields.map(f=>({name:f,type:"url",label:{imageUrl:"Translated image URL",cleanBackgroundUrl:"Clean background URL",videoUrl:"Video URL",sourceSrtUrl:"Source SRT URL",translatedSrtUrl:"Translated SRT URL"}[f]}))];
+  if (op === "image") output.push({name:"requestPreview",type:"collection",label:"Request preview (no submission)"});
   return {name,label,description,mappable,communication,interface:output};
 }
 export const modules = Object.fromEntries(Object.keys(names).map(op=>[op,makeModule(op)]));
