@@ -10,10 +10,17 @@ export function statusRow(operation,id,result){
     ...(result.chargedCredits!=null?{chargedCredits:result.chargedCredits}:{})};
   if(!Number.isInteger(code))return {...row,state:'unknown',nextAction:'Check this job in Weydub using its ID.'};
   if(code<1)return {...row,state:'processing',nextOperation:operation,nextAction:'Wait, then check the same job ID. Do not submit the file again.'};
-  if(code!==1)return {...row,state:'failed',nextAction:!image&&code===83
-    ?'Check your Weydub credit balance to unlock this job. Do not create another job.'
-    :!image&&code===73?'Processing did not start. Check the credits on the connected Weydub account and keep this job ID.'
-    :'Check this job in Weydub for its error details before submitting another file.'};
+  if(code!==1){
+    const reason=!image&&code===5?'The video exceeds the duration limit for this Weydub account or operation.'
+      :!image&&code===73?'Processing did not start. Check the credits on the connected Weydub account and keep this job ID.'
+      :!image&&code===83?'Processing finished but the output is locked. Check the Weydub credit balance before retrying.'
+      :'The job failed before a downloadable result was produced.';
+    return {...row,state:'failed',statusReason:reason,nextAction:code===83
+      ?'Check your Weydub credit balance to unlock this job. Do not create another job.'
+      :code===73?'Check the connected Weydub account credits and keep this job ID. Do not submit the file again.'
+      :code===5?'Use a shorter file or an account/operation that supports this duration. Keep this job ID for support.'
+      :'Check this job in Weydub for its error details before submitting another file.'};
+  }
   const files=(image?['output']:['video','sourceSubtitles','targetSubtitles']).filter(k=>{
     try{return ['https:','http:'].includes(new URL(result[k]).protocol);}catch{return false;}
   });

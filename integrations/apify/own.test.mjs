@@ -32,6 +32,7 @@ test('ambiguous create does not retry; missing credentials cannot create or quer
 test('dataset distinguishes unfinished, failed, finished without a file, and downloadable results',()=>{
   assert.equal(statusRow('video-status','21',{status:-3,video:'https://example.org/source'}).state,'processing');
   assert.match(statusRow('video-status','21',{status:83}).nextAction,/unlock/);
+  assert.match(statusRow('video-status','21',{status:5}).statusReason,/duration limit/);
   assert.equal(statusRow('image-status','21',{status:43}).state,'failed');
   assert.equal(statusRow('image-status','21',{}).state,'unknown');
   assert.equal(statusRow('image-status','21',{status:1,output:'not a URL'}).state,'missing-output');
