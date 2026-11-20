@@ -1,4 +1,4 @@
-## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文介绍](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
+[English](README.md) | [中文](README_cn.md)
 
 > **International users:** Use [Weydub Video Translator](https://weydub.com/video-translator/) and the [Weydub API docs](https://weydub.com/docs/api/). Weydub is the international version of GhostCut; this repository keeps the historical GhostCut project name for compatibility, and older screenshots/GIFs may still show the original domestic brand.
 
@@ -18,6 +18,8 @@ node examples/media.mjs image "$IMAGE_URL" --source zh --target en
 ```
 
 Set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` locally for live calls. Save the returned job ID; use `video-status` for OCR, removal and dubbing, or `image-status` for images. Querying an existing ID does not submit a second processing job.
+
+In [Apify Store, open the Weydub Actor](https://apify.com/weydub/weydub-media-localization) and run the default image example with **Submit a billable media job** off. Its dataset shows the request without spending Weydub credits. To translate your own image, enter its URL and your Weydub credentials, turn submission on, then choose **Check an image job** and enter the returned job ID to get the download link. Apify platform usage is separate.
 
 To build a workflow without writing code, [install Weydub in your Make organization by invitation](https://www.make.com/en/hq/app-invitation/a4e2ee19d928e181b5dbbbd59c10a8ed) and [try one product image](integrations/make/README.md), or [install the release on self-hosted n8n](integrations/n8n/README.md). Use your own Weydub App Key and App Secret for live jobs. Make is available through the invite rather than the reviewed directory. The n8n package is for self-hosted installations; it is not a verified n8n Cloud node.
 

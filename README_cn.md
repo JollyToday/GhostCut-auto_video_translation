@@ -1,7 +1,8 @@
-## [English Version](https://github.com/JollyToday/GhostCut/blob/main/README.md "GhostCut English info")  ---- [中文版](https://github.com/JollyToday/GhostCut/blob/main/README_cn.md "鬼手剪辑中文介绍") 
+[English](README.md) | [中文](README_cn.md)
 
+鬼手的海外版是 [Weydub](https://weydub.com/)。开发者可以查看 [API 文档](https://weydub.com/docs/api/)，也可以直接打开 [Apify 上的 Weydub 工具](https://apify.com/weydub/weydub-media-localization)。第一次保留默认商品图，关闭 **Submit a billable media job** 后运行，可以在 Dataset 里看到将要发送的请求，不扣 Weydub 点数。要拿到译图，换成自己的图片地址，填入自己的 Weydub API 凭证并开启提交；随后选择 **Check an image job**，输入刚才的任务号即可查询下载链接。Apify 的平台用量单独计算。
 
-### 视频文字翻译示例：从做到右全自动翻译并剪辑完成
+### 视频文字翻译示例：从左到右看翻译前后的画面
 鬼手剪辑能自动翻译视频内的文字和语音，做到样式还原和音画对齐，以下是真实案例。
 支持多种语言。
 
