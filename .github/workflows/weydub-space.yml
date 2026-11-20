@@ -1,0 +1,42 @@
+name: Package Weydub for Hugging Face Spaces
+on:
+  push:
+    tags: ['weydub-space-v*']
+permissions: {}
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Stage the Space and verify the official sample
+        run: |
+          set -eu
+          node integrations/build-contract.mjs --check
+          node integrations/huggingface/stage.mjs "$RUNNER_TEMP/space"
+          cd "$RUNNER_TEMP/space"
+          python -B - <<'PY'
+          from gallery import GALLERY, IMAGE, gallery
+          from nodes import Image
+          import json
+          assert len(GALLERY) == 4
+          assert gallery("Translate image").count("data:image/webp;base64,") == 2
+          job, preview = Image().run(IMAGE)["result"]
+          assert not job and json.loads(json.loads(preview.removeprefix("Preview: "))["downloadInfo"])["url"] == IMAGE
+          PY
+          zip -q "$RUNNER_TEMP/weydub-space.zip" ./*
+          cd "$RUNNER_TEMP"
+          sha256sum weydub-space.zip > weydub-space.zip.sha256
+      - name: Publish the Space files for manual upload
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP"
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "Weydub Media Localization Lab for Spaces ${GITHUB_REF_NAME#weydub-space-v}" \
+            --notes 'Unzip and upload the files at the root of your own Gradio Space. The public preview works without Weydub credentials. Direct processing uses your account credits in your personal duplicate. https://weydub.com/docs/api/' \
+            weydub-space.zip weydub-space.zip.sha256

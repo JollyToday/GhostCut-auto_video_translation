@@ -1,11 +1,25 @@
 """Public product media. Nothing here is fetched with customer credentials."""
 
+from base64 import b64encode
 from html import escape
+from pathlib import Path
 
 ROOT = "https://weydub.com"
 IMAGE = "https://gc100.cdn.izhaoli.cn/ve_material_image/A-00b4943646344cfc/e2d6dd82903f4059bd94c9b660f5f7b6/1782789120948.webp"
 VIDEO = "https://p.cdn.izhaoli.cn/gc/web/static/20250526/video/AI-Video-Translator-ar-zh-to-en.mp4"
 IMG_ROOT = ROOT + "/assets/weydub-public/subtitle-removal/text-removal-"
+
+
+def label_pair():
+    figures = []
+    for lang, label in [("zh", "Chinese original"), ("en", "English translation")]:
+        data = Path(__file__).with_name(f"label-{lang}.webp").read_bytes()
+        src = "data:image/webp;base64," + b64encode(data).decode("ascii")
+        figures.append(f'<figure><img alt="{label} of the 3D product poster" width="480" height="640" '
+                       f'src="{src}"><figcaption>{label}</figcaption></figure>')
+    return '<div class="pair labels">' + "".join(figures) + "</div>"
+
+
 GALLERY = {
     "Remove subtitles": (
         "Burned-in subtitles", "The words are still visible when the player captions are off. Compare the same scene before and after removal.",
@@ -25,8 +39,8 @@ GALLERY = {
         "Published Weydub video translation demo. Use authorized speech for your own job.", "/video-translator/"),
     "Translate image": (
         "Text inside a product photo", "The translated title belongs in the picture itself. Review small print, units and logos before publishing.",
-        f'<figure class="photo"><img alt="Product poster with Chinese wording" src="{IMAGE}" width="300" height="400"></figure>',
-        "Original image from the public API guide. Request a rendered image to receive the translated artwork.", "/image-translator/"),
+        label_pair(),
+        "The English poster is an actual API output from the Chinese original shown here.", "/image-translator/"),
 }
 
 

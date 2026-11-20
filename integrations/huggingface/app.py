@@ -5,12 +5,12 @@ from urllib.parse import urlsplit, urlunsplit
 
 import gradio as gr
 
-from gallery import GALLERY, gallery
+from gallery import GALLERY, IMAGE, gallery
 from nodes import CONTRACT, Dub, Erase, GetJob, Image, OCR
 
 HERE = Path(__file__).parent
 OPS = {"Remove subtitles": Erase, "Extract subtitles": OCR, "Dub video": Dub, "Translate image": Image}
-DEFAULT = "Remove subtitles"
+DEFAULT = "Translate image"
 
 
 def live_configured() -> bool:
@@ -78,28 +78,33 @@ def lookup(kind: str, job: str, profile: gr.OAuthProfile | None) -> tuple[str, d
     return (f"Job {job}: " + ("complete." if status == "1" else f"status {status}. Check this ID again if still processing."), files)
 
 
-def choose(name: str) -> tuple:
+def choose(name: str, media_url: str) -> tuple:
+    url_change = gr.update()
+    if name != DEFAULT and media_url == IMAGE:
+        url_change = gr.update(value="")
+    elif name == DEFAULT and not media_url.strip() and not live_configured():
+        url_change = gr.update(value=IMAGE)
     return (gallery(name), gr.update(visible=name != "Remove subtitles",
             label="Spoken language" if name == "Dub video" else "Visible text language"),
             gr.update(visible=name in ("Translate image", "Dub video")),
-            gr.update(visible=name == "Extract subtitles"), None, False)
+            gr.update(visible=name == "Extract subtitles"), None, False, url_change)
 
 
 def build() -> gr.Blocks:
+    active = live_configured()
     with gr.Blocks(title="Weydub Media Localization Lab", analytics_enabled=False) as lab:
         gr.Markdown("# Weydub Media Localization Lab\nCompare media samples and build a request for your own file.")
         operation = gr.Radio(list(GALLERY), value=DEFAULT, label="Operation")
         scene = gr.HTML(gallery(DEFAULT))
         fixture = gr.DownloadButton("Download sample SRT", value=str(HERE / "example.srt"), visible=False)
         gr.Markdown("## Build a request")
-        url = gr.Textbox(label="Downloadable media URL", placeholder="https://…", max_lines=1)
+        url = gr.Textbox(label="Downloadable media URL", value="" if active else IMAGE, placeholder="https://…", max_lines=1)
         with gr.Row():
-            source = gr.Textbox(label="Visible text language", value="zh", visible=False)
-            target = gr.Textbox(label="Target language", value="en", visible=False)
+            source = gr.Textbox(label="Visible text language", value="zh")
+            target = gr.Textbox(label="Target language", value="en")
         inputs = [operation, url, source, target]
         show = gr.Button("Preview request", variant="primary")
         payload = gr.JSON(label="Request body", open=True)
-        active = live_configured()
         if active:
             gr.LoginButton()
         with gr.Group(visible=active):
@@ -113,7 +118,7 @@ def build() -> gr.Blocks:
             files = gr.JSON(label="Download URLs")
         gr.Markdown("[API documentation](https://weydub.com/docs/api/) · [Processing prices](https://weydub.com/vip/pricing-detail/)"
                     + ("" if active else "\n\nTo process your own files, use a private duplicate with your Weydub credentials. See the Space README."))
-        operation.change(choose, operation, [scene, source, target, fixture, payload, consent])
+        operation.change(choose, [operation, url], [scene, source, target, fixture, payload, consent, url], api_visibility="private")
         show.click(preview, inputs, payload, api_name="preview")
         if active:
             send.click(submit, [*inputs, consent], [kind, job, message], api_name="submit")

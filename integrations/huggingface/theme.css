@@ -9,7 +9,9 @@
 .media-view figure {margin:0;}
 .media-view .pair {display:grid;grid-template-columns:repeat(2,minmax(0,220px));gap:16px;margin:12px 0;}
 .media-view .pair img,.media-view .photo img {height:220px;width:100%;object-fit:contain;background:var(--background-fill-secondary);border:1px solid var(--border-color-primary);border-radius:8px;}
-.media-view .photo {max-width:320px;margin:12px 0;}
+.media-view .labels {grid-template-columns:repeat(2,minmax(0,270px));}
+.media-view .labels img {height:auto;aspect-ratio:3/4;display:block;}
+.media-view .labels figcaption {margin-top:6px;}
 .media-view .cues {border-block:1px solid var(--border-color-primary);margin:16px 0;}
 .cues>div {display:grid;grid-template-columns:minmax(150px,1fr) 3fr;align-items:baseline;gap:16px;padding:8px 0;}
 .cues time {font-family:monospace;color:var(--body-text-color-subdued);}
