@@ -8,7 +8,7 @@
 
 Coming from RapidAPI? Start with the [marketplace quickstart](examples/rapidapi.md). It links each listing to its own Playground and explains which job ID to save. The Postman collection and CLI below are for **direct Weydub credentials**.
 
-Use [the Postman collection](examples/Weydub.postman_collection.json) or Node.js 20+ with no packages to install. Supply a video or image URL you control. The repository GIFs illustrate the product; they are not test inputs. The CLI previews a creation request by default. Add `--submit` only when you want to spend your own API credits:
+In Postman, [open the public collection](https://www.postman.com/niumo-136777cf-7015050/weydub-media-api/collection/01a3zbt/weydub-media-localization-api-byo-credentials) and [follow one file from submission to download](examples/postman.md). For the CLI, use Node.js 20+ with no packages to install. Supply a video or image URL you control. The repository GIFs illustrate the product; they are not test inputs. The CLI previews a creation request by default. Add `--submit` only when you want to spend your own API credits:
 
 ```sh
 node examples/media.mjs ocr "$VIDEO_URL" --source zh
