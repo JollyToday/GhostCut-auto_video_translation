@@ -10,7 +10,6 @@ on:
         type: boolean
         default: false
 permissions: {}
-# The guarded push prefix below is used only for the verified release handoff.
 jobs:
   verify:
     if: github.repository == 'JollyToday/GhostCut-auto_video_translation' && github.ref == 'refs/heads/main'
@@ -58,9 +57,7 @@ jobs:
           retention-days: 1
   publish:
     needs: verify
-    if: |
-      (github.event_name == 'workflow_dispatch' && inputs.publish) ||
-      (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'ci(n8n): publish'))
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
     runs-on: ubuntu-latest
     permissions:
       contents: read
