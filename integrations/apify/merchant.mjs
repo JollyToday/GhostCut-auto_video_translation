@@ -55,6 +55,23 @@ function resultType(op,data) {
   return 'video/mp4';
 }
 
+function deliveryProof(secret, run, fingerprint, output, data) {
+  const digest=createHash('sha256').update(data).digest('hex');
+  return createHmac('sha256',secret).update(JSON.stringify(['delivery-v1',run.id,run.defaultDatasetId,
+    fingerprint,output.jobId,output.operation,output.contentType,output.bytes,output.recordKey,output.url,digest])).digest('hex');
+}
+
+async function savedDelivery(actor,secret,run,fingerprint,op,job) {
+  const saved=await actor.getValue('WEYDUB-DELIVERY');
+  if(!saved?.proof || saved.jobId!==job || saved.operation!==op || saved.recordKey!=='MEDIA')return null;
+  const file=await actor.getValue('MEDIA');
+  const data=typeof file==='string' && op==='ocr'?Buffer.from(file):file;
+  if(!(data instanceof Uint8Array) || data.byteLength!==saved.bytes ||
+      saved.proof!==deliveryProof(secret,run,fingerprint,saved,data))return null;
+  const {proof,...output}=saved;
+  return output;
+}
+
 export async function merchantJob(actor,input) {
   const env=process.env, secret=env.WEYDUB_APIFY_ORIGIN_SECRET;
   if(!secret || secret.length<40 || env.ACTOR_ID!==actorId || env.APIFY_USER_IS_PAYING!=='1')
@@ -92,7 +109,8 @@ export async function merchantJob(actor,input) {
     await actor.setValue('WEYDUB-ORDER',{...order,fingerprint});
   }
   const job=order.jobId;
-  for(;;){
+  let output=await savedDelivery(actor,secret,run,fingerprint,op,job);
+  while(!output){
       const result=await broker('status',{job});
       if(result.state==='failed')throw Error('Weydub could not process this file. No completed-media event was charged.');
       if(result.state==='ready'){
@@ -100,16 +118,16 @@ export async function merchantJob(actor,input) {
         const delivered=await bytes(resultUrl,op==='ocr'?1024*1024:64*1024*1024);
         const type=resultType(op,delivered);
         await actor.setValue('MEDIA',delivered,{contentType:type});
-        // Keep the buyer's result in the run as well as the dataset, before any charge.
-        const output={jobId:job,operation:op,contentType:type,bytes:delivered.length,recordKey:'MEDIA',url:resultUrl};
-        const dataset=await actor.openDataset();
-        const existing=(await dataset.getData({limit:1})).items[0];
-        if(!existing || existing.jobId!==job || existing.url!==resultUrl)await actor.pushData(output);
-        await actor.setValue('WEYDUB-DELIVERY',output);
+        output={jobId:job,operation:op,contentType:type,bytes:delivered.length,recordKey:'MEDIA',url:resultUrl};
+        await actor.setValue('WEYDUB-DELIVERY',{...output,proof:deliveryProof(secret,run,fingerprint,output,delivered)});
         break;
       }
       await delay(8000);
   }
+  // The original run's file stays usable even when its temporary upstream link expires.
+  const dataset=await actor.openDataset();
+  const existing=(await dataset.getData({limit:1})).items[0];
+  if(!existing || existing.jobId!==job || existing.recordKey!=='MEDIA')await actor.pushData(output);
   const ticket=await broker('claim',{job,dataset:run.defaultDatasetId});
   if(!ticket.mayCharge){
     if(['reported','reconciled'].includes(ticket.state) && ticket.charged===ticket.count)return;
