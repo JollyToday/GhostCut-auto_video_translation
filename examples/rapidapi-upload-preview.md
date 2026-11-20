@@ -14,7 +14,9 @@ These instructions are for the **upload-version preview** of subtitle removal, i
 
 ### Run an image or dubbing upload
 
-Use Bash, curl 7.76+ and jq. You need access to the upload version first. In its Playground, copy the RapidAPI host from the **upload** operation. For a draft, confirm with the provider that your app can reach that version; choosing a draft in Studio does not switch a public subscription. If the Playground generates a JSON upload body, use the raw-file commands below.
+You need access to the upload version first. For a draft, confirm with the provider that your app can reach that version; choosing a draft in Studio does not switch a public subscription.
+
+In the upload operation, choose **Body → application/octet-stream → Upload file**. Select the original image or MP4, then set the two language headers and `Idempotency-Key` in **Headers**. Use one file, not a ZIP or a JSON object. For command-line use, copy the RapidAPI host from the same operation and follow the Bash examples below (curl 7.76+ and jq). They send the precise image or video content type; both upload methods return the same job ID when retried with identical inputs and key.
 
 ```bash
 read -rp 'RapidAPI host (no https://): ' RAPIDAPI_HOST
