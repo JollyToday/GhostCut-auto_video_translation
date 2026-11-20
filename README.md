@@ -21,7 +21,7 @@ Set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` locally for live calls. Save the re
 
 To build a workflow without writing code, [install Weydub in your Make organization by invitation](https://www.make.com/en/hq/app-invitation/a4e2ee19d928e181b5dbbbd59c10a8ed) and [try one product image](integrations/make/README.md), or [install the release on self-hosted n8n](integrations/n8n/README.md). Use your own Weydub App Key and App Secret for live jobs. Make is available through the invite rather than the reviewed directory. The n8n package is for self-hosted installations; it is not a verified n8n Cloud node.
 
-For MCP clients, [download the Weydub desktop extension](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/weydub-mcp-v1.0.1/mcp/dist/weydub-media.mcpb) and enter your own Weydub credentials in a compatible client. For a source installation, clone this repository, run `cd mcp`, `npm ci --ignore-scripts` and `node check.mjs`, then configure the stdio command `node /absolute/path/to/mcp/server.mjs`. The four processing tools preview by default; `check_job` retrieves results.
+For MCP clients, [install the Weydub desktop extension and run your first job](mcp/README.md). Start by previewing a request, then use the returned job ID to download your SRT, processed video, or translated image.
 
 The [Pipedream Connect action source](integrations/pipedream/) and offline tests are available for developers. The app has been submitted for registry review and is not yet available in Pipedream's public catalog.
 
