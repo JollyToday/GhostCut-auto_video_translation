@@ -79,10 +79,18 @@ export async function merchantJob(actor,input) {
     }
     return response.json();
   }
-  const data=await bytes(input.input, (op==='image'?8:16)*1024*1024);
-  const order=await broker('order',{key,mime:mimeOf(op,data),source:op!=='erase'?(input.source||'zh'):undefined,
-    target:['dub','image'].includes(op)?(input.target||'en'):undefined},data);
-  await actor.setValue('WEYDUB-ORDER',order);
+  const source=op!=='erase'?(input.source||'zh'):undefined;
+  const target=['dub','image'].includes(op)?(input.target||'en'):undefined;
+  const fingerprint=createHash('sha256').update(JSON.stringify([run.id,run.userId,op,key,input.input,source,target])).digest('hex');
+  let order=await actor.getValue('WEYDUB-ORDER');
+  if(order){
+    if(order.fingerprint!==fingerprint || !/^[a-f0-9]{32}$/.test(order.jobId))
+      throw Error('The saved order does not match this input. Open the original run to retrieve your file.');
+  }else{
+    const data=await bytes(input.input, (op==='image'?8:16)*1024*1024);
+    order=await broker('order',{key,mime:mimeOf(op,data),source,target},data);
+    await actor.setValue('WEYDUB-ORDER',{...order,fingerprint});
+  }
   const job=order.jobId;
   for(;;){
       const result=await broker('status',{job});

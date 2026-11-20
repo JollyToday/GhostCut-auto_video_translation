@@ -13,9 +13,9 @@ test('Store run persists a deliverable before charging and does not recharge on 
     pricingInfo:{pricingModel:'PAY_PER_EVENT'}};
   const media='https://gc100.cdn.izhaoli.cn/example.webp', result='https://gc9.cdn.izhaoli.cn/example.jpg';
   const job='2'.repeat(32),record=new Map(),dataset=[],calls=[];
-  let charged=0,claimed=false,failDownload=true,loseReport=true;
+  let charged=0,claimed=false,failDownload=true,loseReport=true,sourceReads=0;
   t.mock.method(globalThis,'fetch',async (url,options)=>{
-    if(String(url)===media)return new Response(Buffer.from('RIFF0000WEBP'));
+    if(String(url)===media)return ++sourceReads===1?new Response(Buffer.from('RIFF0000WEBP')):new Response('',{status:403});
     if(String(url)===result)return failDownload?new Response('',{status:503}):new Response(Buffer.from([255,216,255,217]));
     const u=new URL(url), path=u.pathname.replace('/marketplace-apify',''), h=options.headers;
     assert.equal(u.origin,'https://api.weydub.com');
@@ -35,17 +35,21 @@ test('Store run persists a deliverable before charging and does not recharge on 
     throw Error('Unexpected request');
   });
   const actor={apifyClient:{run:()=>({get:async()=>run})},openDataset:async()=>({getData:async()=>({items:dataset})}),
-    pushData:async r=>dataset.push(r),setValue:async(k,v)=>record.set(k,v),charge:async args=>{
+    pushData:async r=>dataset.push(r),setValue:async(k,v)=>record.set(k,v),getValue:async k=>record.get(k),charge:async args=>{
       assert.equal(args.idempotencyKey,'wd-'+job);charged++;return {chargedCount:1};
     }};
   const input={operation:'image',requestKey:'photo-1',input:media};
   await assert.rejects(merchantJob(actor,input),/unavailable/);
   assert.equal(charged,0);assert.ok(!calls.includes('/v1/apify/claim'));
+  const before=calls.length;
+  await assert.rejects(merchantJob(actor,{...input,target:'fr'}),/does not match/);
+  assert.equal(calls.length,before);
   failDownload=false;
   await assert.rejects(merchantJob(actor,input),/report/);
   assert.equal(charged,1);
   await assert.rejects(merchantJob(actor,input),/reconciliation/);
   assert.equal(charged,1);assert.equal(dataset.length,1);
+  assert.equal(sourceReads,1);assert.equal(calls.filter(path=>path.endsWith('/order')).length,1);
   process.env.APIFY_USER_IS_PAYING='0';
   await assert.rejects(merchantJob(actor,input),/billing is not available/);
 });
