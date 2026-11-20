@@ -13,4 +13,6 @@ For example, an episode delivered without a subtitle file needs **Extract Full-F
 
 The proposed app uses the customer's connected Weydub credentials (`app_key`, `app_secret`); it does not use RapidAPI keys or a shared Weydub balance. The account field names must be confirmed when Pipedream provisions the app. Deliver media URLs only to the accounts and systems authorized to process the file.
 
+For a video job, status `73` means the connected Weydub account has insufficient processing credits and the job has not started. Stop polling and check that account before retrying. At `83`, the work is already done but the output is locked; resolve the balance and look up the **same** ID. For an image, use `imageUrl` for the translated artwork. A background-only file is not a completed translation.
+
 Run `node --test check.test.mjs` here to test previews, request signing, asynchronous results and failure handling without credentials or paid work. The request contract is generated from the repository's public Postman collection; run `node integrations/build-contract.mjs --check` from the repository root to verify it.

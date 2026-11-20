@@ -54,7 +54,7 @@ test("lookups call only read endpoints, match work IDs, and handle stringified i
     }
     assert.ok(url.endsWith("/image/translate/query"));
     assert.equal(body.id, 51);
-    return ok(++polls === 1 ? { status: 0, result: null } : { status: 1, result: JSON.stringify({ output_url: "translated.webp", inpaint_url: "clean.webp" }) });
+    return ok(++polls === 1 ? { id: 51, status: 0, result: null } : { id: "51", status: 1, result: JSON.stringify({ output_url: "translated.webp", inpaint_url: "clean.webp" }) });
   });
   const input = { weydub: creds, jobId: "51" };
   const video = await run("get-video-result", input);
@@ -62,6 +62,21 @@ test("lookups call only read endpoints, match work IDs, and handle stringified i
   assert.equal(video.videoUrl, null);
   assert.equal((await run("get-image-result", input)).imageUrl, null);
   assert.equal((await run("get-image-result", input)).imageUrl, "translated.webp");
+});
+
+test("wrong or incomplete image results cannot be delivered; credit states preserve the work ID", async (t) => {
+  const input = {weydub: creds, jobId: "51"};
+  const f = t.mock.method(globalThis, "fetch", async () => ok({id: 52, status: 1, result: {output_url: "unrelated.webp"}}));
+  await assert.rejects(run("get-image-result", input), /No matching image job/);
+  f.mock.mockImplementation(async () => ok({id: 51, status: 1, result: {inpaint_url: "background.webp"}}));
+  await assert.rejects(run("get-image-result", input), /without a translated image/);
+  for (const [code, message] of [[73, /not started/], [83, /output is locked/]]) {
+    f.mock.mockImplementation(async () => ok({content: [{id: 51, processStatus: code, videoUrl: "unreleased.mp4"}]}));
+    const result = await run("get-video-result", input);
+    assert.match(result.statusMessage, message);
+    assert.equal(result.jobId, "51");
+    assert.equal(result.videoUrl, null);
+  }
 });
 
 test("bad input cannot submit; an uncertain or unfunded job is never replayed", async (t) => {

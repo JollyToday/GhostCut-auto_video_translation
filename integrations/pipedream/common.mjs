@@ -44,8 +44,11 @@ function unpack(op, props, reply) {
   if (reply?.code !== 1000) throw Error(reply?.code === 4005 ? "Insufficient Weydub processing credits (4005)." : `Weydub code ${reply?.code ?? "unknown"}. Check existing jobs before resubmitting.`);
   const b = reply.body;
   if (op === "image-status") {
-    if (!Number.isInteger(b?.status)) throw Error("No image job status returned for this account.");
+    if (String(b?.id) !== jobId(props.jobId) || !Number.isInteger(b?.status)) {
+      throw Error("No matching image job for this connection. For a video or SRT, use Get Video or OCR Result with the original job ID.");
+    }
     const value = b.status === 1 && b.result ? (typeof b.result === "string" ? JSON.parse(b.result) : b.result) : null;
+    if (b.status === 1 && !value?.output_url) throw Error("The image job is marked complete without a translated image. Keep the job ID for support; do not submit it again.");
     return { jobId: jobId(props.jobId), status: b.status, imageUrl: value?.output_url || null, cleanBackgroundUrl: value?.inpaint_url || null };
   }
   if (op === "video-status") {
@@ -53,7 +56,11 @@ function unpack(op, props, reply) {
     const item = b?.content?.find((work) => String(work.id) === id);
     if (!item || !Number.isInteger(item.processStatus)) throw Error("No matching work found for this account.");
     const ready = item.processStatus === 1;
-    return { jobId: id, status: item.processStatus, videoUrl: ready && item.videoUrl || null, sourceSrtUrl: ready && item.srcSrtUrl || null, translatedSrtUrl: ready && item.tgtSrtUrl || null };
+    const creditMessage = {
+      73: "Processing has not started. Check the connected Weydub account's processing credits before retrying.",
+      83: "Processing finished but the output is locked. Resolve the balance on the connected Weydub account and check this job again; do not create a new one.",
+    }[item.processStatus];
+    return { jobId: id, status: item.processStatus, ...(creditMessage && {statusMessage: creditMessage}), videoUrl: ready && item.videoUrl || null, sourceSrtUrl: ready && item.srcSrtUrl || null, translatedSrtUrl: ready && item.tgtSrtUrl || null };
   }
   return { state: "accepted", jobId: jobId(op === "image" ? b : b?.dataList?.[0]?.id), nextAction: op === "image" ? "weydub-get-image-result" : "weydub-get-video-result" };
 }
@@ -90,7 +97,7 @@ export function action(op) {
       }
       if (!response.ok) throw Error(`Weydub returned HTTP ${response.status}. Check the job before resubmitting.`);
       const out = unpack(op, this, await response.json());
-      $.export("$summary", lookup ? `Job ${out.jobId}: status ${out.status}` : `Submitted job ${out.jobId}. Save this ID to check the result.`);
+      $.export("$summary", lookup ? `Job ${out.jobId}: status ${out.status}.${out.statusMessage ? ` ${out.statusMessage}` : ""}` : `Submitted job ${out.jobId}. Save this ID to check the result.`);
       return out;
     },
   };
