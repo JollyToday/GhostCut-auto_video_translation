@@ -12,6 +12,67 @@ These instructions are for the **upload-version preview** of subtitle removal, i
 2. Copy the request host and RapidAPI authentication headers from that version's Playground. Send the actual file bytes, for example `--data-binary @episode.mp4` with `Content-Type: video/mp4`. For a JPEG use `--data-binary @label.jpg` and `Content-Type: image/jpeg`. Do not send a URL or multipart form. Give this file, operation and language pair a unique `Idempotency-Key`.
 3. A `202` response contains a `jobId`, not a deliverable. Query `GET /v1/jobs/{jobId}` through the **same product**. Wait while `state` is `pending`; use the result field in the table when it is `ready`. A `failed` job has no file to download. Check old numeric v1 IDs through the original listing.
 
+### Run an image or dubbing upload
+
+Use Bash, curl 7.76+ and jq. You need access to the upload version first. In its Playground, copy the RapidAPI host from the **upload** operation. For a draft, confirm with the provider that your app can reach that version; choosing a draft in Studio does not switch a public subscription. If the Playground generates a JSON upload body, use the raw-file commands below.
+
+```bash
+read -rp 'RapidAPI host (no https://): ' RAPIDAPI_HOST
+read -rsp 'RapidAPI key: ' RAPIDAPI_KEY; echo
+rapid() {
+  [[ $RAPIDAPI_HOST =~ ^[a-z0-9-]+\.p\.rapidapi\.com$ ]] || return 1
+  local path=$1; shift
+  curl --silent --show-error --fail-with-body \
+    -H "X-RapidAPI-Host: $RAPIDAPI_HOST" -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
+    "$@" "https://$RAPIDAPI_HOST$path"
+}
+```
+
+If this subscription is not linked yet, request a fresh code as described above:
+
+```bash
+read -rsp 'One-time Weydub link code: ' code; echo
+jq -nc --arg code "$code" '{code:$code}' |
+  rapid /v1/account/link -H 'Content-Type: application/json' --data-binary @-
+unset code
+```
+
+Choose **one** of these examples for the selected product. Each assumes the source is Chinese and the desired output is English. Use a new idempotency key for each new file or language pair; keep that key if you retry the same upload.
+
+**Product image** (use `image/png` or `image/webp` instead for those formats):
+
+```bash
+receipt=$(rapid /v1/images/translate \
+  -H 'Content-Type: image/jpeg' -H 'Idempotency-Key: product-17-label-zh-en-v1' \
+  -H 'X-Source-Language: zh' -H 'X-Target-Language: en' \
+  --data-binary @label.jpg) && printf '%s\n' "$receipt"
+```
+
+**Dubbed video** (use a clip with audible speech):
+
+```bash
+receipt=$(rapid /v1/videos/dub \
+  -H 'Content-Type: video/mp4' -H 'Idempotency-Key: episode-17-dialogue-zh-en-v1' \
+  -H 'X-Source-Language: zh' -H 'X-Target-Language: en' \
+  --data-binary @episode.mp4) && printf '%s\n' "$receipt"
+```
+
+An accepted upload looks like `{"jobId":"0123456789abcdef0123456789abcdef"}`. Keep the actual ID. The command below checks it once; if `pending`, wait 30 seconds and repeat the status request, without uploading again.
+
+```bash
+job_id=$(jq -er '.jobId | strings | select(test("^[a-f0-9]{32}$"))' <<<"$receipt") &&
+  status=$(rapid "/v1/jobs/$job_id") && jq '{jobId,state}' <<<"$status"
+```
+
+Once `ready`, download the file with a separate request. The download host does not need your RapidAPI key. Use `translated-image` as the filename for images (the format may differ from the source) or `dubbed.mp4` for video.
+
+```bash
+output=translated-image  # or: output=dubbed.mp4
+url=$(jq -er 'select(.state == "ready") | (.imageUrl // .videoUrl) | strings | select(startswith("https://"))' <<<"$status") &&
+  curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' \
+    --output "$output" "$url"
+```
+
 A shared sponsored trial, where available, is one file per verified customer across participating products. An enabled Lite prepaid subscription grants 50 started-half-minute units per verified $6.50 payment. Polls consume requests but no processing units. The image and dubbing upload previews do not accept prepaid processing; existing v1 subscriptions are not converted to these units.
 
 After a timeout or `503`, retry only with the original key and identical bytes and settings. `402` means the trial or processing allowance is unavailable; `409` means the key was already used for different input. For `413` reduce the file size; for `415` check the actual file format and content type. Keep the job ID for support.
