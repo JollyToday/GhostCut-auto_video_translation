@@ -16,4 +16,8 @@ Start with a few seconds of captioned video or a single product image. You will 
 
 **How can I tell when it's finished?** `code: 1000` means the API accepted your request. A finished video has `processStatus: 1` on the row with your ID; a finished image has `body.status: 1`. A successful OCR returns a subtitle file; it need not return a video.
 
+**Can I download subtitles after using my last credit?** In our test, the public collection processed a seven-second Chinese clip on an account with one credit. **Check video job** returned a three-cue SRT. With the balance now at zero, a second status request for the same job returned the same subtitles and the balance stayed at zero. Use the original job ID while the file is available. Sending **Extract subtitles** again would request new processing.
+
+**What if my video has an ID but no download?** On the matching row, `processStatus: 73` means processing did not start because the connected account lacked credits. `83` means the result is locked pending sufficient credit. Check the balance of the Weydub account used for that request and keep the job ID. Buying a Postman plan does not add Weydub processing credits.
+
 **What if I have more than one file?** All three video operations write to `video_work_id`. Save each returned ID alongside the original filename before sending the next file. To retrieve an earlier result, set `video_work_id` to that ID, then send **Check video job**. For images, use `image_job_id` and **Check image job**. If submission timed out without returning an ID, check your Weydub task history before sending it again.
