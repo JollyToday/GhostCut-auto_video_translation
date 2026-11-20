@@ -10,6 +10,7 @@ on:
         type: boolean
         default: false
 permissions: {}
+# The guarded push prefix below is used only for the verified release handoff.
 jobs:
   verify:
     if: github.repository == 'JollyToday/GhostCut-auto_video_translation' && github.ref == 'refs/heads/main'
