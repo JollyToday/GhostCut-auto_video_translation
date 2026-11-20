@@ -4,6 +4,8 @@
 
 Four actions submit a single file: remove lower-frame burned-in captions with Lite, extract visible subtitles with full-frame OCR, translate and dub speech, or translate text inside an image. For OCR, enter the language you see on screen. For dubbing, choose the language you hear and the language you want to deliver. Supply a directly downloadable HTTPS file you have permission to process.
 
+The app also includes **Make an API call**, a signed JSON POST module for advanced workflows. Enter a leading-slash path such as `/point/query` and a JSON object; the module sends it to Weydub's fixed media gateway with the connection credentials. It accepts paths and bodies only, does not follow redirects, and never accepts a full URL. Use the four named modules when they cover your workflow because their fields and result checks are safer and easier to map. The universal module is for a Weydub endpoint documented in the [developer guide](https://weydub.com/docs/api/), not for arbitrary third-party URLs.
+
 Keep your own Weydub App Key and App Secret in a Make connection. The connection checks access with a balance query. A RapidAPI key uses a different authentication method.
 
 For an image, run the module once with **Submit billable job** set to **No**. Expand **Request preview (no submission)**: `downloadInfo` should contain the full image URL, and `srcLang` and `tgtLang` should match the labels you want to translate. This uses a Make operation without creating a Weydub job.
@@ -14,4 +16,4 @@ An image status of `1` means the translated image is ready. The clean-background
 
 **Looking for an SRT?** In **Get a Video or Subtitle Result**, enter the work ID for the OCR job and use the connection that submitted it. At `Processing status: 1`, open **Source SRT URL** for the captions in their original language. If **Get an Image Result** reports that no image matches, switch lookup modules with the same work ID. You do not need to upload the clip again.
 
-`app.mjs` exports the base, connection and six module definitions. For a module, `communication`, `mappable` and `interface` correspond to the Make editor's **Communication**, **Mappable Parameters** and **Interface** tabs. Request bodies and their signatures use the same serialization.
+`app.mjs` exports the base, connection, six named module definitions and the universal `makeApiCall` definition. For a module, `communication`, `mappable` and `interface` correspond to the Make editor's **Communication**, **Mappable Parameters** and **Interface** tabs. Request bodies and their signatures use the same serialization.

@@ -75,3 +75,23 @@ export function makeModule(op) {
   return {name,label,description,mappable,communication,interface:output};
 }
 export const modules = Object.fromEntries(Object.keys(names).map(op=>[op,makeModule(op)]));
+
+// The fixed prefix and disabled redirects keep connection headers on the signed media gateway.
+const gateway = `${origin}/v-w-c/gateway/ve/`;
+export const universal = {
+  name:"makeApiCall", label:"Make an API call", description:"Performs an arbitrary authorized API call.",
+  mappable:[
+    {name:"path", label:"URL", type:"text", required:true, default:"/point/query",
+      help:`Enter a path relative to ${gateway.slice(0,-1)}, for example /point/query. Use the JSON POST endpoints from the Weydub API guide.`,
+      validate:{pattern:"^/[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*$"}},
+    {name:"jsonBody", label:"JSON body", type:"text", required:true, default:'{"notZero":true,"isValid":true}',
+      help:"The default body checks your balance. Creating media jobs with other endpoints can use Weydub credits."},
+  ],
+  communication:{
+    url:`${gateway}{{substring(parameters.path, 1)}}`, method:"POST", type:"raw",
+    followRedirects:false, followAllRedirects:false,
+    temp:{wire:"{{createJSON(parseJSON(parameters.jsonBody))}}"}, headers:keyHeaders("connection"), body:"{{temp.wire}}",
+    response:{valid,output:{body:"{{body}}",statusCode:"{{statusCode}}"}}, log,
+  },
+  interface:[{name:"body",type:"any",label:"Body"},{name:"statusCode",type:"number",label:"HTTP status code"}],
+};
