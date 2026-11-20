@@ -23,4 +23,6 @@ To download a file from a job you already submitted, import the workflow for tha
 
 Open the **Check … job** node, paste the saved job ID, select the same Weydub credential, then execute the workflow. If it stops at **Inspect job status**, check that node's output. For a pending job, check the same ID later. Video status `73` means there are insufficient credits to start; `83` means the result is locked: check your balance and keep the original ID. An image status above `1` means the translation failed. These download workflows never create another processing job.
 
+**Started the job in Apify?** If you ran the [Weydub Actor](https://apify.com/weydub/weydub-media-localization) with your own Weydub credentials, copy the `jobId` from its dataset row, not the Apify run ID. Choose the matching workflow above and enter the same Weydub credentials in n8n. You can retrieve a completed, unlocked file even if that account has since used its last credit. Switching to a different Weydub account will not transfer the job.
+
 Lite erasure targets the bottom 18% of the frame. Dubbing requires speech you may use; original burned-in text remains. Processing uses your Weydub credits. [API documentation](https://weydub.com/docs/api/) · [Rates](https://weydub.com/vip/pricing-detail/).
