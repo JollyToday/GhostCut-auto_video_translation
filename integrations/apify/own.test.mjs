@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {ownJob,statusRow} from './own.mjs';
+import {checkMediaChoice,ownJob,statusRow} from './own.mjs';
 
 const input={operation:'image',input:'https://example.org/input.webp',submit:true,appKey:'qa-example',appSecret:'test-only'};
 function store(){
@@ -8,6 +8,16 @@ function store(){
   return {rows,records,getValue:async k=>records.get(k),setValue:async(k,v)=>records.set(k,v),
     pushData:async v=>rows.push(v),openDataset:async()=>({getData:async()=>({items:rows})})};
 }
+
+test('changing from the sample photo to a video operation rejects the stale file, not extensionless media or job IDs',()=>{
+  for(const op of ['ocr','erase','dub'])assert.throws(()=>checkMediaChoice(op,'https://example.org/label.WEBP?x=clip.mp4'),/image URL/);
+  assert.throws(()=>checkMediaChoice('image','https://example.org/episode.mp4'),/video URL/);
+  checkMediaChoice('ocr','https://example.org/clip.mp4?poster=thumb.jpg');
+  checkMediaChoice('ocr','https://example.org/download?id=example');
+  assert.throws(()=>checkMediaChoice('ocr','sample.mp4'),/direct HTTP or HTTPS/);
+  assert.throws(()=>checkMediaChoice('ocr','file:///sample.mp4'),/direct HTTP or HTTPS/);
+  checkMediaChoice('video-status','123');
+});
 
 test('restart after dataset outage reuses saved job and writes one result',async()=>{
   const actor=store();let sent=0,first=true;

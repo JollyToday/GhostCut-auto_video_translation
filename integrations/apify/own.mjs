@@ -4,6 +4,18 @@ import {setTimeout as delay} from 'node:timers/promises';
 const receiptKey='WEYDUB-SUBMISSION';
 const uncertain='Check your Weydub job history before submitting again. The earlier request may already have used credits.';
 
+export function checkMediaChoice(operation,input){
+  if(operation.endsWith('-status'))return;
+  let url;
+  try{url=new URL(input.trim());}catch{throw Error('Provide a direct HTTP or HTTPS media file URL.');}
+  if(!['https:','http:'].includes(url.protocol))throw Error('Provide a direct HTTP or HTTPS media file URL.');
+  const path=url.pathname;
+  if(operation!=='image' && /\.(?:webp|png|jpe?g|gif|avif|bmp)$/i.test(path))
+    throw Error('This video operation received an image URL. Replace the sample photo with a direct video file URL before running it.');
+  if(operation==='image' && /\.(?:mp4|mov|mkv|webm|avi|m4v)$/i.test(path))
+    throw Error('Image translation received a video URL. Choose a still product image or switch to a video operation.');
+}
+
 export function statusRow(operation,id,result){
   const image=operation==='image-status', code=result.status;
   const row={operation,jobId:id,status:code,...(!image && result.id!=null?{id:result.id}:{}),

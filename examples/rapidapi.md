@@ -22,6 +22,8 @@ The November 20-26, 2026 (UTC) pilot offers one sponsored media job per verified
 
 ## Open an account, then submit one file (v1 listings)
 
+If you have provider preview access and your Playground shows **Link your Weydub account** and a binary upload instead of **Open Account**, use the [upload-version guide](rapidapi-upload-preview.md). The existing v1 subscriptions and numeric job IDs still use the v1 endpoints below.
+
 Select your application and call **Open Account** once for the current RapidAPI subscription. A response with `code: 1000` and `body.uid` confirms account setup. The UID is an account identifier, not a media job ID. Changing `customIdentity` does not create another end-customer allowance.
 
 If **Open Account** returns `9999` ("System error") without a UID, stop before creating a media job. Send the provider the listing, endpoint, time with timezone and `trace` privately through RapidAPI. Changing identities, adding personal contact details or connecting a social account is not the next step. Open Account does not sign you in to TikTok or publish a video.
