@@ -26,6 +26,10 @@
       "title":"Submit a billable media job","type":"boolean","default":false,
       "description":"Off previews a creation request without sending it. Status checks only retrieve the existing job."
     },
+    "requestKey": {
+      "title":"Request key for Store billing","type":"string","editor":"textfield",
+      "description":"For Apify Store billing, use a stable key for this file and operation, such as episode-001-ocr. It prevents a retry from creating a second billable job. Leave empty when using your own Weydub credentials."
+    },
     "waitForResult": {
       "title":"Wait for my download link","type":"boolean","default":false,
       "description":"For submissions using your Weydub credits. Keep this run open while the file is processing. If it takes longer, the dataset gives you the original job ID to check later. Waiting uses Apify runtime."

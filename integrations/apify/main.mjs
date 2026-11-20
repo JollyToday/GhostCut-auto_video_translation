@@ -4,12 +4,14 @@ import {promisify} from 'node:util';
 import {fileURLToPath} from 'node:url';
 import {merchantJob} from './merchant.mjs';
 import {checkMediaChoice,ownJob} from './own.mjs';
+import {resolveBilling} from './billing.mjs';
 
 const run=promisify(execFile);
 const operations=new Set(['erase','ocr','dub','image','video-status','image-status']);
 await Actor.main(async()=>{
   const settings=await Actor.getInput()??{};
-  const {operation,input,source='zh',target='en',submit=false,appKey,appSecret,billing='own'}=settings;
+  const {operation,input,source='zh',target='en',submit=false,appKey,appSecret}=settings;
+  const billing=resolveBilling(settings);
   if(!operations.has(operation)||typeof input!=='string'||!input.trim())throw Error('Choose an operation and provide a media URL or job ID.');
   checkMediaChoice(operation,input);
   const status=operation.endsWith('-status');

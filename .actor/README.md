@@ -11,7 +11,9 @@ Turn the subtitles in a video into an SRT file, remove burned-in captions, dub s
 
 **Try a preview.** Leave the default image and keep **Submit a billable media job** off. Run the Actor and inspect `preview` in the dataset. This makes no Weydub API request. For a video, replace the sample image URL with your own video URL.
 
-**Process one file.** Enter your Weydub credentials in the two secret fields, turn on submission and run once. Save the returned `jobId` and `nextOperation`. Submitting a second time creates another job. Weydub processing uses your own account's [credits and rates](https://weydub.com/vip/pricing-detail/); your Apify plan governs the Actor run.
+**Process one file with your own account.** Enter your Weydub credentials in the two secret fields, turn on submission and run once. Save the returned `jobId` and `nextOperation`. Submitting a second time creates another job. Weydub processing uses your own account's [credits and rates](https://weydub.com/vip/pricing-detail/); your Apify plan governs the Actor run.
+
+**Process one file through Apify Store billing.** In an Apify Store paid run, leave both Weydub secret fields empty, provide a stable **Request key for Store billing**, choose a processing operation and turn on submission. The Actor detects the paid Store run and sends the file through Weydub's merchant gateway; the stable key lets a restarted run resume the same job instead of creating another charge. Preview and status operations remain read-only. Store pricing and the final output charge are controlled by the published Actor pricing.
 
 **Get the file in this run.** Turn on **Wait for my download link** when submitting. Open the resulting dataset row: `sourceSubtitles` downloads the SRT, `video` opens a cleaned or dubbed MP4, and `output` opens the translated image. Waiting uses Apify runtime. If the file is still processing when the Actor stops waiting, the row includes the original `jobId`.
 
