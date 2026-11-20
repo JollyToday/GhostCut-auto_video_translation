@@ -4,7 +4,7 @@ On self-hosted n8n, install the versioned GitHub release in the `nodes` folder o
 
 ```sh
 mkdir -p ~/.n8n/nodes
-npm install --prefix ~/.n8n/nodes --legacy-peer-deps --ignore-scripts https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-n8n-v0.1.1/n8n-nodes-weydub-0.1.1.tgz
+npm install --prefix ~/.n8n/nodes --legacy-peer-deps --ignore-scripts https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-n8n-v0.1.2/n8n-nodes-weydub-0.1.2.tgz
 ```
 
 Import [the OCR workflow](examples/preview-ocr.json) for burned-in captions or [the image workflow](examples/preview-image.json) for a Chinese product photo. Click **Execute workflow**. Both return a request preview without credentials or processing charges. For OCR, replace the example.org address with your own clip before live processing. The image example already contains a public sample from the Weydub API guide.
@@ -21,6 +21,6 @@ To download a file from a job you already submitted, import the workflow for tha
 | Lite erasure or speech dubbing | [Download a processed video](examples/download-video.json) | Download video → Binary → video (MP4) |
 | Image translation | [Download a translated image](examples/download-image.json) | Download image → Binary → image |
 
-Open the **Check … job** node, paste the saved job ID, select the same Weydub credential, then execute the workflow. If it stops at **Inspect job status**, open that node's output: a status below `1` means you can check the same ID later. A status above `1` means processing failed. These download workflows never create another processing job.
+Open the **Check … job** node, paste the saved job ID, select the same Weydub credential, then execute the workflow. If it stops at **Inspect job status**, check that node's output. For a pending job, check the same ID later. Video status `73` means there are insufficient credits to start; `83` means the result is locked: check your balance and keep the original ID. An image status above `1` means the translation failed. These download workflows never create another processing job.
 
 Lite erasure targets the bottom 18% of the frame. Dubbing requires speech you may use; original burned-in text remains. Processing uses your Weydub credits. [API documentation](https://weydub.com/docs/api/) · [Rates](https://weydub.com/vip/pricing-detail/).

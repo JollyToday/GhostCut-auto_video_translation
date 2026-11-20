@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-weydub",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Weydub video subtitle removal, full-frame OCR, dubbing and image translation for n8n.",
   "homepage": "https://weydub.com/docs/api/",
   "repository": {"type":"git","url":"git+https://github.com/JollyToday/GhostCut-auto_video_translation.git","directory":"integrations/n8n"},

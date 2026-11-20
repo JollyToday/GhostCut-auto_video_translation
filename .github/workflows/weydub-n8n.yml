@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,14 +32,24 @@ jobs:
           npm install --prefix smoke --legacy-peer-deps --no-audit --no-fund --ignore-scripts "./$archive"
           node "$GITHUB_WORKSPACE/integrations/n8n/check-install.cjs" "$RUNNER_TEMP/smoke"
           sha256sum "$archive" > "$archive.sha256"
+          # npm verifies the tarball's SHA-512 under its versioned package URL.
+          digest=$(sha512sum "$archive" | cut -d' ' -f1)
+          printf '%s  pkg:npm/n8n-nodes-weydub@%s\n' "$digest" "$version" > npm-subject.txt
+      - name: Attest the exact npm tarball built by this run
+        id: provenance
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        with:
+          subject-checksums: ${{ runner.temp }}/npm-subject.txt
       - name: Publish the verified package
         env:
           GH_TOKEN: ${{ github.token }}
+          BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
         run: |
           set -eu
           cd "$RUNNER_TEMP"
           archive="n8n-nodes-weydub-${GITHUB_REF_NAME#weydub-n8n-v}.tgz"
+          cp "$BUNDLE" "$archive.sigstore.json"
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
             --title "Weydub Media for self-hosted n8n ${GITHUB_REF_NAME#weydub-n8n-v}" \
-            --notes 'Install this package in your self-hosted n8n nodes folder. Import the included OCR or image translation workflow to preview without credentials. Live processing uses your own Weydub credits. https://weydub.com/docs/api/' \
-            "$archive" "$archive.sha256"
+            --notes 'Includes request previews and download workflows for timed subtitles, processed video and translated images. Live processing uses your own Weydub credits. The signature bundle identifies the exact archive built by this workflow. https://weydub.com/docs/api/' \
+            "$archive" "$archive.sha256" "$archive.sigstore.json"
