@@ -3,6 +3,7 @@
 !__init__.py
 !nodes.py
 !contract.json
+!credentials.example.json
 !pyproject.toml
 !README.md
 !LICENSE

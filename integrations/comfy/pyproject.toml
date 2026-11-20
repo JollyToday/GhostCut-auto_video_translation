@@ -1,6 +1,6 @@
 [project]
 name = "weydub-media"
-version = "0.1.1"
+version = "0.1.2"
 description = "Remove video text, extract timed OCR subtitles, dub speech and translate images using Weydub."
 readme = "README.md"
 license = {file = "LICENSE"}

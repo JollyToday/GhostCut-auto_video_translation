@@ -1,6 +1,5 @@
 import hashlib
 import json
-import os
 import re
 from copy import deepcopy
 from pathlib import Path
@@ -9,6 +8,7 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 CONTRACT = json.loads(Path(__file__).with_name("contract.json").read_text())
+NODE_DIR = Path(__file__).resolve().parent
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -16,11 +16,33 @@ class NoRedirect(HTTPRedirectHandler):
         return None
 
 
+def _credential_paths():
+    return (
+        Path.home() / ".config" / "weydub" / "credentials.json",
+        Path.home() / ".weydub" / "credentials.json",
+        NODE_DIR / "credentials.json",
+    )
+
+
+def _credentials():
+    for path in _credential_paths():
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, OSError, ValueError):
+            continue
+        if isinstance(payload, dict):
+            key = payload.get("app_key")
+            secret = payload.get("app_secret")
+            if isinstance(key, str) and key.strip() and isinstance(secret, str) and secret.strip():
+                return key.strip(), secret.strip()
+    locations = ", ".join(str(path) for path in _credential_paths())
+    raise ValueError(
+        "Add app_key and app_secret to one of these local Weydub credential files: " + locations
+    )
+
+
 def _call(path, body):
-    key = os.environ.get("WEYDUB_APP_KEY")
-    secret = os.environ.get("WEYDUB_APP_SECRET")
-    if not key or not secret:
-        raise ValueError("Set your Weydub API credentials in the ComfyUI server environment.")
+    key, secret = _credentials()
     wire = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode()
     first = hashlib.md5(wire).hexdigest()
     signature = hashlib.md5((first + secret).encode()).hexdigest()
