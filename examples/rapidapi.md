@@ -4,6 +4,8 @@ Choose the listing by the file you want to deliver. For example, a store may nee
 
 The marketplace listings use RapidAPI authentication. The direct Weydub CLI, Postman collection and integrations in this repository use a different signing method; a RapidAPI key will not work with those direct API examples.
 
+The reviewed English copy for the four marketplace listings is in [rapidapi-listing-copy.md](rapidapi-listing-copy.md). Keep the product-specific instructions below aligned with those descriptions when a listing is updated.
+
 | I need | Start here | Output |
 | --- | --- | --- |
 | Translated labels inside a product image | [Image Translation](https://rapidapi.com/jollytoday-jollytoday-default/api/image-translation) | A newly rendered image |
