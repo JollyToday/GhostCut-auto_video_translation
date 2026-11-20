@@ -42,6 +42,37 @@ def _result(*values):
     return {"ui": {"text": [str(x) for x in values if x]}, "result": values}
 
 
+def _download(value):
+    if not isinstance(value, str) or any(c.isspace() for c in value):
+        return ""
+    try:
+        u = urlsplit(value)
+        if u.scheme in ("http", "https") and u.hostname and u.username is None and u.password is None:
+            return value
+    except ValueError:
+        pass
+    return ""
+
+
+def _job_result(code, media="", subtitles="", kind="video"):
+    # Keep the original numeric status and socket order for existing graphs.
+    if type(code) is not int:
+        state, hint = "unknown", "Unrecognized status. Check the original job in Weydub."
+    elif code < 1:
+        state, hint = str(code), "Processing. Queue Get Job Result again with the same ID."
+    elif code != 1:
+        state = str(code)
+        hint = ("Check your Weydub balance to unlock the original job." if kind == "video" and code == 83
+                else "Processing failed. Check the original job in Weydub before resubmitting.")
+    else:
+        state, media, subtitles = "1", _download(media), _download(subtitles)
+        hint = ("Ready. Open the result link to download your file." if media or subtitles
+                else "Finished without a download link. Contact Weydub with the original job ID.")
+    if state != "1":
+        media = subtitles = ""
+    return {"ui": {"text": [s for s in (hint, media, subtitles) if s]}, "result": (state, media, subtitles)}
+
+
 class CreateJob:
     CATEGORY = "Weydub/Media"
     FUNCTION = "run"
@@ -127,15 +158,22 @@ class GetJob:
             raise ValueError("Choose the media type and use the job ID returned by creation.")
         if kind == "image":
             b = _call(CONTRACT["image-status"]["path"], {"id": int(job_id)})
-            result = b.get("result") or {}
+            code = b.get("status")
+            if type(code) is not int or code != 1:
+                return _job_result(code, kind=kind)
+            result = b.get("result")
             if isinstance(result, str):
-                result = json.loads(result)
-            return _result(str(b["status"]), result.get("output_url") or "", "")
+                try:
+                    result = json.loads(result)
+                except ValueError:
+                    result = None
+            return _job_result(code, result.get("output_url") if isinstance(result, dict) else None, kind=kind)
         b = _call(CONTRACT["video-status"]["path"], {"idWorks": [job_id]})
         row = next((x for x in b.get("content", []) if str(x.get("id")) == job_id), None)
         if not row:
             raise ValueError("No matching video job for this account.")
-        return _result(str(row["processStatus"]), row.get("videoUrl") or "", row.get("srcSrtUrl") or row.get("tgtSrtUrl") or "")
+        return _job_result(row.get("processStatus"), row.get("videoUrl"),
+                           _download(row.get("srcSrtUrl")) or row.get("tgtSrtUrl"))
 
 
 NODE_CLASS_MAPPINGS = {"WeydubLiteErase": Erase, "WeydubFullFrameOCR": OCR, "WeydubDub": Dub,
