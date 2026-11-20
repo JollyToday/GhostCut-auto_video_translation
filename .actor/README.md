@@ -13,7 +13,9 @@ Turn the subtitles in a video into an SRT file, remove burned-in captions, dub s
 
 **Process one file.** Enter your Weydub credentials in the two secret fields, turn on submission and run once. Save the returned `jobId` and `nextOperation`. Submitting a second time creates another job. Weydub processing uses your own account's [credits and rates](https://weydub.com/vip/pricing-detail/); your Apify plan governs the Actor run.
 
-**Download the result.** Start a new run with **Check a video or subtitle job** or **Check an image job**. Replace the source URL with the numeric job ID and use the same Weydub credentials. The dataset tells you what to do next:
+**Get the file in this run.** Turn on **Wait for my download link** when submitting. Open the resulting dataset row: `sourceSubtitles` downloads the SRT, `video` opens a cleaned or dubbed MP4, and `output` opens the translated image. Waiting uses Apify runtime. If the file is still processing when the Actor stops waiting, the row includes the original `jobId`.
+
+**Check later.** Leave waiting off to return the job ID immediately. To retrieve an existing result, start a run with **Check a video or subtitle job** or **Check an image job**. Replace the source URL with the numeric job ID and use the same Weydub credentials. The dataset tells you what to do next:
 
 | `state` | Next step |
 |---|---|

@@ -36,13 +36,16 @@ const r=await response.json();
 if(r.code!==1000)throw Error(`Gateway business code ${r.code}. Check your job list before retrying a creation request.`);
 if(!isStatus) {
   const id=action==='image'?r.body:r.body.dataList?.[0]?.id;
-  if(!id)throw Error('No job ID returned. Check your job list before retrying.');
+  if(!/^[1-9]\d*$/.test(String(id))||!Number.isSafeInteger(Number(id)))throw Error('No valid job ID returned. Check your job list before retrying.');
   console.log(`Job ${id}\nnode examples/media.mjs ${action==='image'?'image':'video'}-status ${id}`);
 }else if(action==='image-status') {
-  const result=typeof r.body.result==='string'&&r.body.result?JSON.parse(r.body.result):r.body.result;
+  if(String(r.body?.id)!==input || !Number.isInteger(r.body?.status))throw Error('No matching image job for these credentials. Check the job type and ID.');
+  const raw=r.body.status===1?r.body.result:null;
+  const result=typeof raw==='string'&&raw?JSON.parse(raw):raw;
   console.log(JSON.stringify({status:r.body.status,output:result?.output_url},null,2));
 }else{
   const item=r.body.content.find(x=>String(x.id)===input);
   if(!item)throw Error('Job not found for these credentials.');
-  console.log(JSON.stringify({id:item.id,status:item.processStatus,video:item.videoUrl,sourceSubtitles:item.srcSrtUrl,targetSubtitles:item.tgtSrtUrl,chargedCredits:item.paidPoint},null,2));
+  const ready=item.processStatus===1;
+  console.log(JSON.stringify({id:item.id,status:item.processStatus,video:ready?item.videoUrl:undefined,sourceSubtitles:ready?item.srcSrtUrl:undefined,targetSubtitles:ready?item.tgtSrtUrl:undefined,chargedCredits:item.paidPoint},null,2));
 }

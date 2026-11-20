@@ -26,6 +26,10 @@
       "title":"Submit a billable media job","type":"boolean","default":false,
       "description":"Off previews a creation request without sending it. Status checks only retrieve the existing job."
     },
+    "waitForResult": {
+      "title":"Wait for my download link","type":"boolean","default":false,
+      "description":"For submissions using your Weydub credits. Keep this run open while the file is processing. If it takes longer, the dataset gives you the original job ID to check later. Waiting uses Apify runtime."
+    },
     "appKey": {
       "title":"Your Weydub AppKey","type":"string","editor":"textfield","isSecret":true,
       "description":"Required when submitting or checking a job. Not needed for preview."

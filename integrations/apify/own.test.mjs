@@ -37,3 +37,34 @@ test('dataset distinguishes unfinished, failed, finished without a file, and dow
   assert.equal(statusRow('image-status','21',{status:1,output:'not a URL'}).state,'missing-output');
   assert.deepEqual(statusRow('video-status','21',{status:1,sourceSubtitles:'https://example.org/file.srt'}).files,['sourceSubtitles']);
 });
+
+test('wait returns the translated file in one row and a restarted run cannot submit it twice',async()=>{
+  const actor=store(), calls=[];
+  const send=async(op,id)=>{
+    calls.push([op,id]);
+    if(op==='image')return 'Job 742\n';
+    return JSON.stringify(calls.length===2?{status:0,output:'https://example.org/source'}:{status:1,output:'https://example.org/translated.jpg'});
+  };
+  const settings={...input,waitForResult:true};
+  await ownJob(actor,settings,send,async()=>{});
+  await ownJob(actor,settings,send,async()=>{throw Error('duplicate poll');});
+  assert.deepEqual(calls,[['image',input.input],['image-status','742'],['image-status','742']]);
+  assert.equal(actor.rows.length,1);assert.equal(actor.rows[0].output,'https://example.org/translated.jpg');
+  assert.equal(actor.rows[0].operation,'image');assert.equal(actor.rows[0].state,'ready');
+});
+
+test('slow jobs, rejected queries and locked results keep the original ID, with no provisional links',async()=>{
+  for(const [reply,expectedState] of [[{status:-1},'processing'],[null,'submitted'],[{status:73},'failed'],[{status:83},'failed'],[{status:1,targetSubtitles:'https://example.org/other.srt'},'missing-output']]){
+    const actor=store();let creates=0,reads=0;
+    await ownJob(actor,{...input,operation:'dub',waitForResult:true},async(op,value)=>{
+      if(op==='dub'){creates++;return 'Job 941\n';}
+      assert.equal(op,'video-status');assert.equal(value,'941');reads++;
+      if(!reply)throw Error('503');
+      return JSON.stringify({...reply,...(reply.status===1?{}:{video:'https://example.org/provisional'})});
+    },async()=>{});
+    const [row]=actor.rows;
+    assert.equal(creates,1);assert.ok(reads>=1&&reads<=16);
+    assert.equal(row.jobId,'941');assert.equal(row.state,expectedState);
+    assert.equal(row.nextOperation,'video-status');assert.equal(row.video,undefined);assert.equal(row.targetSubtitles,undefined);
+  }
+});
