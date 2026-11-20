@@ -1,0 +1,19 @@
+{
+  "name": "Weydub: download a processed video",
+  "id": "WeydubVideoResult",
+  "active": false,
+  "nodes": [
+    {"id":"d80599b0-b66d-4073-bd84-d62b5beaad04","name":"Start","type":"n8n-nodes-base.manualTrigger","typeVersion":1,"position":[0,0],"parameters":{}},
+    {"id":"60544005-0b48-4884-a462-4f2470746536","name":"Check video job","type":"n8n-nodes-weydub.weydub","typeVersion":1,"position":[220,0],"parameters":{"operation":"video-status","jobId":""},"notesInFlow":true,"notes":"Paste the job ID from your erasure or dubbing request. Select the same Weydub credential."},
+    {"id":"7f94e9bb-f13c-4c81-aa6d-16c630e50ba0","name":"Video ready?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[440,0],"parameters":{"conditions":{"options":{"caseSensitive":true,"typeValidation":"strict","version":2},"conditions":[{"id":"3fc6d658-5df6-44fa-9622-246a92369b74","leftValue":"={{ $json.status === 1 && /^https?:\\/\\//i.test($json.videoUrl || '') }}","rightValue":"","operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}}},
+    {"id":"91a82b9b-471a-43f6-a994-e25154201edf","name":"Download video","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[680,-96],"parameters":{"url":"={{ $json.videoUrl.replace(/^http:/i, 'https:') }}","options":{"response":{"response":{"responseFormat":"file","outputPropertyName":"video"}},"timeout":120000}}},
+    {"id":"10e29170-d03d-4691-96a8-1c2e1f886fe1","name":"Inspect job status","type":"n8n-nodes-base.noOp","typeVersion":1,"position":[680,96],"parameters":{},"notesInFlow":true,"notes":"Below 1: still processing; run this lookup again later. Above 1 or a missing finished video: keep the ID and check the job in Weydub."}
+  ],
+  "connections": {
+    "Start":{"main":[[{"node":"Check video job","type":"main","index":0}]]},
+    "Check video job":{"main":[[{"node":"Video ready?","type":"main","index":0}]]},
+    "Video ready?":{"main":[[{"node":"Download video","type":"main","index":0}],[{"node":"Inspect job status","type":"main","index":0}]]}
+  },
+  "settings":{"executionOrder":"v1"},
+  "pinData":{}
+}
