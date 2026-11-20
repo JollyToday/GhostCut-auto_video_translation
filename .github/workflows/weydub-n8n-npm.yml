@@ -57,7 +57,9 @@ jobs:
           retention-days: 1
   publish:
     needs: verify
-    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    if: |
+      (github.event_name == 'workflow_dispatch' && inputs.publish) ||
+      (github.event_name == 'push' && startsWith(github.event.head_commit.message, 'ci(n8n): publish'))
     runs-on: ubuntu-latest
     permissions:
       contents: read
