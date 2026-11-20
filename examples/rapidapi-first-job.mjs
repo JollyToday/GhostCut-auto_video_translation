@@ -10,6 +10,17 @@ const products = {
 const usage = 'Usage: node examples/rapidapi-first-job.mjs image|remove|dub|edit [--submit]. Set MEDIA_URL for a video or your own product image.';
 const positiveId = v => Number.isSafeInteger(v) && v > 0;
 
+// Only include support identifiers and numeric meter readings, never keys or media URLs.
+function failureReceipt(response, slug, path, trace) {
+  const safeId = v => typeof v === 'string' && /^[A-Za-z0-9._:-]{1,160}$/.test(v) ? v : undefined;
+  const meters = {};
+  for (const [name, value] of response.headers) {
+    if (/^x-ratelimit-(?:requests|advanced|video[-_]?tasks?)-(?:limit|remaining)$/.test(name) && /^\d{1,16}$/.test(value)) meters[name] = value;
+  }
+  return {listing:slug, endpoint:path, httpStatus:response.status, trace:safeId(trace),
+    rapidapiRequestId:safeId(response.headers.get('x-rapidapi-request-id')), meters};
+}
+
 export async function firstJob(args, env = {}, request = fetch) {
   const [op, flag] = args;
   if (!Object.hasOwn(products, op) || args.length > 2 || (flag !== undefined && flag !== '--submit')) throw Error(usage);
@@ -21,6 +32,10 @@ export async function firstJob(args, env = {}, request = fetch) {
   const host = `${slug}.p.rapidapi.com`;
   const url = `https://${host}${path}`;
   const body = payload(input);
+  if (op === 'dub' && env.DUB_CAPTIONS !== undefined) {
+    if (!['0','1'].includes(env.DUB_CAPTIONS)) throw Error('Set DUB_CAPTIONS to 0 (voice only) or 1 (voice and translated captions).');
+    body.needText = Number(env.DUB_CAPTIONS);
+  }
   if (!flag) return {state:'preview', method:'POST', url, body};
   if (!env.RAPIDAPI_KEY?.trim()) throw Error('Set RAPIDAPI_KEY locally, then submit once.');
   let response, result;
@@ -30,13 +45,13 @@ export async function firstJob(args, env = {}, request = fetch) {
       headers:{'content-type':'application/json','x-rapidapi-host':host,'x-rapidapi-key':env.RAPIDAPI_KEY},
       body:JSON.stringify(body),
     });
-    if (!response.ok) return {state:'check_request', httpStatus:response.status, advice:'Check the request in RapidAPI before submitting again.'};
+    if (!response.ok) return {state:'check_request', ...failureReceipt(response,slug,path), advice:'Check the original request in RapidAPI before submitting again.'};
     result = await response.json();
   } catch {
     throw Error('No readable response. The job may already exist. Check your request history or contact the provider before submitting again.');
   }
   const {code, trace} = result ?? {};
-  if (code !== 1000) return {state:'check_request', code, trace, advice:code === 4005 ? 'Processing credit check failed. Contact the provider with this trace before upgrading or retrying.' : 'Check the response in the Playground before submitting again.'};
+  if (code !== 1000) return {state:'check_request', code, ...failureReceipt(response,slug,path,trace), advice:code === 4005 ? 'Processing credit check failed. Stop here: another call may use more marketplace quota. Send this receipt privately to the provider to check the subscription mapping and meter history. Do not upgrade or poll.' : 'Check the original request with the provider before submitting again.'};
   const jobId = op === 'image' ? result.body : result.body?.dataList?.[0]?.id;
   if (positiveId(jobId)) return {state:'accepted', jobId, next:`node examples/rapidapi-result.mjs ${op} ${jobId}`};
   const projectId = result.body?.idProject;

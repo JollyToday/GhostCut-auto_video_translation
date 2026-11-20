@@ -17,6 +17,8 @@ For a timed SRT from visible captions, use [full-frame OCR through the direct AP
 
 Select your application and call **Open Account** once for the current RapidAPI subscription. A response with `code: 1000` and `body.uid` confirms account setup. The UID is an account identifier, not a media job ID. Changing `customIdentity` does not create another end-customer allowance.
 
+If **Open Account** returns `9999` ("System error") without a UID, stop before creating a media job. Send the provider the listing, endpoint, time with timezone and `trace` privately through RapidAPI. Changing identities, adding personal contact details or connecting a social account is not the next step. Open Account does not sign you in to TikTok or publish a video.
+
 **Before choosing a plan:** on **Pricing**, `Requests` is separate from the processing meter (`Advanced` for images, `Video Task` for video). A request allowance does not tell you how many minutes will render or confirm a free first job. If a short test returns `4005`, contact the provider with the `trace` before buying a larger plan.
 
 For a first image, open **Translate Image** and use the public product photo in its example. `downloadInfo` is a JSON string containing a `url`, with `srcLang: "zh"`, `tgtLang: "en"`, `translateOn: 1` and `synthesisOn: 1`. For a video, replace the placeholder URL with a direct HTTPS link to a clip you control. The URL must serve the file without a website login. The v1 video translation example uses `sourceLang: "cn"` for Chinese speech.
@@ -32,6 +34,12 @@ node examples/rapidapi-first-job.mjs image
 To see the request for your own file, set `MEDIA_URL` locally. Use `remove` for a clip with Chinese captions, `dub` for Chinese speech to English, or `edit` to mirror a clip. For different languages, change the fields in the Playground. The local preview prints your input URL; keep it private if it grants access to your file.
 
 After **Open Account** succeeds, set `RAPIDAPI_KEY` locally. To send the previewed image request once, run `node examples/rapidapi-first-job.mjs image --submit`. The same flag works for video. This can consume processing credit. The script prints the status command for the returned job ID, or the Playground query if you received only a project ID. If the connection drops after submission, check the original request before running it again.
+
+### Let a viewer upload a local clip and download a subtitled video
+
+1. Let the viewer select a file. Upload it to your storage and give your backend a direct HTTPS read URL that stays valid until processing finishes. A local path, `blob:` preview URL or page behind a login will not work. Keep the RapidAPI key on your backend.
+2. For **Chinese speech to English speech with English captions**, preview `DUB_CAPTIONS=1 node examples/rapidapi-first-job.mjs dub` with `MEDIA_URL` set locally. The payload uses `sourceLang: "cn"`, `lang: "en"` and `needText: 1`. Choose the supported spoken and target languages for other pairs in this listing's Playground. Send one create request for the chosen version; store the returned ID with the viewer's file and language.
+3. Check **Get Result** using that ID. When the matching work has `processStatus: 1`, use its `videoUrl` to play the result or let the viewer download it. Store an authorized copy if your product needs to keep it. This produces a rendered video for one target language. For switchable captions in a player, supply separate timed subtitle tracks; `needText` is not a language switch or a stand-alone SRT export.
 
 ### What to test on your first clip
 
@@ -91,6 +99,12 @@ Each invocation makes **one result query** and can count toward the listing's re
 
 ## HTTP 200, but no job ID
 
-Read the JSON `code`, `msg` and `trace`. `4005` means the subscription does not have enough processing credit for the requested job. No job was created, so there is no result to poll. **Open Account** and the listing's **Pricing** tab tell you different things: an account or a request allowance alone does not confirm available media-processing credit. Contact the provider through RapidAPI with the product name and response `trace`; do not send your key or purchase an upgrade just to troubleshoot this error.
+`4005` ("insufficient credits") means the processing service refused the job. An active Pro plan, remaining RapidAPI quota or a successful account setup does not explain why the processing check failed. **Stop submitting and do not poll without a job ID.** A failed call may still move a marketplace meter. Upgrading is not a troubleshooting step.
+
+The first-job script prints a small receipt on a refusal. Send it privately to the provider with the time (including timezone) and plan. If using the Playground, record the listing and endpoint, HTTP status, business `code` and `trace`, RapidAPI request ID if shown, and any `Requests` / `Video Task` / `Advanced` meter readings already available. Do not make another request to measure the difference. Never include your key (even a prefix), authorization headers or signed media URL. Ask the provider to reconcile the subscription, processing account and any quota consumed without a job. A changed quota counter alone does not establish a monetary charge or refund.
+
+### Does the video editing listing post to TikTok or prevent flags?
+
+No. The legacy listing creates an edited video file from material you have rights to use. It cannot sign into a social account, publish for you, check a platform's moderation decision or guarantee acceptance of an upload.
 
 For the browser tools, advanced models and direct integration options, see [Weydub](https://weydub.com/) and its [API documentation](https://weydub.com/docs/api/).

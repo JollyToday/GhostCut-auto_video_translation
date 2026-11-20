@@ -47,3 +47,20 @@ test('failed credit checks, missing IDs and lost responses never retry or sugges
     assert.ok(out.advice);
   }
 });
+test('credit refusal produces a support receipt without leaking media, credentials or unrelated headers',async()=>{
+  const secretUrl = 'https://example.com/private?token=media-secret';
+  const out = await firstJob(['remove','--submit'],{...env,MEDIA_URL:secretUrl},async()=>Response.json(
+    {code:4005,trace:'work-trace-1',msg:secretUrl},
+    {headers:{'x-rapidapi-request-id':'request-2','x-ratelimit-video-task-remaining':'394',
+      'x-ratelimit-requests-remaining':'not a number','x-rapidapi-key':'buyer-secret','set-cookie':'private-cookie'}}));
+  assert.equal(out.trace,'work-trace-1');
+  assert.equal(out.rapidapiRequestId,'request-2');
+  assert.equal(out.endpoint,'/work/fast');
+  assert.deepEqual(out.meters,{'x-ratelimit-video-task-remaining':'394'});
+  assert.doesNotMatch(JSON.stringify(out),/media-secret|buyer-secret|private-cookie|not a number/);
+});
+test('rendered captions are opt-in and invalid caption settings never submit',async()=>{
+  assert.equal((await firstJob(['dub'],env,noNetwork)).body.needText,0);
+  assert.equal((await firstJob(['dub'],{...env,DUB_CAPTIONS:'1'},noNetwork)).body.needText,1);
+  await assert.rejects(firstJob(['dub','--submit'],{...env,DUB_CAPTIONS:'yes'},noNetwork),/DUB_CAPTIONS/);
+});
