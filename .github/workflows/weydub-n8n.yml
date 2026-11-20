@@ -1,0 +1,41 @@
+name: Release Weydub n8n node
+on:
+  push:
+    tags: ['weydub-n8n-v*']
+permissions: {}
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Package and verify the installable node
+        working-directory: integrations/n8n
+        run: |
+          set -eu
+          version=$(node -p 'require("./package.json").version')
+          test "$GITHUB_REF_NAME" = "weydub-n8n-v$version"
+          node ../build-contract.mjs --check
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP"
+          cd "$RUNNER_TEMP"
+          archive="n8n-nodes-weydub-$version.tgz"
+          npm install --prefix smoke --no-audit --no-fund --ignore-scripts "./$archive"
+          node "$GITHUB_WORKSPACE/integrations/n8n/check-install.cjs" "$RUNNER_TEMP/smoke"
+          sha256sum "$archive" > "$archive.sha256"
+      - name: Publish the verified package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          cd "$RUNNER_TEMP"
+          archive="n8n-nodes-weydub-${GITHUB_REF_NAME#weydub-n8n-v}.tgz"
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "Weydub Media for self-hosted n8n ${GITHUB_REF_NAME#weydub-n8n-v}" \
+            --notes 'Install this package in your self-hosted n8n nodes folder. Import the included OCR or image translation workflow to preview without credentials. Live processing uses your own Weydub credits. https://weydub.com/docs/api/' \
+            "$archive" "$archive.sha256"

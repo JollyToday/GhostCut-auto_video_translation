@@ -1,0 +1,12 @@
+{
+  "name": "Weydub: translate a product photo",
+  "id": "WeydubImagePreview",
+  "active": false,
+  "nodes": [
+    {"id":"131f49f6-1cce-4bb1-a505-1955d397ff0e","name":"Start","type":"n8n-nodes-base.manualTrigger","typeVersion":1,"position":[0,0],"parameters":{}},
+    {"id":"c8beced8-080c-4db1-8516-f4e297df5dd5","name":"Preview product image","type":"n8n-nodes-weydub.weydub","typeVersion":1,"position":[240,0],"parameters":{"operation":"image","mediaUrl":"https://gc100.cdn.izhaoli.cn/ve_material_image/A-00b4943646344cfc/e2d6dd82903f4059bd94c9b660f5f7b6/1782789120948.webp","source":"zh","target":"en","submit":false}}
+  ],
+  "connections":{"Start":{"main":[[{"node":"Preview product image","type":"main","index":0}]]}},
+  "settings":{"executionOrder":"v1"},
+  "pinData":{}
+}
