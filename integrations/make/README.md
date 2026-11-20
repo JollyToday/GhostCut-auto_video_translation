@@ -12,4 +12,6 @@ Leave **Submit billable job** off when designing a workflow. Turn it on only whe
 
 An image status of `1` means the translated image is ready. The clean-background URL is a separate optional file without the translated labels. An image status above `1` means processing failed: keep the ID and support trace and stop polling. A successful Make operation alone does not mean the media was processed successfully. Make operation credits and Weydub processing credits are separate.
 
+**Looking for an SRT?** In **Get a Video or Subtitle Result**, enter the work ID for the OCR job and use the connection that submitted it. At `Processing status: 1`, open **Source SRT URL** for the captions in their original language. If **Get an Image Result** reports that no image matches, switch lookup modules with the same work ID. You do not need to upload the clip again.
+
 `app.mjs` exports the base, connection and six module definitions. For a module, `communication`, `mappable` and `interface` correspond to the Make editor's **Communication**, **Mappable Parameters** and **Interface** tabs. Request bodies and their signatures use the same serialization.

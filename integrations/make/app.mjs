@@ -56,7 +56,7 @@ export function makeModule(op) {
     // createJSON normalizes both response shapes before parsing only a nested string.
     const result = `if(substring(createJSON(body.body.result), 0, 1) === "{", body.body.result, parseJSON(body.body.result))`;
     communication.response.temp = {result:expr(`if(body.body.status === 1, ${result}, emptycollection)`)};
-    communication.response.valid = {condition:"{{body.code === 1000 && body.body.id == parameters.jobId}}",message:"Image not returned for this job ID. Weydub {{body.code}}: {{body.msg}} (trace {{body.trace}})."};
+    communication.response.valid = {condition:"{{body.code === 1000 && body.body.id == parameters.jobId}}",message:"{{if(body.code === 1000, 'No image matches this job ID. For a video or SRT, use Get a Video or Subtitle Result. For an image, check the ID and connection.', body.msg)}} (Weydub {{body.code}}, trace {{body.trace}})."};
     communication.response.output = {jobId:"{{parameters.jobId}}", status:"{{body.body.status}}", statusMessage:"{{ifempty(body.body.taskStatusEnum.descriptionEn, body.body.taskStatusEnum.description)}}", trace:"{{body.trace}}", imageUrl:"{{temp.result.output_url}}", cleanBackgroundUrl:"{{temp.result.inpaint_url}}"};
     fields = ["imageUrl","cleanBackgroundUrl"];
   } else if (lookup) {
