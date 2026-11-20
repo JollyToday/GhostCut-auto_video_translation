@@ -1,6 +1,6 @@
 # RapidAPI file uploads: provider preview
 
-These instructions are for the **upload-version preview** of subtitle removal, image translation and translated dubbing. Use them only when your selected version shows **Link** and a binary upload operation in the Playground. If you see **Open Account** and a `urls` or `downloadInfo` field, follow the [live v1 guide](rapidapi.md) instead. The separately published [OCR API](rapidapi-ocr.md) has its own walkthrough.
+These instructions are for the **upload-version preview** of subtitle removal, image translation and translated dubbing. The separately published [OCR API](rapidapi-ocr.md) also accepts a raw binary MP4. Use them only when your selected version shows **Link** and a binary upload operation in the Playground. If you see **Open Account** and a `urls` or `downloadInfo` field, follow the [live v1 guide](rapidapi.md) instead.
 
 | What you need | File to upload | Headers in addition to `Idempotency-Key` and `Content-Type` | When ready, download |
 | --- | --- | --- | --- |
@@ -9,14 +9,14 @@ These instructions are for the **upload-version preview** of subtitle removal, i
 | Translated speech and captions | `POST /v1/videos/dub`; H.264 MP4 with one AAC speech track, up to 60 seconds and 16 MiB. Use a voice you have permission to process. Burned-in captions remain. | `X-Source-Language` for the speech; `X-Target-Language` for the new voice. Select different languages. | `videoUrl` |
 
 1. In [Weydub account linking](https://weydub.com/account/connect/rapidapi/), enter the RapidAPI handle that owns your application (the team handle for a team app). Send the one-time code in `{"code":"..."}` to `POST /v1/account/link` through the matching listing within ten minutes. Never send a Weydub password or AppSecret.
-2. Copy the request host and RapidAPI authentication headers from that version's Playground. Send the actual file bytes, for example `--data-binary @episode.mp4` with `Content-Type: video/mp4`. For a JPEG use `--data-binary @label.jpg` and `Content-Type: image/jpeg`. Do not send a URL or multipart form. Give this file, operation and language pair a unique `Idempotency-Key`.
+2. Copy the request host and RapidAPI authentication headers from that version's Playground. Send the actual file bytes, for example `--data-binary @episode.mp4` with `Content-Type: video/mp4` or `application/octet-stream`. For a JPEG use `--data-binary @label.jpg` and `Content-Type: image/jpeg`. Do not send a URL or multipart form. Give this file, operation and language pair a unique `Idempotency-Key`.
 3. A `202` response contains a `jobId`, not a deliverable. Query `GET /v1/jobs/{jobId}` through the **same product**. Wait while `state` is `pending`; use the result field in the table when it is `ready`. A `failed` job has no file to download. Check old numeric v1 IDs through the original listing.
 
 ### Run an image or dubbing upload
 
 You need access to the upload version first. For a draft, confirm with the provider that your app can reach that version; choosing a draft in Studio does not switch a public subscription.
 
-In the upload operation, choose **Body → application/octet-stream → Upload file**. Select the original image or MP4, then set the two language headers and `Idempotency-Key` in **Headers**. Use one file, not a ZIP or a JSON object. For command-line use, copy the RapidAPI host from the same operation and follow the Bash examples below (curl 7.76+ and jq). They send the precise image or video content type; both upload methods return the same job ID when retried with identical inputs and key.
+In the upload operation, choose **Body → application/octet-stream → Upload file**. Select the original image or MP4, then set the two language headers and `Idempotency-Key` in **Headers**. Use one file, not a ZIP or a JSON object. For command-line use, copy the RapidAPI host from the same operation and follow the Bash examples below (curl 7.76+ and jq). They send the precise image or video content type; both upload methods return the same job ID when retried with identical inputs and key. The OCR and Lite subtitle-removal versions use the same file picker and raw-byte behavior.
 
 ```bash
 read -rp 'RapidAPI host (no https://): ' RAPIDAPI_HOST

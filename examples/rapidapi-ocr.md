@@ -12,7 +12,7 @@ Our reference clip is a roughly seven-second Chinese tea tutorial from the [Weyd
 如何品鉴红茶
 ```
 
-Use any short clip you have permission to process. No audio track is required. If you only hear the words, use [speech transcription instead](https://weydub.com/technology/ai-subtitle-generation-video-ocr-asr/).
+Use any short clip you have permission to process. No audio track is required. The Playground accepts a local file; SDK and cURL clients can send the raw bytes as `video/mp4` or `application/octet-stream`. If you only hear the words, use [speech transcription instead](https://weydub.com/technology/ai-subtitle-generation-video-ocr-asr/).
 
 ## Link your app once
 
