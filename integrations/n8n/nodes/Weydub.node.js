@@ -1,5 +1,4 @@
 'use strict';
-const {createHash}=require('node:crypto');
 const contract=require('../contract.json');
 const origin='https://api.zhaoli.com';
 const operations=[
@@ -71,12 +70,10 @@ class Weydub {
         let value;
         if(isCreate&&!get('submit',false)) value={state:'preview',operation:op,...req};
         else {
-          const c=await this.getCredentials('weydubApi',i);
-          if(!c?.appKey||!c?.appSecret)throw Error('Select a Weydub credential with an App Key and App Secret.');
-          const body=JSON.stringify(req.body),md5=s=>createHash('md5').update(s).digest('hex');
+          const body=JSON.stringify(req.body);
           let raw;
-          try { raw=await this.helpers.httpRequest({method:'POST',url:origin+req.path,body,headers:{'Content-Type':'application/json',AppKey:c.appKey,AppSign:md5(md5(body)+c.appSecret)},timeout:45000,disableFollowRedirect:true}); }
-          catch {throw Error('Weydub did not return a confirmed response. Check existing jobs before retrying.');}
+          try { raw=await this.helpers.httpRequestWithAuthentication.call(this,'weydubApi',{method:'POST',url:origin+req.path,body,headers:{'Content-Type':'application/json'},timeout:45000,disableFollowRedirect:true}); }
+          catch {throw Error('Check your Weydub credential and existing jobs before retrying; no response was confirmed.');}
           value=result(op,input,typeof raw==='string'?JSON.parse(raw):raw);
         }
         rows.push({json:value,pairedItem:{item:i}});

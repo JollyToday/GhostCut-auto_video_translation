@@ -1,13 +1,15 @@
 {
   "name": "n8n-nodes-weydub",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Weydub video subtitle removal, full-frame OCR, dubbing and image translation for n8n.",
   "homepage": "https://weydub.com/docs/api/",
   "repository": {"type":"git","url":"git+https://github.com/JollyToday/GhostCut-auto_video_translation.git","directory":"integrations/n8n"},
-  "author": "Weydub",
+  "author": {"name":"Weydub","email":"cs@weydub.com"},
   "license": "MIT",
   "keywords": ["n8n-community-node-package","subtitles","OCR","video-localization"],
-  "files": ["nodes","credentials","contract.json","examples","README.md","LICENSE"],
-  "n8n": {"n8nNodesApiVersion":1,"credentials":["credentials/WeydubApi.credentials.js"],"nodes":["nodes/Weydub.node.js"]},
+  "files": ["dist","examples","README.md","LICENSE"],
+  "scripts": {"build":"node build.mjs","prepack":"node build.mjs"},
+  "peerDependencies": {"n8n-workflow":"*"},
+  "n8n": {"n8nNodesApiVersion":1,"credentials":["dist/credentials/WeydubApi.credentials.js"],"nodes":["dist/nodes/Weydub.node.js"]},
   "engines": {"node":">=20"}
 }

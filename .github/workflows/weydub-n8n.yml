@@ -22,10 +22,12 @@ jobs:
           version=$(node -p 'require("./package.json").version')
           test "$GITHUB_REF_NAME" = "weydub-n8n-v$version"
           node ../build-contract.mjs --check
+          npm run build
+          npm_config_ignore_scripts=true npx --yes @n8n/scan-community-package@0.44.0 .
           npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP"
           cd "$RUNNER_TEMP"
           archive="n8n-nodes-weydub-$version.tgz"
-          npm install --prefix smoke --no-audit --no-fund --ignore-scripts "./$archive"
+          npm install --prefix smoke --legacy-peer-deps --no-audit --no-fund --ignore-scripts "./$archive"
           node "$GITHUB_WORKSPACE/integrations/n8n/check-install.cjs" "$RUNNER_TEMP/smoke"
           sha256sum "$archive" > "$archive.sha256"
       - name: Publish the verified package

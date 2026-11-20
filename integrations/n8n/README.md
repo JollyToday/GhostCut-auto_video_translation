@@ -4,7 +4,7 @@ On self-hosted n8n, install the versioned GitHub release in the `nodes` folder o
 
 ```sh
 mkdir -p ~/.n8n/nodes
-npm install --prefix ~/.n8n/nodes --ignore-scripts https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-n8n-v0.1.0/n8n-nodes-weydub-0.1.0.tgz
+npm install --prefix ~/.n8n/nodes --legacy-peer-deps --ignore-scripts https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-n8n-v0.1.1/n8n-nodes-weydub-0.1.1.tgz
 ```
 
 Import [the OCR workflow](examples/preview-ocr.json) for burned-in captions or [the image workflow](examples/preview-image.json) for a Chinese product photo. Click **Execute workflow**. Both return a request preview without credentials or processing charges. For OCR, replace the example.org address with your own clip before live processing. The image example already contains a public sample from the Weydub API guide.
