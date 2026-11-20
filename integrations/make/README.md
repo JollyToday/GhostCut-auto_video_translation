@@ -1,6 +1,6 @@
 # Weydub modules for Make
 
-These definitions are used in a private Make custom app. There is no public install link yet. Developers can use the [direct API](https://weydub.com/docs/api/) independently.
+[Install Weydub in Make](https://www.make.com/en/hq/app-invitation/a4e2ee19d928e181b5dbbbd59c10a8ed). On the invitation page select **Install**, choose your Make organization, and add a Weydub module to a scenario. This is the provider's published custom app, available by invitation link. It is not yet listed in Make's reviewed app directory. For an integration without Make, use the [direct API](https://weydub.com/docs/api/).
 
 Four actions submit a single file: remove lower-frame burned-in captions with Lite, extract visible subtitles with full-frame OCR, translate and dub speech, or translate text inside an image. For OCR, enter the language you see on screen. For dubbing, choose the language you hear and the language you want to deliver. Supply a directly downloadable HTTPS file you have permission to process.
 

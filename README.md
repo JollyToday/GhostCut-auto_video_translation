@@ -19,6 +19,8 @@ node examples/media.mjs image "$IMAGE_URL" --source zh --target en
 
 Set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` locally for live calls. Save the returned job ID; use `video-status` for OCR, removal and dubbing, or `image-status` for images. Querying an existing ID does not submit a second processing job.
 
+To build a workflow without writing code, [install Weydub in Make](https://www.make.com/en/hq/app-invitation/a4e2ee19d928e181b5dbbbd59c10a8ed) and [try one product image](integrations/make/README.md), or [install the node on self-hosted n8n](integrations/n8n/README.md). Both use your own Weydub connection.
+
 For MCP clients, [download the Weydub desktop extension](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/weydub-mcp-v1.0.1/mcp/dist/weydub-media.mcpb) and enter your own Weydub credentials in a compatible client. For a source installation, clone this repository, run `cd mcp`, `npm ci --ignore-scripts` and `node check.mjs`, then configure the stdio command `node /absolute/path/to/mcp/server.mjs`. The four processing tools preview by default; `check_job` retrieves results.
 
 The [Pipedream Connect action source](integrations/pipedream/) and offline tests are available for developers. The app has been submitted for registry review and is not yet available in Pipedream's public catalog.
