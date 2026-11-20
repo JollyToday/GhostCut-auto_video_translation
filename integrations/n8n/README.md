@@ -13,6 +13,14 @@ Use one input item per media file. Choose **Extract Full-Frame OCR Subtitles**, 
 
 For live work, select your own **Weydub API** credential in n8n and turn on **Submit Billable Job**. The node returns a `jobId`. Save that ID, use a Wait node, then use **Get Video or OCR Result** with the same ID. At status `1`, `srtUrl` contains the timed subtitles; for erasure or dubbing use `videoUrl`. For images use **Get Image Result** and `outputUrl`. Do not resubmit to check progress. In a batch, branch on `state: error` to keep results for the other files.
 
-Already submitted an erasure or dubbing job? Import [Download a processed video](examples/download-video.json). In **Check video job**, paste the job ID and select the credential you used to create it. Execute the workflow. A finished MP4 appears in **Download video → Binary → video**. If the job is pending, the workflow stops at **Inspect job status**; run it again later with the same ID. This workflow only checks and downloads an existing job.
+To download a file from a job you already submitted, import the workflow for that job:
+
+| Your job | Download workflow | Where the file appears |
+| --- | --- | --- |
+| Full-frame OCR | [Download timed subtitles](examples/download-subtitles.json) | Download subtitles → Binary → subtitles (SRT) |
+| Lite erasure or speech dubbing | [Download a processed video](examples/download-video.json) | Download video → Binary → video (MP4) |
+| Image translation | [Download a translated image](examples/download-image.json) | Download image → Binary → image |
+
+Open the **Check … job** node, paste the saved job ID, select the same Weydub credential, then execute the workflow. If it stops at **Inspect job status**, open that node's output: a status below `1` means you can check the same ID later. A status above `1` means processing failed. These download workflows never create another processing job.
 
 Lite erasure targets the bottom 18% of the frame. Dubbing requires speech you may use; original burned-in text remains. Processing uses your Weydub credits. [API documentation](https://weydub.com/docs/api/) · [Rates](https://weydub.com/vip/pricing-detail/).

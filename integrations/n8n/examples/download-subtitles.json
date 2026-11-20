@@ -1,0 +1,19 @@
+{
+  "name": "Weydub: download OCR subtitles",
+  "id": "WeydubOcrResult",
+  "active": false,
+  "nodes": [
+    {"id":"ea0cfa5e-2ef9-4b04-95f4-a34fc054cdff","name":"Start","type":"n8n-nodes-base.manualTrigger","typeVersion":1,"position":[0,0],"parameters":{}},
+    {"id":"9ccc385f-c115-40b6-b606-fadfa6324bf1","name":"Check OCR job","type":"n8n-nodes-weydub.weydub","typeVersion":1,"position":[220,0],"parameters":{"operation":"video-status","jobId":""},"notesInFlow":true,"notes":"Paste the job ID from your full-frame OCR request. Select the Weydub credential you used to submit it."},
+    {"id":"654ffc86-aaad-4ee2-89e8-ce4091dceb45","name":"Subtitles ready?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[440,0],"parameters":{"conditions":{"options":{"caseSensitive":true,"typeValidation":"strict","version":2},"conditions":[{"id":"f1453118-4964-42aa-bab3-834ea8dc3a03","leftValue":"={{ $json.status === 1 && /^https?:\\/\\//i.test($json.srtUrl || '') }}","rightValue":"","operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}}},
+    {"id":"430cf6db-9358-491a-9a4a-aec8f6da63be","name":"Download subtitles","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[680,-96],"parameters":{"url":"={{ $json.srtUrl.replace(/^http:/i, 'https:') }}","options":{"response":{"response":{"responseFormat":"file","outputPropertyName":"subtitles"}},"timeout":120000}}},
+    {"id":"f834897f-f188-4cde-ac4f-5b87415020e4","name":"Inspect job status","type":"n8n-nodes-base.noOp","typeVersion":1,"position":[680,96],"parameters":{},"notesInFlow":true,"notes":"Status below 1: check this ID again later. Above 1: check the failure in Weydub. Status 1 without an SRT: check that the clip contains readable text in the selected language."}
+  ],
+  "connections":{
+    "Start":{"main":[[{"node":"Check OCR job","type":"main","index":0}]]},
+    "Check OCR job":{"main":[[{"node":"Subtitles ready?","type":"main","index":0}]]},
+    "Subtitles ready?":{"main":[[{"node":"Download subtitles","type":"main","index":0}],[{"node":"Inspect job status","type":"main","index":0}]]}
+  },
+  "settings":{"executionOrder":"v1"},
+  "pinData":{}
+}

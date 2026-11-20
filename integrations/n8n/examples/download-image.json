@@ -1,0 +1,19 @@
+{
+  "name": "Weydub: download a translated image",
+  "id": "WeydubImageResult",
+  "active": false,
+  "nodes": [
+    {"id":"1db7fa32-727e-4532-9b0e-fa860e56f176","name":"Start","type":"n8n-nodes-base.manualTrigger","typeVersion":1,"position":[0,0],"parameters":{}},
+    {"id":"060870e1-07ba-48b1-a970-c3e4165a9895","name":"Check image job","type":"n8n-nodes-weydub.weydub","typeVersion":1,"position":[220,0],"parameters":{"operation":"image-status","jobId":""},"notesInFlow":true,"notes":"Paste the image translation job ID. Select the Weydub credential you used to submit it."},
+    {"id":"199191ee-0a5f-4a9f-9025-18621af19291","name":"Image ready?","type":"n8n-nodes-base.if","typeVersion":2.2,"position":[440,0],"parameters":{"conditions":{"options":{"caseSensitive":true,"typeValidation":"strict","version":2},"conditions":[{"id":"c65516d7-e079-46ae-959d-0cb8dd5135cf","leftValue":"={{ $json.status === 1 && /^https?:\\/\\//i.test($json.outputUrl || '') }}","rightValue":"","operator":{"type":"boolean","operation":"true","singleValue":true}}],"combinator":"and"},"options":{}}},
+    {"id":"4323825e-a1bf-4691-9f35-b813f8bd1568","name":"Download image","type":"n8n-nodes-base.httpRequest","typeVersion":4.2,"position":[680,-96],"parameters":{"url":"={{ $json.outputUrl.replace(/^http:/i, 'https:') }}","options":{"response":{"response":{"responseFormat":"file","outputPropertyName":"image"}},"timeout":120000}}},
+    {"id":"0598e9b6-d9be-4f93-b2f1-22425ed33a4d","name":"Inspect job status","type":"n8n-nodes-base.noOp","typeVersion":1,"position":[680,96],"parameters":{},"notesInFlow":true,"notes":"Status below 1: check this ID again later. Above 1 or finished without an image: inspect the job in Weydub using the same account."}
+  ],
+  "connections":{
+    "Start":{"main":[[{"node":"Check image job","type":"main","index":0}]]},
+    "Check image job":{"main":[[{"node":"Image ready?","type":"main","index":0}]]},
+    "Image ready?":{"main":[[{"node":"Download image","type":"main","index":0}],[{"node":"Inspect job status","type":"main","index":0}]]}
+  },
+  "settings":{"executionOrder":"v1"},
+  "pinData":{}
+}
