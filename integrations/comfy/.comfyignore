@@ -1,0 +1,8 @@
+# The registry package needs only these runtime, metadata, and license files.
+*
+!__init__.py
+!nodes.py
+!contract.json
+!pyproject.toml
+!README.md
+!LICENSE
