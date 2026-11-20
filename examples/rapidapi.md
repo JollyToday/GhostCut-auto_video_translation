@@ -6,14 +6,21 @@ The marketplace listings use RapidAPI authentication. The direct Weydub CLI, Pos
 
 | I need | Start here | Output |
 | --- | --- | --- |
+| An editable subtitle file from text printed in a video | [Subtitle Extraction (full-frame OCR)](https://rapidapi.com/jollytoday-jollytoday-default/api/weydub-subtitle-extraction) | A timed SRT in the printed language |
 | Translated labels inside a product image | [Image Translation](https://rapidapi.com/jollytoday-jollytoday-default/api/image-translation) | A newly rendered image |
 | A video with burned-in text removed | [Remove Subtitles](https://rapidapi.com/jollytoday-jollytoday-default/api/auto-video-watermark-or-subtitles-remove) | A cleaned video, not an SRT |
 | Spoken dialogue in another language | [Video Translation](https://rapidapi.com/jollytoday-jollytoday-default/api/video-translation) | A dubbed video, optionally with new captions |
 | A second crop, trim or mirrored rendition | [Video Reproduction or De-duplication](https://rapidapi.com/jollytoday-jollytoday-default/api/video-reproduction-or-de-duplication1) | An edited video, not a duplicate-detection report |
 
-For a timed SRT from visible captions, use [full-frame OCR through the direct API](../README.md#try-the-media-api). Select the language you see on screen. The RapidAPI video listing is the v1 speech dubbing route; the direct API exposes the full-frame OCR and high-emotion dubbing workflows separately.
+## Extract an SRT from a local clip (OCR v2)
 
-## Open an account, then submit one file
+Start on the OCR listing's **BASIC** plan. [Connect your Weydub account](https://weydub.com/account/connect/rapidapi/) to the profile handle that owns your RapidAPI app, then redeem the single-use code with **Link your Weydub account** within ten minutes. For a team app, use the team's profile handle.
+
+Upload a local H.264 MP4 (up to 60 seconds and 16 MiB) with **Extract full-frame subtitles from an MP4**. Send the file bytes, select the language of the words **on screen**, and reuse the same `Idempotency-Key` when retrying the same file and settings. Save the returned `jobId`. Check **Download your timed SRT** with that ID; when `state` is `ready`, download `srtUrl` without sending your API key to the file host. Follow the [seven-second walkthrough with cURL commands and sample SRT](rapidapi-ocr.md).
+
+The November 20-26, 2026 (UTC) pilot offers one sponsored media job per verified customer while daily capacity lasts. BASIC does not automatically upgrade you. Paid OCR is by invitation and requires the provider to verify payment and activate units; RapidAPI request and bandwidth limits apply separately. For batch jobs with your own Weydub credentials, use the [direct API](../README.md#try-the-media-api).
+
+## Open an account, then submit one file (v1 listings)
 
 Select your application and call **Open Account** once for the current RapidAPI subscription. A response with `code: 1000` and `body.uid` confirms account setup. The UID is an account identifier, not a media job ID. Changing `customIdentity` does not create another end-customer allowance.
 
@@ -49,12 +56,12 @@ If your [Weydub material library](https://weydub.com/material/) contains **Sampl
 | --- | --- | --- |
 | Remove the Chinese captions | In **Remove Subtitles**, set `videoInpaintLang` to `zh`. | Pause at about one second, when the first caption is visible in the original. Compare the same frame in the output, then play through the other two captions. |
 | Dub the Chinese narration into English | In **Video Translation**, use `sourceLang: "cn"`, `lang: "en"`, `removeBgAudio: "0"` and `needText: 0`. Use speech you have permission to dub. | Listen through the last line, about the color of the tea. Turning new captions off does not remove the Chinese words already in the picture. |
-| Recover the captions as an SRT | Use the **direct Weydub OCR** example, choose `zh`, and scan the full frame. | In our direct API test the tea clip returned three cues. The first ran from `00:00:00,167` to `00:00:01,767`. OCR follows the words on screen, even if the audio is muted. |
+| Recover the captions as an SRT | In **Subtitle Extraction**, upload the MP4 bytes and choose `zh`. The scan covers the full frame. | In our direct API test the tea clip returned three cues. The first ran from `00:00:00,167` to `00:00:01,767`. OCR follows the words on screen, even if the audio is muted. |
 | Translate the text on a product image | Use the **Translate Image** sample with `zh` to `en`; keep both translation and rendering enabled. | Open `output_url` and look for English labels. A direct API test of the sample rendered “One-click 3D conversion”. The optional `inpaint_url` is the background with the original labels removed. |
 
 The OCR cue times and image label are observations from the **direct Weydub API**. They identify what to inspect; they do not establish an allowance or a successful paid run on a RapidAPI plan.
 
-## Retrieve the right file
+## Retrieve the right file (v1 listings)
 
 | Job | Save this from the create response | Send to **Get Result** | Download on success |
 | --- | --- | --- | --- |

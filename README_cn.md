@@ -1,5 +1,7 @@
 [English](README.md) | [中文](README_cn.md)
 
+要从本地视频的画面中提取字幕，可以打开 [RapidAPI 全屏 OCR](https://rapidapi.com/jollytoday-jollytoday-default/api/weydub-subtitle-extraction)。绑定账户后上传 MP4，选画面上文字的语言，下载带时间轴的 SRT。[接入指南](examples/rapidapi.md)列出了文件限制、试用条件和结果查询方式。
+
 鬼手的海外版是 [Weydub](https://weydub.com/)。开发者可以查看 [API 文档](https://weydub.com/docs/api/)，也可以直接打开 [Apify 上的 Weydub 工具](https://apify.com/weydub/weydub-media-localization)。第一次保留默认商品图，关闭 **Submit a billable media job** 后运行，可以在 Dataset 里看到将要发送的请求，不扣 Weydub 点数。要拿到译图，换成自己的图片地址，填入自己的 Weydub API 凭证并开启提交；随后选择 **Check an image job**，输入刚才的任务号即可查询下载链接。Apify 的平台用量单独计算。
 
 ### 视频文字翻译示例：从左到右看翻译前后的画面
