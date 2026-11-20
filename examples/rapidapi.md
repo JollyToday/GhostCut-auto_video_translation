@@ -4,8 +4,6 @@ Choose the listing by the file you want to deliver. For example, a store may nee
 
 The marketplace listings use RapidAPI authentication. The direct Weydub CLI, Postman collection and integrations in this repository use a different signing method; a RapidAPI key will not work with those direct API examples.
 
-The reviewed English copy for the four marketplace listings is in [rapidapi-listing-copy.md](rapidapi-listing-copy.md). Keep the product-specific instructions below aligned with those descriptions when a listing is updated.
-
 | I need | Start here | Output |
 | --- | --- | --- |
 | Translated labels inside a product image | [Image Translation](https://rapidapi.com/jollytoday-jollytoday-default/api/image-translation) | A newly rendered image |
@@ -22,6 +20,18 @@ Select your application and call **Open Account** once for the current RapidAPI 
 **Before choosing a plan:** on **Pricing**, `Requests` is separate from the processing meter (`Advanced` for images, `Video Task` for video). A request allowance does not tell you how many minutes will render or confirm a free first job. If a short test returns `4005`, contact the provider with the `trace` before buying a larger plan.
 
 For a first image, open **Translate Image** and use the public product photo in its example. `downloadInfo` is a JSON string containing a `url`, with `srcLang: "zh"`, `tgtLang: "en"`, `translateOn: 1` and `synthesisOn: 1`. For a video, replace the placeholder URL with a direct HTTPS link to a clip you control. The URL must serve the file without a website login. The v1 video translation example uses `sourceLang: "cn"` for Chinese speech.
+
+### Try the first request locally
+
+From this repository, run the [first-job example](rapidapi-first-job.mjs) with Node.js 20+. This prints the request for the public Chinese product photo, without making a network call or using quota:
+
+```sh
+node examples/rapidapi-first-job.mjs image
+```
+
+To see the request for your own file, set `MEDIA_URL` locally. Use `remove` for a clip with Chinese captions, `dub` for Chinese speech to English, or `edit` to mirror a clip. For different languages, change the fields in the Playground. The local preview prints your input URL; keep it private if it grants access to your file.
+
+After **Open Account** succeeds, set `RAPIDAPI_KEY` locally. To send the previewed image request once, run `node examples/rapidapi-first-job.mjs image --submit`. The same flag works for video. This can consume processing credit. The script prints the status command for the returned job ID, or the Playground query if you received only a project ID. If the connection drops after submission, check the original request before running it again.
 
 ### What to test on your first clip
 
