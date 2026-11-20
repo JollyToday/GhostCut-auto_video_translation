@@ -1,0 +1,100 @@
+name: Verify and publish the Weydub n8n npm package
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/weydub-n8n-npm.yml']
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the verified GitHub release to the public npm registry
+        type: boolean
+        default: false
+permissions: {}
+jobs:
+  verify:
+    if: github.repository == 'JollyToday/GhostCut-auto_video_translation' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      digest: ${{ steps.package.outputs.digest }}
+      version: ${{ steps.package.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - id: package
+        name: Compare released files to the current source and rehearse publication
+        working-directory: integrations/n8n
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(node -p 'require("./package.json").version')
+          archive="n8n-nodes-weydub-$version.tgz"
+          mkdir -p "$RUNNER_TEMP"/{released,source,packed,unpacked}
+          gh release download "weydub-n8n-v$version" --repo "$GITHUB_REPOSITORY" \
+            --pattern "$archive" --pattern "$archive.sha256" --dir "$RUNNER_TEMP/released"
+          (cd "$RUNNER_TEMP/released" && sha256sum --check --strict "$archive.sha256")
+          node ../build-contract.mjs --check
+          npm run build
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/packed"
+          tar -xzf "$RUNNER_TEMP/packed/$archive" -C "$RUNNER_TEMP/source"
+          tar -xzf "$RUNNER_TEMP/released/$archive" -C "$RUNNER_TEMP/unpacked"
+          diff -r "$RUNNER_TEMP/source/package" "$RUNNER_TEMP/unpacked/package"
+          npm publish "$RUNNER_TEMP/released/$archive" --dry-run --access public --ignore-scripts
+          digest=$(sha512sum "$RUNNER_TEMP/released/$archive" | cut -d' ' -f1)
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: validated-n8n-npm-package
+          path: ${{ runner.temp }}/released/*.tgz
+          if-no-files-found: error
+          retention-days: 1
+  publish:
+    needs: verify
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-n8n-npm-package
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+      - name: Publish with provenance and verify the registry receipt
+        env:
+          DIGEST: ${{ needs.verify.outputs.digest }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          # Optional first release credential; normal releases use npm trusted publishing.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
+        run: |
+          set -euo pipefail
+          archive="n8n-nodes-weydub-$VERSION.tgz"
+          echo "$DIGEST  $archive" | sha512sum --check --strict
+          npm publish "$archive" --provenance --access public --ignore-scripts
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const {VERSION,DIGEST}=process.env;
+          const url=`https://registry.npmjs.org/n8n-nodes-weydub/${VERSION}`;
+          for (let i=0;i<6;i++) {
+            const res=await fetch(url,{signal:AbortSignal.timeout(15000)});
+            if(res.ok) {
+              const {dist}=await res.json();
+              assert.equal(dist.integrity,'sha512-'+Buffer.from(DIGEST,'hex').toString('base64'));
+              if(dist.attestations?.provenance?.predicateType && dist.attestations.url) {
+                console.log(`Registry confirmed ${VERSION}, package integrity and provenance.`);break;
+              }
+            }
+            if(i===5)throw Error('Registry receipt incomplete; inspect it before any further release.');
+            await new Promise(resolve=>setTimeout(resolve,5000));
+          }
+          JS
