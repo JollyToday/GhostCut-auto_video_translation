@@ -1,8 +1,15 @@
 """Run against the staged upload with PYTHONPATH pointing to that directory."""
 from types import SimpleNamespace
+from pathlib import Path
+import sys
 
 import gradio as gr
 import pytest
+
+# The repository keeps the shared client in the Comfy integration and copies
+# it into a staged Space package at release time.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "comfy"))
+
 import app
 import nodes
 
