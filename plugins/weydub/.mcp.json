@@ -1,0 +1,10 @@
+{
+  "removal": {
+    "command": "node",
+    "args": ["${CLAUDE_PLUGIN_ROOT}/server.mjs"],
+    "env": {
+      "WEYDUB_CONFIGURED_KEY": "${user_config.app_key}",
+      "WEYDUB_CONFIGURED_SECRET": "${user_config.app_secret}"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "weydub-directory",
+  "owner": {"name": "Weydub"},
+  "metadata": {"description": "Clean burned-in captions with Weydub; install the full-frame Pro removal plugin for Claude Code."},
+  "plugins": [
+    {"name": "weydub", "source": "./plugins/weydub", "description": "Clean burned-in captions from a video with Weydub Pro."}
+  ]
+}
