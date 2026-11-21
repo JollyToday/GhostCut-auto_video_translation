@@ -1,0 +1,12 @@
+{
+  "name": "Weydub - Download a translated image by job ID",
+  "flow": [{
+    "id": 1,
+    "module": "app#weydub-media-4geufd:getImageResult",
+    "version": 1,
+    "parameters": {},
+    "mapper": {},
+    "metadata": {"designer": {"x": 0, "y": 0}}
+  }],
+  "metadata": {"version": 1, "instant": false, "designer": {"orphans": []}}
+}

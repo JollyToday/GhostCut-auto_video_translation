@@ -1,0 +1,16 @@
+{
+  "name": "Weydub - Read the Chinese captions from a product clip",
+  "flow": [{
+    "id": 1,
+    "module": "app#weydub-media-4geufd:extractVisibleSubtitles",
+    "version": 1,
+    "parameters": {},
+    "mapper": {
+      "mediaUrl": "https://weydub.com/creator-kit/clips/pocket-light/zh.mp4",
+      "source": "zh",
+      "submit": false
+    },
+    "metadata": {"designer": {"x": 0, "y": 0}}
+  }],
+  "metadata": {"version": 1, "instant": false, "designer": {"orphans": []}}
+}

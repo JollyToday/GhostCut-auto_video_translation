@@ -1,0 +1,15 @@
+{
+  "name": "Weydub - Remove the bottom caption with Lite",
+  "flow": [{
+    "id": 1,
+    "module": "app#weydub-media-4geufd:removeBurnedInSubtitles",
+    "version": 1,
+    "parameters": {},
+    "mapper": {
+      "mediaUrl": "https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/input.mp4",
+      "submit": false
+    },
+    "metadata": {"designer": {"x": 0, "y": 0}}
+  }],
+  "metadata": {"version": 1, "instant": false, "designer": {"orphans": []}}
+}

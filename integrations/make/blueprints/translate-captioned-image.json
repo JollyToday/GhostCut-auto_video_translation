@@ -1,0 +1,17 @@
+{
+  "name": "Weydub - Translate the Chinese caption on a product photo",
+  "flow": [{
+    "id": 1,
+    "module": "app#weydub-media-4geufd:translateImage",
+    "version": 1,
+    "parameters": {},
+    "mapper": {
+      "mediaUrl": "https://weydub.com/creator-kit/clips/pocket-light/zh.webp",
+      "source": "zh",
+      "target": "en",
+      "submit": false
+    },
+    "metadata": {"designer": {"x": 0, "y": 0}}
+  }],
+  "metadata": {"version": 1, "instant": false, "designer": {"orphans": []}}
+}

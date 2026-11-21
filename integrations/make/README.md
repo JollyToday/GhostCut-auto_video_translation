@@ -13,6 +13,16 @@ Download the two JSON blueprints below (use **Download raw file** on GitHub). Af
 
 The sample comes from the [Weydub Creator Kit](https://weydub.com/creator-kit/). To dub your own clip, replace the sample URL and check the spoken and target languages before submitting.
 
+## Try a caption or image workflow
+
+Import one blueprint into each blank scenario as above. The three creation examples open in preview mode. To process a sample, turn **Submit billable job** on and run the creation scenario once. Copy the Job ID into the matching result scenario, using the same connection. Rerun only the result scenario until **Processing status** is `1`.
+
+| Start here | Open the result | What to check |
+|---|---|---|
+| [Read visible Chinese captions](blueprints/read-visible-captions.json) | [Video or Subtitle Result](blueprints/check-dubbed-clip.json) → **Source SRT URL** | The lamp clip has three lines of Chinese text. Compare the downloaded SRT with the [original timed captions](https://weydub.com/creator-kit/clips/pocket-light/zh.srt). OCR reads the picture; it doesn't transcribe the narrator. |
+| [Remove the bottom caption with Lite](blueprints/remove-bottom-caption.json) | [Video or Subtitle Result](blueprints/check-dubbed-clip.json) → **Video URL** | The text changes position between shots. Compare the input and output at 2.31, 6.55 and 12.18 seconds. Only the last caption falls inside this module's bottom 18% band. To clean all three, see the [full-frame Pro comparison](../../examples/full-frame-removal/). |
+| [Translate the caption on a product photo](blueprints/translate-captioned-image.json) | [Image Result](blueprints/check-translated-image.json) → **Translated image URL** | The [original photo](https://weydub.com/creator-kit/clips/pocket-light/zh.webp) shows a folding lamp. Near the bottom, the Chinese text asks the reader to turn it on. Look for that message in English in the translated image. **Clean background URL** is a different output: the lettering has been removed. |
+
 ## Module reference
 
 The app also includes **Make an API call**, a signed JSON POST module for advanced workflows. Enter a leading-slash path such as `/point/query` and a JSON object; the module sends it to Weydub's fixed media gateway with the connection credentials. It accepts paths and bodies only, does not follow redirects, and never accepts a full URL. Use the four named modules when they cover your workflow because their fields and result checks are safer and easier to map. The universal module is for a Weydub endpoint documented in the [developer guide](https://weydub.com/docs/api/), not for arbitrary third-party URLs.
