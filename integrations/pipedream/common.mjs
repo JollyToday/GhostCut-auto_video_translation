@@ -5,6 +5,7 @@ import contract from "./contract.mjs";
 const docs = "[See the documentation](https://weydub.com/docs/api/)";
 const labels = {
   erase: ["remove-video-text", "Remove Burned-In Subtitles", "Clean text in the bottom 18% of the frame using the Lite removal model."],
+  "erase-pro": ["remove-subtitles-pro", "Remove Burned-In Subtitles (Full-Frame Pro)", "Remove hardcoded captions throughout the frame. Other visible text such as signs and product labels may also be removed."],
   ocr: ["extract-subtitles", "Extract Full-Frame OCR Subtitles", "Read visible subtitles across the frame and return a job for a timed SRT."],
   dub: ["dub-video", "Translate and Dub Video", "Translate authorized speech and create a dubbed video using the high-emotion voice model."],
   image: ["translate-image", "Translate Image Text", "Render translated text back into a product image or poster."],
@@ -29,6 +30,10 @@ function media(value) {
   return value;
 }
 function makeBody(op, props) {
+  if (op === "erase-pro") return {
+    urls: [media(props.mediaUrl)], needChineseOcclude: 1, videoInpaintLang: "all",
+    extraOptions: JSON.stringify({extra_inpaint_config: {model: "advanced_full"}}),
+  };
   const body = structuredClone(contract[op].body);
   if (op === "image-status") body.id = Number(jobId(props.jobId));
   else if (op === "video-status") body.idWorks = [jobId(props.jobId)];
@@ -71,7 +76,7 @@ export function action(op) {
   if (lookup) props.jobId = { type: "string", label: "Job ID", description: "Use the jobId returned by the create action. It is not an account UID." };
   else {
     props.mediaUrl = { type: "string", label: op === "image" ? "Image URL" : "Video URL", description: "Direct HTTPS link to a file you have permission to process." };
-    if (op !== "erase") props.source = { type: "string", label: op === "dub" ? "Spoken Language" : "Visible Text Language", description: "Language code of the source, for example zh or en." };
+    if (["ocr","dub","image"].includes(op)) props.source = { type: "string", label: op === "dub" ? "Spoken Language" : "Visible Text Language", description: "Language code of the source, for example zh or en." };
     if (["dub", "image"].includes(op)) props.target = { type: "string", label: "Target Language", description: "Language code of the output, for example en." };
     props.submit = { type: "boolean", label: "Submit Billable Job", description: "Leave off to preview. Turn on to spend this connected account's processing credits on one file.", default: false };
   }
@@ -88,7 +93,7 @@ export function action(op) {
       const wire = JSON.stringify(body);
       let response;
       try {
-        response = await fetch(`https://api.zhaoli.com${contract[op].path}`, {
+        response = await fetch(`https://api.zhaoli.com${contract[op === "erase-pro" ? "erase" : op].path}`, {
           method: "POST", redirect: "error", signal: AbortSignal.timeout(45000), body: wire,
           headers: { "Content-Type": "application/json", AppKey: key, AppSign: md5(md5(wire) + secret) },
         });

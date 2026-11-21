@@ -1,13 +1,18 @@
 # Weydub for Pipedream Connect
 
-These are the six proposed actions for the [Weydub media API](https://weydub.com/docs/api/). The first four accept one downloadable HTTPS file. To check a job, keep its `jobId` and use one of the two result actions. Pipedream registration is pending; these actions are not yet selectable in its public catalog.
+These actions connect to the [Weydub media API](https://weydub.com/docs/api/). Each create action takes one downloadable HTTPS file. Keep its `jobId` and use the matching result action to retrieve the output. Pipedream registration is pending; the actions are not yet selectable in its public catalog.
 
 | Start with | What to specify | Result to retrieve |
 | --- | --- | --- |
+| Remove Burned-In Subtitles (Full-Frame Pro) | A clip with burned-in captions; neither a language nor a box is required | `videoUrl` |
 | Remove Burned-In Subtitles | A clip with subtitles in the bottom 18% of the frame (Lite) | `videoUrl` |
 | Extract Full-Frame OCR Subtitles | A video and the language of its visible text; no region or transcript required | `sourceSrtUrl` |
 | Translate and Dub Video | A clip you have permission to dub, its spoken language and your target language | `videoUrl` |
 | Translate Image Text | A product image and its source and target languages | `imageUrl`; `cleanBackgroundUrl` is the optional background without text |
+
+**Which removal action should I use?** If a caption moves or appears above the lower band, start with **Full-Frame Pro**. It can also erase a price or a store sign you meant to keep. When that matters, use [the area selector in the Weydub editor](https://weydub.com/subtitle-removal/). The original **Remove Burned-In Subtitles** action still uses lower-band Lite in existing workflows. [Compare original and cleaned frames before choosing](https://weydub.com/creator-kit/#compare).
+
+For a first Pro run, use the [captioned Creator Kit clip](https://weydub.com/creator-kit/clips/wrong-cup/en.mp4). Leave **Submit Billable Job** off to preview. To process the clip, turn it on, submit once and give the `jobId` to **Get Video or OCR Result** with the same connection. If it is still processing, repeat only the lookup. At status `1`, download the MP4 from `videoUrl`.
 
 For example, an episode delivered without a subtitle file needs **Extract Full-Frame OCR Subtitles**. Select the language you *see*, even if the narrator speaks a different language. Preview first. When ready, turn on **Submit Billable Job** for that clip, store the returned `jobId` with the episode name, and call **Get Video or OCR Result** with that ID. At `status: 1`, save `sourceSrtUrl` alongside the video. Use **Get Image Result** for image jobs. If the service times out after submission, check your task list before sending the file again.
 
@@ -15,4 +20,4 @@ The proposed app uses the customer's connected Weydub credentials (`app_key`, `a
 
 For a video job, status `73` means the connected Weydub account has insufficient processing credits and the job has not started. Stop polling and check that account before retrying. At `83`, the work is already done but the output is locked; resolve the balance and look up the **same** ID. For an image, use `imageUrl` for the translated artwork. A background-only file is not a completed translation.
 
-Run `node --test check.test.mjs` here to test previews, request signing, asynchronous results and failure handling without credentials or paid work. The request contract is generated from the repository's public Postman collection; run `node integrations/build-contract.mjs --check` from the repository root to verify it.
+Run `node --test check.test.mjs` here to test previews, request signing, removal models, asynchronous results and failure handling without credentials or paid work. The original six actions use the contract generated from the public Postman collection; run `node integrations/build-contract.mjs --check` from the repository root to verify it. The separate Pro action uses the full-frame settings from the [Weydub Pro adapter](../pro-removal-mcp/).

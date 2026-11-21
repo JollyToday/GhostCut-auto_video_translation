@@ -13,14 +13,33 @@ const run = (key, fields) => actions[key].run.call(fields, { $: { export() {} } 
 const ok = (body) => Response.json({ code: 1000, body });
 const md5 = (text) => createHash("md5").update(text).digest("hex");
 
-test("six separate actions; all four previews are offline and redact private media URLs", async (t) => {
+test("all five create actions preview offline without exposing private media URLs", async (t) => {
   const fetch = t.mock.method(globalThis, "fetch", () => { throw Error("unexpected network request"); });
-  assert.equal(Object.keys(actions).length, 6);
-  for (const key of ["remove-video-text", "extract-subtitles", "dub-video", "translate-image"]) {
+  for (const key of ["remove-subtitles-pro","remove-video-text", "extract-subtitles", "dub-video", "translate-image"]) {
     assert.equal(actions[key].props.submit.default, false);
     assert.deepEqual(await run(key, { ...props, weydub: null, submit: false }), { state: "preview", action: key });
   }
   assert.equal(fetch.mock.callCount(), 0);
+});
+
+test("full-frame Pro and legacy lower-band Lite are separate billable requests", async (t) => {
+  const requests = [];
+  t.mock.method(globalThis, "fetch", async (url, req) => {
+    requests.push(JSON.parse(req.body));
+    assert.equal(new URL(url).pathname, "/v-w-c/gateway/ve/work/free");
+    assert.equal(req.headers.AppSign, md5(md5(req.body) + "test-secret"));
+    return ok({dataList:[{id:17}]});
+  });
+  assert.equal((await run("remove-subtitles-pro",{mediaUrl:props.mediaUrl,submit:true,weydub:creds})).nextAction,"weydub-get-video-result");
+  await run("remove-video-text", props);
+  const [pro,lite] = requests;
+  assert.deepEqual(pro.urls,[props.mediaUrl]);
+  assert.equal(pro.needChineseOcclude,1);
+  assert.equal(pro.videoInpaintLang,"all");
+  assert.equal(JSON.parse(pro.extraOptions).extra_inpaint_config.model,"advanced_full");
+  assert.equal(pro.videoInpaintMasks,undefined);
+  assert.equal(JSON.parse(lite.extraOptions).extra_inpaint_config.model,"advanced_lite");
+  assert.deepEqual(JSON.parse(lite.videoInpaintMasks)[0].region,[[0,0.82],[1,0.82],[1,1],[0,1]]);
 });
 
 test("submission signs the exact wire payload and returns the right kind of job ID", async (t) => {
