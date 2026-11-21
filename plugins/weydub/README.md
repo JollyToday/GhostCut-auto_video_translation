@@ -11,7 +11,7 @@ See [before-and-after examples on Weydub](https://weydub.com/subtitle-removal/).
 /plugin install weydub@weydub-plugins
 ```
 
-Run `/weydub:pro-subtitle-removal` and ask: “Preview Pro removal for this video. Tell me what will be sent before starting a job.” You need Node.js 20 or later. Previewing is local and free. For processing, set your own `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` in the environment that starts the client. Keep them out of messages.
+Run `/weydub:pro-subtitle-removal` and ask: “Preview Pro removal for this video. Tell me what will be sent before starting a job.” You need Node.js 20 or later. Previewing a URL is local and free. To try a local MP4 without a key, ask the agent to use the [sponsored short-clip workflow](skills/pro-subtitle-removal/SKILL.md#try-a-local-clip-without-a-key). Uploading the file requires your permission. Sponsored capacity is shared across integrations; if it runs out, there is no automatic charge.
 
 ### Install the skill in another agent
 
@@ -19,6 +19,6 @@ Run `/weydub:pro-subtitle-removal` and ask: “Preview Pro removal for this vide
 npx skills add https://github.com/JollyToday/GhostCut-auto_video_translation/tree/main/plugins/weydub/skills/pro-subtitle-removal
 ```
 
-Give the agent a direct HTTPS link to a video you are authorized to process. Tell it when to submit. Save the returned work ID to retrieve the result without paying to process the clip twice. The extension has no subscription of its own: processing uses your [Weydub account's credit rates](https://weydub.com/vip/pricing-detail/). [API documentation](https://weydub.com/docs/api/).
+For the paid path, set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` in the agent's environment and give it a direct HTTPS link to a video you are authorized to process. Tell it when to submit. Save the returned work ID to retrieve the result without paying to process the clip twice. Processing uses your [Weydub account's credit rates](https://weydub.com/vip/pricing-detail/). [API documentation](https://weydub.com/docs/api/).
 
 For a first run, use [the 15-second coffee audition clip](https://weydub.com/creator-kit/clips/wrong-cup/en.mp4?v=c6a45c49c92e). To review an example before spending credits, compare [original stills](https://weydub.com/creator-kit/comparison/comedy-original-grid.webp) with [the same stills after removal](https://weydub.com/creator-kit/comparison/comedy-clean-grid.webp).

@@ -1,0 +1,56 @@
+import {randomBytes} from 'node:crypto';
+import {open, readFile, stat, writeFile, unlink} from 'node:fs/promises';
+import {Readable} from 'node:stream';
+import {pipeline} from 'node:stream/promises';
+import {parseArgs} from 'node:util';
+
+const endpoint = 'https://api.weydub.com/agent-trial/v1/removal';
+const usage = 'submit CLIP.mp4 RECEIPT_FILE --confirm-upload | status RECEIPT_FILE | download RECEIPT_FILE OUTPUT.mp4';
+const limit = 16 * 1024 * 1024;
+
+async function receipt(file, create) {
+  if (create) {
+    try {
+      await writeFile(file, randomBytes(32).toString('hex')+'\n', {flag:'wx', mode:0o600});
+    } catch (err) { if (err.code !== 'EEXIST') throw err; }
+  }
+  const value = (await readFile(file,'utf8')).trim();
+  if (!/^[0-9a-f]{64}$/.test(value)) throw Error('Invalid receipt file. Keep the original file from submit.');
+  return value;
+}
+
+async function run() {
+  const {positionals:[action,first,second,...rest], values} = parseArgs({
+    allowPositionals:true, options:{'confirm-upload':{type:'boolean'},help:{type:'boolean'}},
+  });
+  if (values.help) return {usage};
+  if (!['submit','status','download'].includes(action) || rest.length || !first ||
+      (action === 'status' ? !!second : !second) || (action !== 'submit' && values['confirm-upload'])) throw Error(usage);
+  const submit = action === 'submit';
+  let body;
+  if (submit) {
+    if (!values['confirm-upload']) throw Error('Confirm permission to send this file to Weydub, then include --confirm-upload.');
+    const info = await stat(first);
+    if (!info.isFile() || info.size < 16 || info.size > limit) throw Error('Choose one H.264 MP4 file up to 16 MiB and 60 seconds.');
+    body = await readFile(first);
+  }
+  const headers = {'X-Trial-Receipt':await receipt(submit ? second : first, submit)};
+  if (submit) headers['Content-Type']='video/mp4';
+  const response = await fetch(endpoint,{method:submit?'POST':'GET',headers,body,redirect:'error',signal:AbortSignal.timeout(90000)});
+  const data = await response.json().catch(()=>({}));
+  if (!response.ok) throw Error(`Weydub ${response.status}: ${data.error || 'Check status using the same receipt file.'}`);
+  if (action !== 'download' || data.state !== 'ready') return {state:data.state,...(data.replayed?{replayed:true}:{})};
+  const result = new URL(data.videoUrl);
+  if (result.protocol !== 'https:' || result.username || result.password) throw Error('Invalid result link.');
+  const media = await fetch(result,{redirect:'error',signal:AbortSignal.timeout(120000)});
+  if (!media.ok || !media.body) throw Error(`Download failed (${media.status}). Reuse this receipt.`);
+  const file = await open(second,'wx',0o600);
+  try {
+    await pipeline(Readable.fromWeb(media.body),file.createWriteStream());
+  } catch (err) {
+    await file.close(); await unlink(second); throw err;
+  }
+  return {state:'downloaded',file:second};
+}
+try { console.log(JSON.stringify(await run())); }
+catch (err) { console.error(err.message); process.exitCode=1; }
