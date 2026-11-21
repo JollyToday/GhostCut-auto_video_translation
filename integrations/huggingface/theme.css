@@ -16,3 +16,12 @@
 .cues>div {display:grid;grid-template-columns:minmax(150px,1fr) 3fr;align-items:baseline;gap:16px;padding:8px 0;}
 .cues time {font-family:monospace;color:var(--body-text-color-subdued);}
 @media(max-width:550px){.cues>div{grid-template-columns:1fr;gap:0}.media-view .pair img{height:155px;}.media-view h2{font-size:21px;}}
+.trial-view {border-block:1px solid var(--border-color-primary);padding-block:18px;}
+.trial-view label,.trial-view details {display:block;margin:12px 0;}
+.trial-view input[type=file] {display:block;max-width:100%;margin-top:4px;}
+.trial-actions {display:flex;gap:8px;flex-wrap:wrap;}
+.trial-view button {border:1px solid var(--border-color-primary);border-radius:6px;padding:6px 12px;color:var(--body-text-color);}
+.trial-view [data-send] {background:#4a4aff;color:white;}
+.trial-view button:disabled {opacity:.5;cursor:default;}
+.trial-view [data-receipt] {border:1px solid var(--border-color-primary);max-width:100%;width:27ch;}
+.trial-view [hidden] {display:none;}

@@ -9,6 +9,7 @@ import gradio as gr
 
 from gallery import GALLERY, IMAGE, gallery
 from nodes import CONTRACT, Dub, Erase, GetJob, Image, OCR, signed_request
+from sponsored import routes
 
 HERE = Path(__file__).parent
 OPS = {"Remove subtitles": Erase, "Extract subtitles": OCR, "Dub video": Dub, "Translate image": Image}
@@ -38,6 +39,11 @@ def require_owner(profile: gr.OAuthProfile | None) -> None:
     owner = os.environ.get("SPACE_ID", "").split("/")[0].lower()
     if not live_configured() or not profile or profile.username.lower() != owner:
         raise gr.Error("Live processing requires signing in as the owner of your configured personal duplicate.")
+
+
+def sponsor_visible():
+    sid = os.environ.get("SPACE_ID", "")
+    return not sid or sid.partition("/")[0].lower() == "weydub"
 
 
 def arguments(name: str, url: str, source: str, target: str) -> dict:
@@ -116,6 +122,10 @@ def build() -> gr.Blocks:
         gr.Markdown("# Weydub Media Localization Lab\nCompare media samples and build a request for your own file.")
         operation = gr.Radio(list(GALLERY), value=DEFAULT, label="Operation")
         scene = gr.HTML(gallery(DEFAULT))
+        if sponsor_visible():
+            trial = gr.HTML(html_template=(HERE / "trial.html").read_text(),
+                            js_on_load=(HERE / "trial.js").read_text(), container=False)
+            operation.change(lambda op: gr.update(visible=op == DEFAULT), operation, trial, api_visibility="private")
         fixture = gr.DownloadButton("Download sample SRT", value=str(HERE / "example.srt"), visible=False)
         gr.Markdown("## Build a request")
         url = gr.Textbox(label="Direct link to your media", placeholder="https://…", max_lines=1)
@@ -163,4 +173,5 @@ def download_links(files):
 
 if __name__ == "__main__":
     build().launch(css=(HERE / "theme.css").read_text(), show_error=False,
+                   app_kwargs={"routes": routes() if sponsor_visible() else []},
                    theme=gr.themes.Base(primary_hue="indigo"), footer_links=[])

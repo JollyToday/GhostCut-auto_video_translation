@@ -14,6 +14,10 @@ sys.path.insert(0, PACKAGE_DIR or str(Path(__file__).resolve().parents[1] / "com
 
 import app
 import nodes
+import httpx
+import sponsored
+from starlette.applications import Starlette
+from starlette.testclient import TestClient
 
 
 @pytest.fixture
@@ -102,3 +106,46 @@ def test_space_preview_uses_full_frame_pro_and_keeps_comfy_lite():
     lite = nodes.Erase().run("https://example.org/video.mp4")["result"][1]
     assert "advanced_lite" in lite
     assert "videoInpaintMasks" in lite
+
+
+def test_trial_excludes_personal_copies(personal_space, monkeypatch):
+    assert not app.sponsor_visible()
+    monkeypatch.setenv("SPACE_ID", "weydub/media-localization")
+    assert app.sponsor_visible() and not app.live_configured()
+
+
+def test_upload_requires_permission_and_a_bounded_mp4(monkeypatch):
+    client = TestClient(Starlette(routes=sponsored.routes()))
+    monkeypatch.setattr(sponsored.httpx, "AsyncClient", lambda **kw: pytest.fail("Unexpected upstream call"))
+    headers = {"x-trial-receipt": "a" * 64, "content-type": "video/mp4"}
+    assert client.get("/sponsored-removal").status_code == 400
+    assert client.post("/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 400
+    headers["x-confirm-upload"] = "yes"
+    assert client.post("/sponsored-removal", headers=headers, content=b"a").status_code == 413
+    headers["content-type"] = "application/json"
+    assert client.post("/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 415
+
+
+def test_sponsor_relay_preserves_receipt_but_never_forwards_credentials(monkeypatch):
+    client = TestClient(Starlette(routes=sponsored.routes()))
+    headers = {"x-trial-receipt": "b" * 64, "authorization": "Bearer private", "cookie": "hf=private",
+               "content-type": "video/mp4", "x-confirm-upload": "yes"}
+    answers = iter([(202, {"state": "queued"}), (200, {"state": "ready", "videoUrl": "https://example.org/out.mp4"}),
+                    (429, {"error": "The shared allowance is unavailable."}), (200, {"state": "ready", "videoUrl": "file:///no"}),
+                    (307, {})])
+
+    def gateway(req):
+        assert str(req.url) == sponsored.ENDPOINT and req.headers["x-trial-receipt"] == "b" * 64
+        assert not {"authorization", "cookie", "x-confirm-upload"} & set(req.headers)
+        if req.method == "POST":
+            assert req.content == b"a" * 32
+        code, data = next(answers)
+        return httpx.Response(code, json=data, headers={"location": "https://unexpected.example/"})
+
+    real_client = httpx.AsyncClient
+    monkeypatch.setattr(sponsored.httpx, "AsyncClient", lambda **kw: real_client(transport=httpx.MockTransport(gateway), **kw))
+    assert client.post("/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 202
+    assert client.get("/sponsored-removal", headers=headers).json()["videoUrl"] == "https://example.org/out.mp4"
+    assert client.post("/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 429
+    for _ in range(2):
+        assert client.get("/sponsored-removal", headers=headers).status_code == 502

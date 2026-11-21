@@ -12,6 +12,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Stage the Space and verify the official sample
         run: |
           set -eu
@@ -42,5 +45,5 @@ jobs:
           cd "$RUNNER_TEMP"
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
             --title "Weydub Media Localization Lab for Spaces ${GITHUB_REF_NAME#weydub-space-v}" \
-            --notes 'Unzip and upload the files at the root of your own Gradio Space. The public preview works without Weydub credentials. Direct processing uses your account credits in your personal duplicate. https://weydub.com/docs/api/' \
+            --notes 'Preview four media operations. The local build and Weydub Space support sponsored full-frame Pro removal on authorized H.264 MP4s up to 60 seconds and 16 MiB. Paid processing in a personal duplicate requires your own Weydub credentials. https://weydub.com/docs/api/' \
             weydub-space.zip weydub-space.zip.sha256
