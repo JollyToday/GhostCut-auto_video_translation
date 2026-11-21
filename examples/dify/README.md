@@ -1,5 +1,15 @@
 # Use Weydub in Dify
 
+**Try your own short clip without an API key.** Import [the sponsored Pro workflow](sponsored-removal.yml) in **Studio → Import DSL File**. It needs no plugin, model or paid Weydub account. The workflow uses Dify's standard Code and HTTP Request nodes. Try the [15-second practice clip](../full-frame-removal/) or an H.264 MP4 you have permission to process, up to 60 seconds and 16 MiB (optional AAC audio).
+
+1. Run **Create a private receipt**, leaving the other fields empty. Save the receipt. This step uses no processing slot.
+2. Select **Submit my authorized clip to Weydub**, paste that receipt, choose your MP4 and run. Selecting the file stores it in your Dify workspace. Running this action sends it to Weydub. Full-frame Pro can also erase signs and prices.
+3. Select **Check my result**, paste the same receipt and run without a file. When it says *Your MP4 is ready*, open `download_url`. Use the same receipt after timeouts; resending identical bytes with it does not start a second job.
+
+Use a trusted workspace: its run history can include the receipt, file and private result link. Anyone with the receipt can retrieve the output. The 100 sponsored slots per UTC month are shared across all anonymous channels. When the allowance is exhausted, the workflow stops; it will never switch to paid processing.
+
+## Use your own Weydub credits
+
 Download [`subtitle-removal-0.1.1.difypkg`](subtitle-removal-0.1.1.difypkg). In a Dify 1.20.0 or later workspace that permits local packages, open **Plugins → Install Plugin → Local Package** and select the download. This is a direct installation package; it does not carry a Dify Marketplace signature. Workspaces that require a verified signature may not install it.
 
 Already using the 0.1.0 local package? Check the version under **Installed Plugins** after uploading. In Community Edition 1.20.0 an upload can finish while 0.1.0 remains active. In that case, schedule the change when no workflows are running, keep your configuration and saved work IDs, uninstall the old package, then install 0.1.1. Confirm the installed version and check an existing work ID before submitting another clip.

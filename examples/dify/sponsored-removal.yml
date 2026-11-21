@@ -1,0 +1,182 @@
+app:
+  name: "Weydub: try Pro subtitle removal"
+  description: "Use an authorized H.264 MP4 up to 60 seconds and 16 MiB. Full-frame detection can also erase signs and prices. No API key. All anonymous channels share 100 slots per UTC month; no paid fallback."
+  mode: workflow
+  icon: "\U0001F3AC"
+  icon_background: "#E5EFFF"
+kind: app
+version: 0.7.0
+dependencies: []
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features: {}
+  graph:
+    viewport: {x: 0, y: 0, zoom: 0.7}
+    edges:
+      - {id: validate, source: '100', sourceHandle: source, target: '200', targetHandle: target, type: custom, data: {sourceType: start, targetType: code}}
+      - {id: route, source: '200', sourceHandle: source, target: '300', targetHandle: target, type: custom, data: {sourceType: code, targetType: if-else}}
+      - {id: upload, source: '300', sourceHandle: 'true', target: '410', targetHandle: target, type: custom, data: {sourceType: if-else, targetType: http-request}}
+      - {id: check, source: '300', sourceHandle: check, target: '420', targetHandle: target, type: custom, data: {sourceType: if-else, targetType: http-request}}
+      - {id: receipt, source: '300', sourceHandle: 'false', target: '430', targetHandle: target, type: custom, data: {sourceType: if-else, targetType: end}}
+      - {id: uploaded, source: '410', sourceHandle: source, target: '500', targetHandle: target, type: custom, data: {sourceType: http-request, targetType: code}}
+      - {id: explain, source: '500', sourceHandle: source, target: '510', targetHandle: target, type: custom, data: {sourceType: code, targetType: end}}
+      - {id: checked, source: '420', sourceHandle: source, target: '520', targetHandle: target, type: custom, data: {sourceType: http-request, targetType: code}}
+      - {id: result, source: '520', sourceHandle: source, target: '620', targetHandle: target, type: custom, data: {sourceType: code, targetType: end}}
+    nodes:
+      - id: '100'
+        type: custom
+        position: {x: 0, y: 180}
+        data:
+          type: start
+          title: Select an action
+          variables:
+            - {variable: action, label: Action, type: select, required: true, options: [Create a private receipt, Submit my authorized clip to Weydub, Check my result], default: Create a private receipt}
+            - {variable: receipt, label: Private receipt (submit or check), type: text-input, max_length: 64, required: false, options: []}
+            - {variable: clip, label: H.264 MP4 (submit only), type: file, required: false, allowed_file_types: [video], allowed_file_extensions: [.MP4], allowed_file_upload_methods: [local_file], options: []}
+      - id: '200'
+        type: custom
+        position: {x: 290, y: 180}
+        data:
+          type: code
+          title: Prepare or verify receipt
+          code_language: python3
+          variables:
+            - {variable: action, value_selector: ['100', action]}
+            - {variable: receipt, value_selector: ['100', receipt]}
+          outputs:
+            key: {type: string, children: null}
+            operation: {type: string, children: null}
+          code: |
+            def main(action, receipt=None):
+                import re, secrets
+                key = (receipt or "").strip()
+                if action == "Create a private receipt":
+                    if key:
+                        raise ValueError("Keep your existing receipt. Select Check my result or Submit my authorized clip to Weydub.")
+                    return {"key": secrets.token_hex(32), "operation": "prepare"}
+                actions = {"Submit my authorized clip to Weydub": "upload", "Check my result": "check"}
+                if action not in actions or not re.fullmatch(r"[0-9a-f]{64}", key):
+                    raise ValueError("Select an action and enter the full private receipt. First time? Create a private receipt first.")
+                return {"key": key, "operation": actions[action]}
+      - id: '300'
+        type: custom
+        position: {x: 580, y: 180}
+        data:
+          type: if-else
+          title: Send only on explicit submit
+          cases:
+            - case_id: 'true'
+              logical_operator: and
+              conditions:
+                - {id: is-upload, comparison_operator: is, varType: string, variable_selector: ['200', operation], value: upload}
+            - case_id: check
+              logical_operator: and
+              conditions:
+                - {id: is-check, comparison_operator: is, varType: string, variable_selector: ['200', operation], value: check}
+      - id: '410'
+        type: custom
+        position: {x: 900, y: 30}
+        data:
+          type: http-request
+          title: Upload this MP4
+          method: post
+          url: https://api.weydub.com/agent-trial/v1/removal
+          authorization: {type: no-auth}
+          headers: |-
+            Content-Type:video/mp4
+            X-Trial-Receipt:{{#200.key#}}
+          params: ''
+          body: {type: binary, data: [{type: file, file: ['100', clip]}]}
+          timeout: {connect: 10, read: 60, write: 60}
+          ssl_verify: true
+          retry_config: {retry_enabled: false, max_retries: 0, retry_interval: 0}
+      - id: '420'
+        type: custom
+        position: {x: 900, y: 190}
+        data:
+          type: http-request
+          title: Look up the same receipt
+          method: get
+          url: https://api.weydub.com/agent-trial/v1/removal
+          authorization: {type: no-auth}
+          headers: "X-Trial-Receipt:{{#200.key#}}"
+          params: ''
+          body: {type: none, data: []}
+          timeout: {connect: 10, read: 30, write: 30}
+          ssl_verify: true
+          retry_config: {retry_enabled: false, max_retries: 0, retry_interval: 0}
+      - id: '430'
+        type: custom
+        position: {x: 900, y: 350}
+        data:
+          type: end
+          title: Save this receipt before uploading
+          outputs: [{variable: private_receipt, value_type: string, value_selector: ['200', key]}]
+      - id: '500'
+        type: custom
+        position: {x: 1210, y: 30}
+        data:
+          type: code
+          title: Read submission status
+          code_language: python3
+          variables:
+            - {variable: body, value_selector: ['410', body]}
+            - {variable: code, value_selector: ['410', status_code]}
+          outputs:
+            state: {type: string, children: null}
+            message: {type: string, children: null}
+          code: |
+            def main(body, code):
+                import json
+                try:
+                    data = json.loads(body)
+                except ValueError:
+                    data = {}
+                if code not in (200, 202) or not data.get("state"):
+                    return {"state": "not_confirmed", "message": data.get("error") or "Could not confirm submission. Check your existing receipt before retrying."}
+                message = "This receipt already has a job." if data.get("replayed") else "Weydub accepted your clip."
+                return {"state": data["state"], "message": message + " Select Check my result and paste the same receipt."}
+      - id: '510'
+        type: custom
+        position: {x: 1510, y: 30}
+        data:
+          type: end
+          title: Submission response
+          outputs:
+            - {variable: state, value_type: string, value_selector: ['500', state]}
+            - {variable: message, value_type: string, value_selector: ['500', message]}
+      - id: '520'
+        type: custom
+        position: {x: 1210, y: 190}
+        data:
+          type: code
+          title: Read status and private download link
+          code_language: python3
+          variables: [{variable: body, value_selector: ['420', body]}]
+          outputs:
+            message: {type: string, children: null}
+            download_url: {type: string, children: null}
+          code: |
+            def main(body):
+                import json
+                from urllib.parse import urlsplit
+                data = json.loads(body)
+                state = data.get("state", "")
+                messages = {"queued": "Queued. Check again with this receipt.", "submitting": "Starting. Check again with this receipt.", "processing": "Processing. Check again with this receipt.", "failed": "Processing failed. Keep the receipt for support.", "needs_review": "This job needs review. Keep the receipt for support."}
+                url = ""
+                if state == "ready":
+                    url = data.get("videoUrl", "")
+                    parsed = urlsplit(url)
+                    if parsed.scheme != "https" or not parsed.hostname or parsed.username is not None:
+                        raise ValueError("Finished without a usable download URL. Keep the receipt for support.")
+                return {"message": "Your MP4 is ready." if url else messages.get(state, data.get("error") or "Unknown response. Keep your receipt."), "download_url": url}
+      - id: '620'
+        type: custom
+        position: {x: 1510, y: 190}
+        data:
+          type: end
+          title: Download your cleaned clip
+          outputs:
+            - {variable: message, value_type: string, value_selector: ['520', message]}
+            - {variable: download_url, value_type: string, value_selector: ['520', download_url]}
