@@ -1,6 +1,8 @@
 # Use Weydub in Dify
 
-Download [`subtitle-removal-0.1.0.difypkg`](subtitle-removal-0.1.0.difypkg). In a Dify workspace that permits local packages, open **Plugins → Install Plugin → Local Package** and select the download. This is a direct installation package; it does not carry a Dify Marketplace signature. Workspaces that require a verified signature may not install it.
+Download [`subtitle-removal-0.1.1.difypkg`](subtitle-removal-0.1.1.difypkg). In a Dify 1.20.0 or later workspace that permits local packages, open **Plugins → Install Plugin → Local Package** and select the download. This is a direct installation package; it does not carry a Dify Marketplace signature. Workspaces that require a verified signature may not install it.
+
+Already using the 0.1.0 local package? Check the version under **Installed Plugins** after uploading. In Community Edition 1.20.0 an upload can finish while 0.1.0 remains active. In that case, schedule the change when no workflows are running, keep your configuration and saved work IDs, uninstall the old package, then install 0.1.1. Confirm the installed version and check an existing work ID before submitting another clip.
 
 Connect your Weydub account in the plugin settings using the [plugin guide](../../integrations/dify/README.md). Connecting checks credentials without starting a job. Keep your key and secret out of the workflow inputs.
 

@@ -1,2 +1,2 @@
 dify-plugin==0.11.1
-requests>=2.32.4,<3
+requests==2.34.2

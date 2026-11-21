@@ -9,7 +9,7 @@ version: 0.7.0
 dependencies:
   - type: package
     value:
-      plugin_unique_identifier: weydub/subtitle_removal:0.1.0@8b465728a4dc763ecd82e2a95ca2ca19784fa8e7ab1c79ca3b3c9fb4861803eb
+      plugin_unique_identifier: weydub/subtitle_removal:0.1.1@a7472d4d3b203edef042a86d3b8c05c865183ed34507762ea17cc558080d5ea4
 workflow:
   conversation_variables: []
   environment_variables: []
