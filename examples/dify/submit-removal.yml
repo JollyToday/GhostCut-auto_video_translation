@@ -1,0 +1,61 @@
+app:
+  name: "Weydub: remove burned-in subtitles"
+  description: "Submit one authorized video for full-frame Pro subtitle removal. Each submission uses Weydub credits. Save the work ID to check the result."
+  mode: workflow
+  icon: "\U0001F3AC"
+  icon_background: "#E5EFFF"
+kind: app
+version: 0.7.0
+dependencies:
+  - type: package
+    value:
+      plugin_unique_identifier: weydub/subtitle_removal:0.1.0@8b465728a4dc763ecd82e2a95ca2ca19784fa8e7ab1c79ca3b3c9fb4861803eb
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features: {}
+  graph:
+    viewport: {x: 0, y: 0, zoom: 0.8}
+    edges:
+      - {id: input-submit, source: '100', sourceHandle: source, target: '200', targetHandle: target, type: custom, data: {sourceType: start, targetType: tool}}
+      - {id: submit-output, source: '200', sourceHandle: source, target: '300', targetHandle: target, type: custom, data: {sourceType: tool, targetType: end}}
+    nodes:
+      - id: '100'
+        type: custom
+        position: {x: 30, y: 120}
+        sourcePosition: right
+        targetPosition: left
+        data:
+          type: start
+          title: Video to clean
+          variables:
+            - {label: Direct HTTPS video URL, variable: video_url, type: text-input, required: true, max_length: 4096, options: []}
+      - id: '200'
+        type: custom
+        position: {x: 340, y: 120}
+        sourcePosition: right
+        targetPosition: left
+        data:
+          type: tool
+          title: Submit one Pro job
+          desc: "Full-frame processing may also remove signs and other on-screen text."
+          provider_type: builtin
+          provider_id: weydub/subtitle_removal/subtitle_removal
+          provider_name: weydub/subtitle_removal/subtitle_removal
+          tool_name: submit_removal
+          tool_label: Remove burned-in subtitles
+          tool_node_version: '2'
+          tool_configurations: {}
+          tool_parameters:
+            video_url: {type: variable, value: ['100', video_url]}
+          retry_config: {retry_enabled: false, max_retries: 0, retry_interval: 0}
+      - id: '300'
+        type: custom
+        position: {x: 650, y: 120}
+        targetPosition: left
+        sourcePosition: right
+        data:
+          type: end
+          title: Save your work ID
+          outputs:
+            - {variable: work_id, value_type: string, value_selector: ['200', work_id]}
