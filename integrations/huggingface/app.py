@@ -1,16 +1,29 @@
 import json
 import os
+import re
+from html import escape
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
 import gradio as gr
 
 from gallery import GALLERY, IMAGE, gallery
-from nodes import CONTRACT, Dub, Erase, GetJob, Image, OCR
+from nodes import CONTRACT, Dub, Erase, GetJob, Image, OCR, signed_request
 
 HERE = Path(__file__).parent
 OPS = {"Remove subtitles": Erase, "Extract subtitles": OCR, "Dub video": Dub, "Translate image": Image}
-DEFAULT = "Translate image"
+DEFAULT = "Remove subtitles"
+SPACE_CONTRACT = {**CONTRACT, "erase": {"path": CONTRACT["erase"]["path"], "body": {
+    "needChineseOcclude": 1, "videoInpaintLang": "all",
+    "extraOptions": json.dumps({"extra_inpaint_config": {"model": "advanced_full"}}, separators=(",", ":"))
+}}}
+
+
+def space_request(path, body):
+    key, secret = (os.getenv(name, "").strip() for name in ("WEYDUB_APP_KEY", "WEYDUB_APP_SECRET"))
+    if not key or not secret:
+        raise ValueError("Add both Weydub credentials to your Space Secrets and restart the Space.")
+    return signed_request(path, body, key, secret)
 
 
 def live_configured() -> bool:
@@ -41,7 +54,7 @@ def arguments(name: str, url: str, source: str, target: str) -> dict:
 def preview(name: str, url: str, source: str, target: str) -> dict:
     args = arguments(name, url, source, target)
     try:
-        op = OPS[name]()
+        op = OPS[name](request=space_request, contract=SPACE_CONTRACT)
         _, text = op.run(**args)["result"]
         return {"method": "POST", "endpoint": "https://api.zhaoli.com" + CONTRACT[op.op]["path"],
                 "body": json.loads(text.removeprefix("Preview: "))}
@@ -50,39 +63,46 @@ def preview(name: str, url: str, source: str, target: str) -> dict:
 
 
 def submit(name: str, url: str, source: str, target: str, consent: bool,
-           profile: gr.OAuthProfile | None) -> tuple[str, str, str]:
+           profile: gr.OAuthProfile | None) -> tuple[str, str, str, dict, str]:
     require_owner(profile)
     if consent is not True:
         raise gr.Error("Confirm that this file may be processed using your own credits.")
     try:
-        job, _ = OPS[name]().run(**arguments(name, url, source, target), submit_billable_job=True)["result"]
-        return ("image" if name == "Translate image" else "video", job, f"Accepted job {job}. Use Get result to check its progress.")
+        job, _ = OPS[name](request=space_request, contract=SPACE_CONTRACT).run(**arguments(name, url, source, target), submit_billable_job=True)["result"]
+        return ("image" if name == "Translate image" else "video", job, f"Accepted job {job}. Use Get result to check its progress.", {}, "")
     except (KeyError, ValueError, RuntimeError) as exc:
         raise gr.Error(str(exc)) from None
 
 
-def lookup(kind: str, job: str, profile: gr.OAuthProfile | None) -> tuple[str, dict]:
+def lookup(kind: str, job: str, profile: gr.OAuthProfile | None) -> tuple[str, dict, str]:
     require_owner(profile)
     if not job.strip():
-        raise gr.Error("Enter the job ID from your submission.")
+        return "Enter the job ID from your submission.", {}, ""
     try:
-        status, media, srt = GetJob().run(kind, job.strip())["result"]
+        result = GetJob(request=space_request).run(kind, job.strip())
+        status, media, srt = result["result"]
     except (ValueError, RuntimeError) as exc:
-        raise gr.Error(str(exc)) from None
+        return str(exc), {}, ""
     files = {}
     if status == "1":
         for label, raw in [("image" if kind == "image" else "video", media), ("subtitles", srt)]:
-            url = urlsplit(raw or "")
-            if url.scheme in ("https", "http") and url.hostname and not (url.username or url.password):
-                files[label] = urlunsplit(url._replace(scheme="https"))
-    return (f"Job {job}: " + ("complete." if status == "1" else f"status {status}. Check this ID again if still processing."), files)
+            if raw and not any(ord(c) < 32 or c in '\\<>"' for c in raw):
+                url = urlsplit(raw)
+                if url.scheme in ("https", "http") and url.hostname and url.username is None:
+                    files[label] = urlunsplit(url._replace(scheme="https"))
+    hint = result["ui"]["text"][0]
+    if status == "1" and not files:
+        hint = "Finished without a usable download link. Contact Weydub with this job ID."
+    elif status.lstrip("-").isdigit() and int(status) <= 0:
+        hint = "Still processing. Use Get result again with the same ID."
+    return f"Job {job.strip()} (status {status}): {hint}", files, download_links(files)
 
 
 def choose(name: str, media_url: str) -> tuple:
     url_change = gr.update()
-    if name != DEFAULT and media_url == IMAGE:
+    if name != "Translate image" and media_url == IMAGE:
         url_change = gr.update(value="")
-    elif name == DEFAULT and not media_url.strip() and not live_configured():
+    elif name == "Translate image" and not media_url.strip() and not live_configured():
         url_change = gr.update(value=IMAGE)
     return (gallery(name), gr.update(visible=name != "Remove subtitles",
             label="Spoken language" if name == "Dub video" else "Visible text language"),
@@ -98,10 +118,10 @@ def build() -> gr.Blocks:
         scene = gr.HTML(gallery(DEFAULT))
         fixture = gr.DownloadButton("Download sample SRT", value=str(HERE / "example.srt"), visible=False)
         gr.Markdown("## Build a request")
-        url = gr.Textbox(label="Downloadable media URL", value="" if active else IMAGE, placeholder="https://…", max_lines=1)
+        url = gr.Textbox(label="Direct link to your media", placeholder="https://…", max_lines=1)
         with gr.Row():
-            source = gr.Textbox(label="Visible text language", value="zh")
-            target = gr.Textbox(label="Target language", value="en")
+            source = gr.Textbox(label="Visible text language", value="zh", visible=False)
+            target = gr.Textbox(label="Target language", value="en", visible=False)
         inputs = [operation, url, source, target]
         show = gr.Button("Preview request", variant="primary")
         payload = gr.JSON(label="Request body", open=True)
@@ -115,15 +135,30 @@ def build() -> gr.Blocks:
                 job = gr.Textbox(label="Job ID")
             get = gr.Button("Get result")
             message = gr.Textbox(label="Job status", interactive=False)
-            files = gr.JSON(label="Download URLs")
-        gr.Markdown("[API documentation](https://weydub.com/docs/api/) · [Processing prices](https://weydub.com/vip/pricing-detail/)"
-                    + ("" if active else "\n\nTo process your own files, use a private duplicate with your Weydub credentials. See the Space README."))
+            downloads = gr.HTML()
+            files = gr.JSON(label="Download URLs", open=False)
+        links = "[API documentation](https://weydub.com/docs/api/) · [Processing prices](https://weydub.com/vip/pricing-detail/)"
+        if not active:
+            sid = os.environ.get("SPACE_ID", "")
+            clone = (f"[Create a private copy](https://huggingface.co/spaces/{sid}?duplicate=true)"
+                     if re.fullmatch(r"[a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+", sid) else "Create a private copy of this Space")
+            links = f"{clone} to process files with your own Weydub credits, or [open the Weydub editor](https://weydub.com/subtitle-removal/).\n\n{links}"
+        gr.Markdown(links)
         operation.change(choose, [operation, url], [scene, source, target, fixture, payload, consent, url], api_visibility="private")
         show.click(preview, inputs, payload, api_name="preview")
         if active:
-            send.click(submit, [*inputs, consent], [kind, job, message], api_name="submit")
-            get.click(lookup, [kind, job], [message, files], api_name="result")
+            send.click(submit, [*inputs, consent], [kind, job, message, files, downloads], api_name="submit")
+            get.click(lookup, [kind, job], [message, files, downloads], api_name="result")
+            for control in (kind, job):
+                control.input(lambda: ("", {}, ""), None, [message, files, downloads], api_visibility="private")
     return lab
+
+
+def download_links(files):
+    labels = {"video": "Download video (MP4)", "image": "Download translated image", "subtitles": "Download subtitles (SRT)"}
+    return " · ".join(f'<a href="{escape(url, quote=True)}" target="_blank" rel="noopener noreferrer">{label}</a>'
+                      for key, label in labels.items() if isinstance(files, dict)
+                      and isinstance(url := files.get(key), str) and url.startswith("https://"))
 
 
 if __name__ == "__main__":

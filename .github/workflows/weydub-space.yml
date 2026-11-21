@@ -17,6 +17,7 @@ jobs:
           set -eu
           node integrations/build-contract.mjs --check
           node integrations/huggingface/stage.mjs "$RUNNER_TEMP/space"
+          python -m pip install --disable-pip-version-check pytest
           cd "$RUNNER_TEMP/space"
           python -B - <<'PY'
           from gallery import GALLERY, IMAGE, gallery
@@ -27,6 +28,8 @@ jobs:
           job, preview = Image().run(IMAGE)["result"]
           assert not job and json.loads(json.loads(preview.removeprefix("Preview: "))["downloadInfo"])["url"] == IMAGE
           PY
+          PYTHONPATH="$RUNNER_TEMP/space" WEYDUB_HF_PACKAGE="$RUNNER_TEMP/space" \
+            python -m pytest "$GITHUB_WORKSPACE/integrations/huggingface/test_space.py" -q
           zip -q "$RUNNER_TEMP/weydub-space.zip" ./*
           cd "$RUNNER_TEMP"
           sha256sum weydub-space.zip > weydub-space.zip.sha256

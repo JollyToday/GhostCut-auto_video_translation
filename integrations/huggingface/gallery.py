@@ -27,7 +27,7 @@ GALLERY = {
             f'<figure><img alt="{label}" width="270" height="480" src="{IMG_ROOT}{suffix}-poster-480.webp"><figcaption>{label}</figcaption></figure>'
             for label, suffix in [("Original frame", "original"), ("After removal", "after")]
         ) + "</div>",
-        "Published Pro comparison. The runnable Lite example targets subtitles in the bottom 18% of the frame.", "/subtitle-removal/"),
+        "Pro searches the whole frame. It can also remove prices and signs. Use the Weydub editor if you need to preserve text outside a caption band.", "/subtitle-removal/"),
     "Extract subtitles": (
         "A subtitle file from visible text", "Use the language in the picture, even when the narrator speaks a different language. Full-frame OCR can also pick up signs and labels.",
         '<div class="cues"><div><time>00:00.000 – 00:02.200</time><p>Choose the language you see on screen.</p></div>'

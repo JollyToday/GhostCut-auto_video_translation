@@ -42,7 +42,10 @@ def _credentials():
 
 
 def _call(path, body):
-    key, secret = _credentials()
+    return signed_request(path, body, *_credentials())
+
+
+def signed_request(path, body, key, secret):
     wire = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode()
     first = hashlib.md5(wire).hexdigest()
     signature = hashlib.md5((first + secret).encode()).hexdigest()
@@ -95,7 +98,13 @@ def _job_result(code, media="", subtitles="", kind="video"):
     return {"ui": {"text": [s for s in (hint, media, subtitles) if s]}, "result": (state, media, subtitles)}
 
 
-class CreateJob:
+class JobClient:
+    def __init__(self, *, request=None, contract=None):
+        self._request = request or _call
+        self.contract = CONTRACT if contract is None else contract
+
+
+class CreateJob(JobClient):
     CATEGORY = "Weydub/Media"
     FUNCTION = "run"
     OUTPUT_NODE = True
@@ -119,7 +128,7 @@ class CreateJob:
         for lang in (source_language, target_language):
             if not re.fullmatch(r"[a-z]{2,3}(?:-[A-Za-z]{2,4})?", lang):
                 raise ValueError("Use a language code, for example zh or en.")
-        entry = CONTRACT[self.op]
+        entry = self.contract[self.op]
         body = deepcopy(entry["body"])
         if self.op == "image":
             body.update(downloadInfo=json.dumps({"url": media_url}), srcLang=source_language, tgtLang=target_language)
@@ -131,7 +140,7 @@ class CreateJob:
             body.update(sourceLang=source_language, lang=target_language)
         if not submit_billable_job:
             return _result("", "Preview: " + json.dumps(body, ensure_ascii=False))
-        reply = _call(entry["path"], body)
+        reply = self._request(entry["path"], body)
         job_id = reply if self.op == "image" else next(iter(reply.get("dataList", [])), {}).get("id")
         if not job_id:
             raise RuntimeError("No job ID returned. Check existing jobs before resubmitting.")
@@ -158,7 +167,7 @@ class Image(CreateJob):
     DESCRIPTION = "Translate the text in an image and return an image with the translation in place."
 
 
-class GetJob:
+class GetJob(JobClient):
     CATEGORY = "Weydub/Media"
     FUNCTION = "run"
     OUTPUT_NODE = True
@@ -179,7 +188,7 @@ class GetJob:
         if not re.fullmatch(r"[1-9][0-9]*", job_id) or kind not in ("image", "video"):
             raise ValueError("Choose the media type and use the job ID returned by creation.")
         if kind == "image":
-            b = _call(CONTRACT["image-status"]["path"], {"id": int(job_id)})
+            b = self._request(self.contract["image-status"]["path"], {"id": int(job_id)})
             code = b.get("status")
             if type(code) is not int or code != 1:
                 return _job_result(code, kind=kind)
@@ -190,7 +199,7 @@ class GetJob:
                 except ValueError:
                     result = None
             return _job_result(code, result.get("output_url") if isinstance(result, dict) else None, kind=kind)
-        b = _call(CONTRACT["video-status"]["path"], {"idWorks": [job_id]})
+        b = self._request(self.contract["video-status"]["path"], {"idWorks": [job_id]})
         row = next((x for x in b.get("content", []) if str(x.get("id")) == job_id), None)
         if not row:
             raise ValueError("No matching video job for this account.")
