@@ -1,8 +1,8 @@
 name: Verify and publish the Weydub n8n npm package
 on:
-  push:
-    branches: [main]
-    paths: ['.github/workflows/weydub-n8n-npm.yml']
+  workflow_run:
+    workflows: ['Release Weydub n8n node']
+    types: [completed]
   workflow_dispatch:
     inputs:
       publish:
@@ -12,7 +12,7 @@ on:
 permissions: {}
 jobs:
   verify:
-    if: github.repository == 'JollyToday/GhostCut-auto_video_translation' && github.ref == 'refs/heads/main'
+    if: github.repository == 'JollyToday/GhostCut-auto_video_translation' && github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -40,6 +40,7 @@ jobs:
             --pattern "$archive" --pattern "$archive.sha256" --dir "$RUNNER_TEMP/released"
           (cd "$RUNNER_TEMP/released" && sha256sum --check --strict "$archive.sha256")
           node ../build-contract.mjs --check
+          npm ci --ignore-scripts --no-audit --no-fund
           npm run build
           npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP/packed"
           tar -xzf "$RUNNER_TEMP/packed/$archive" -C "$RUNNER_TEMP/source"

@@ -1,0 +1,12 @@
+{
+  "name":"Weydub: remove captions from anywhere in a video",
+  "id":"WeydubProPreview",
+  "active":false,
+  "nodes":[
+    {"id":"b13dda70-de67-4b98-aca9-9f9817d553cb","name":"Start","type":"n8n-nodes-base.manualTrigger","typeVersion":1,"position":[0,0],"parameters":{}},
+    {"id":"190155d4-8882-4370-abba-03241fc7649f","name":"Preview full-frame Pro removal","type":"n8n-nodes-weydub.weydub","typeVersion":1,"position":[240,0],"parameters":{"operation":"erase-pro","mediaUrl":"https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/input.mp4","submit":false}}
+  ],
+  "connections":{"Start":{"main":[[{"node":"Preview full-frame Pro removal","type":"main","index":0}]]}},
+  "settings":{"executionOrder":"v1"},
+  "pinData":{}
+}

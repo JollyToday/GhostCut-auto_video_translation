@@ -24,13 +24,14 @@ jobs:
           version=$(node -p 'require("./package.json").version')
           test "$GITHUB_REF_NAME" = "weydub-n8n-v$version"
           node ../build-contract.mjs --check
+          npm ci --ignore-scripts --no-audit --no-fund
           npm run build
           npm_config_ignore_scripts=true npx --yes @n8n/scan-community-package@0.44.0 .
           npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP"
           cd "$RUNNER_TEMP"
           archive="n8n-nodes-weydub-$version.tgz"
           npm install --prefix smoke --legacy-peer-deps --no-audit --no-fund --ignore-scripts "./$archive"
-          node "$GITHUB_WORKSPACE/integrations/n8n/check-install.cjs" "$RUNNER_TEMP/smoke"
+          NODE_PATH="$GITHUB_WORKSPACE/integrations/n8n/node_modules" node "$GITHUB_WORKSPACE/integrations/n8n/check-install.cjs" "$RUNNER_TEMP/smoke"
           sha256sum "$archive" > "$archive.sha256"
           # npm verifies the tarball's SHA-512 under its versioned package URL.
           digest=$(sha512sum "$archive" | cut -d' ' -f1)

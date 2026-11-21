@@ -4,10 +4,12 @@ On self-hosted n8n, install the versioned GitHub release in the `nodes` folder o
 
 ```sh
 mkdir -p ~/.n8n/nodes
-npm install --prefix ~/.n8n/nodes --legacy-peer-deps --ignore-scripts https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-n8n-v0.1.3/n8n-nodes-weydub-0.1.3.tgz
+npm install --prefix ~/.n8n/nodes --legacy-peer-deps --ignore-scripts https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-n8n-v0.1.4/n8n-nodes-weydub-0.1.4.tgz
 ```
 
 Import [the OCR workflow](examples/preview-ocr.json) for burned-in captions or [the image workflow](examples/preview-image.json) for a Chinese product photo. Click **Execute workflow**. Both return a request preview without credentials or processing charges. For OCR, replace the example.org address with your own clip before live processing. The image example already contains a public sample from the Weydub API guide.
+
+For subtitle removal, import [the full-frame Pro workflow](examples/preview-pro.json). It previews the settings for a [15-second clip](../../examples/full-frame-removal/) with captions at the top, middle and bottom. Preview does not fetch the video or spend credits. For a real run, pick an authorized clip, select your Weydub credential and turn on **Submit Billable Job**. Pro can also remove signs or prices. Use the [Weydub area selector](https://weydub.com/subtitle-removal/) when you need to keep those.
 
 Use one input item per media file. Choose **Extract Full-Frame OCR Subtitles**, paste a downloadable video link and enter the language of the writing. Run the node with **Submit Billable Job** off to inspect the request. No credential is needed for a preview.
 
@@ -18,7 +20,7 @@ To download a file from a job you already submitted, import the workflow for tha
 | Your job | Download workflow | Where the file appears |
 | --- | --- | --- |
 | Full-frame OCR | [Download timed subtitles](examples/download-subtitles.json) | Download subtitles → Binary → subtitles (SRT) |
-| Lite erasure or speech dubbing | [Download a processed video](examples/download-video.json) | Download video → Binary → video (MP4) |
+| Pro or Lite erasure, or speech dubbing | [Download a processed video](examples/download-video.json) | Download video → Binary → video (MP4) |
 | Image translation | [Download a translated image](examples/download-image.json) | Download image → Binary → image |
 
 Open the **Check … job** node, paste the saved job ID, select the same Weydub credential, then execute the workflow. If it stops at **Inspect job status**, check that node's output. For a pending job, check the same ID later. Video status `73` means there are insufficient credits to start; `83` means the result is locked: check your balance and keep the original ID. An image status above `1` means the translation failed. These download workflows never create another processing job.
