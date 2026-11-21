@@ -1,0 +1,12 @@
+{
+  "name": "weydub-plugins",
+  "owner": {"name": "Weydub"},
+  "metadata": {"description": "Weydub video localization tools for burned-in captions."},
+  "plugins": [
+    {
+      "name": "weydub",
+      "source": "./plugins/weydub",
+      "description": "Remove burned-in subtitles across a video frame with your Weydub account."
+    }
+  ]
+}
