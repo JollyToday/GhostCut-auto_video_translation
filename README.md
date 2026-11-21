@@ -25,6 +25,8 @@ To build a workflow without writing code, [install Weydub in your Make organizat
 
 For MCP clients, [install the Weydub desktop extension and run your first job](mcp/README.md). Start by previewing a request, then use the returned job ID to download your SRT, processed video, or translated image.
 
+[See Pro remove captions from the top, middle and bottom of a clip](examples/full-frame-removal/). Download the input and actual output to compare them, or use the same input to test your integration.
+
 The [Pipedream Connect action source](integrations/pipedream/) and offline tests are available for developers. The app has been submitted for registry review and is not yet available in Pipedream's public catalog.
 
 To explore the four operations in a browser, [build the Gradio sample lab](integrations/huggingface/). It previews requests without credits and can run in a personal Hugging Face Space with owner-only processing.

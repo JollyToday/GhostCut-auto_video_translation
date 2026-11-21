@@ -6,6 +6,8 @@ Have a supplier video with captions baked into the picture? This flow submits a 
 
 ## Set up once
 
+Need a test URL? The [three-position sample](../full-frame-removal/) includes a direct MP4 link for `WEYDUB_VIDEO_URL` and the actual processed file for comparison.
+
 1. On your own Node-RED instance, set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` in the service environment. Get these from your [Weydub API account](https://weydub.com/docs/api/). Set `WEYDUB_VIDEO_URL` to a direct HTTPS link to a video you have permission to process. A link to a social post will not work. Keep signed URLs and credentials out of exported flows.
 2. Add `weydubCrypto: require('node:crypto')` inside the existing `functionGlobalContext` object in your Node-RED `settings.js`, then restart Node-RED. This uses Node's built-in crypto library to sign requests. Allow outbound HTTPS to `api.zhaoli.com`, the processing API used by Weydub. Only trusted people should have access to this editor.
 3. Download [the flow JSON](pro-subtitle-removal.json). Open **Menu → Import → select a file to import**, choose the file, then **Import → Deploy**. Deployment alone does not start a job.

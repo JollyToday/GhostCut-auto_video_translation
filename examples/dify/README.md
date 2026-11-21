@@ -6,6 +6,8 @@ Already using the 0.1.0 local package? Check the version under **Installed Plugi
 
 Connect your Weydub account in the plugin settings using the [plugin guide](../../integrations/dify/README.md). Connecting checks credentials without starting a job. Keep your key and secret out of the workflow inputs.
 
+For a first test, use the [15-second clip with captions in three positions](../full-frame-removal/). The example includes a direct input URL for Studio and a real output you can inspect without running the workflow.
+
 In **Studio**, choose **Import DSL File** for each of these two files. They work independently and do not require an LLM.
 
 | Workflow | What to enter | What you get |

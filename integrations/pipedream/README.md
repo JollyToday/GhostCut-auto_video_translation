@@ -10,6 +10,8 @@ These actions connect to the [Weydub media API](https://weydub.com/docs/api/). E
 | Translate and Dub Video | A clip you have permission to dub, its spoken language and your target language | `videoUrl` |
 | Translate Image Text | A product image and its source and target languages | `imageUrl`; `cleanBackgroundUrl` is the optional background without text |
 
+[Compare captions at the top, middle and bottom](../../examples/full-frame-removal/) before choosing a removal action. Both the input MP4 and the delivered Pro file are available to download.
+
 **Which removal action should I use?** If a caption moves or appears above the lower band, start with **Full-Frame Pro**. It can also erase a price or a store sign you meant to keep. When that matters, use [the area selector in the Weydub editor](https://weydub.com/subtitle-removal/). The original **Remove Burned-In Subtitles** action still uses lower-band Lite in existing workflows. [Compare original and cleaned frames before choosing](https://weydub.com/creator-kit/#compare).
 
 For a first Pro run, use the [captioned Creator Kit clip](https://weydub.com/creator-kit/clips/wrong-cup/en.mp4). Leave **Submit Billable Job** off to preview. To process the clip, turn it on, submit once and give the `jobId` to **Get Video or OCR Result** with the same connection. If it is still processing, repeat only the lookup. At status `1`, download the MP4 from `videoUrl`.
