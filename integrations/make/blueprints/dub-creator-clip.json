@@ -1,0 +1,19 @@
+{
+  "name": "Weydub - Dub a Chinese creator clip in English",
+  "flow": [
+    {
+      "id": 1,
+      "module": "app#weydub-media-4geufd:translateAndDubVideo",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "mediaUrl": "https://weydub.com/creator-kit/clips/pocket-light/zh.mp4",
+        "source": "zh",
+        "target": "en",
+        "submit": false
+      },
+      "metadata": { "designer": { "x": 0, "y": 0 } }
+    }
+  ],
+  "metadata": { "version": 1, "instant": false, "designer": { "orphans": [] } }
+}

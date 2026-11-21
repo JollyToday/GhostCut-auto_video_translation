@@ -4,6 +4,17 @@
 
 Four actions submit a single file: remove lower-frame burned-in captions with Lite, extract visible subtitles with full-frame OCR, translate and dub speech, or translate text inside an image. For OCR, enter the language you see on screen. For dubbing, choose the language you hear and the language you want to deliver. Supply a directly downloadable HTTPS file you have permission to process.
 
+## Try dubbing with a sample
+
+Download the two JSON blueprints below (use **Download raw file** on GitHub). After installing the app, create a **new blank scenario for each file**. In the scenario editor open **More → Import blueprint**. Choose your own Weydub connection in the imported module, save, and leave scheduling off.
+
+1. [Dub a Chinese clip in English](blueprints/dub-creator-clip.json) starts with the [Pocket Light sample](https://weydub.com/creator-kit/clips/pocket-light/zh.mp4), spoken language `zh` and target `en`. Click **Run once** with **Submit billable job** set to **No**: the module should return `preview` without submitting a video to Weydub. To produce one English dub, change it to **Yes**, run **once** and keep the **Job ID**.
+2. [Download the dubbed clip](blueprints/check-dubbed-clip.json) uses **Get a Video or Subtitle Result**. Enter the saved ID and use the same connection. While processing, rerun **only this scenario**. When **Processing status** is `1`, open **Video URL**, download the MP4 and listen to the English dialogue. This scenario never submits a new clip.
+
+The sample comes from the [Weydub Creator Kit](https://weydub.com/creator-kit/). To dub your own clip, replace the sample URL and check the spoken and target languages before submitting.
+
+## Module reference
+
 The app also includes **Make an API call**, a signed JSON POST module for advanced workflows. Enter a leading-slash path such as `/point/query` and a JSON object; the module sends it to Weydub's fixed media gateway with the connection credentials. It accepts paths and bodies only, does not follow redirects, and never accepts a full URL. Use the four named modules when they cover your workflow because their fields and result checks are safer and easier to map. The universal module is for a Weydub endpoint documented in the [developer guide](https://weydub.com/docs/api/), not for arbitrary third-party URLs.
 
 Keep your own Weydub App Key and App Secret in a Make connection. The connection checks access with a balance query. A RapidAPI key uses a different authentication method.
