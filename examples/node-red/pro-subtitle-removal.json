@@ -1,0 +1,184 @@
+[
+  {
+    "id": "d63fcdf6c02a1a00",
+    "type": "tab",
+    "label": "Weydub Pro subtitle removal",
+    "disabled": false,
+    "info": "Use only on a private Node-RED editor. Start once, then check the work ID. See the README for setup and authorized media examples."
+  },
+  {
+    "id": "d63fcdf6c02a1a01",
+    "type": "inject",
+    "z": "d63fcdf6c02a1a00",
+    "name": "Submit one video (uses credits)",
+    "x": 165,
+    "y": 100,
+    "wires": [
+      [
+        "d63fcdf6c02a1a03"
+      ]
+    ],
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "topic": "submit",
+    "payload": "WEYDUB_VIDEO_URL",
+    "payloadType": "env",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1
+  },
+  {
+    "id": "d63fcdf6c02a1a02",
+    "type": "inject",
+    "z": "d63fcdf6c02a1a00",
+    "name": "Check status (latest or saved ID)",
+    "x": 165,
+    "y": 180,
+    "wires": [
+      [
+        "d63fcdf6c02a1a03"
+      ]
+    ],
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "topic": "check",
+    "payload": "",
+    "payloadType": "str",
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1
+  },
+  {
+    "id": "d63fcdf6c02a1a03",
+    "type": "function",
+    "z": "d63fcdf6c02a1a00",
+    "name": "Validate and sign",
+    "x": 440,
+    "y": 140,
+    "wires": [
+      [
+        "d63fcdf6c02a1a04"
+      ],
+      [
+        "d63fcdf6c02a1a05"
+      ],
+      [
+        "d63fcdf6c02a1a07"
+      ]
+    ],
+    "func": "const submit = msg.topic === 'submit';\n  const fail = text => [null, null, {payload: {state: 'attention', message: text}}];\n  const key = env.get('WEYDUB_APP_KEY');\n  const secret = env.get('WEYDUB_APP_SECRET');\n  const crypto = global.get('weydubCrypto');\n  if (!key || !secret || !crypto) return fail('Set your Weydub credentials and enable weydubCrypto in settings.js. Nothing was submitted.');\n  const last = flow.get('lastSubmission');\n  const md5 = data => crypto.createHash('md5').update(data).digest('hex');\n  let body, tag;\n  if (submit) {\n    const value = msg.payload;\n    let url;\n    try { url = new URL(value); } catch {}\n    if (typeof value !== 'string' || !url || url.protocol !== 'https:' || url.username || url.password || /[\\s\\\\]/.test(value))\n      return fail('Set WEYDUB_VIDEO_URL to a direct HTTPS video URL without embedded credentials.');\n    tag = crypto.createHash('sha256').update(value).digest('hex');\n    if (last && !last.id) return fail('A submission has no confirmed work ID yet. Check your Weydub history before starting another job.');\n    if (last && last.tag === tag) return [null, null, {payload: {state: 'already_submitted', work_id: last.id, message: 'Use Check status with this work ID.'}}];\n    body = {urls: [value], needChineseOcclude: 1, videoInpaintLang: 'all',\n      extraOptions: JSON.stringify({extra_inpaint_config: {model: 'advanced_full'}})};\n    flow.set('lastSubmission', {tag});\n  } else {\n    const id = String(msg.payload || last?.id || '').trim();\n    if (!/^[1-9]\\d*$/.test(id)) return fail('Enter the work ID from your Weydub account or submit a clip first.');\n    body = {idWorks: [id]};\n  }\n  const payload = JSON.stringify(body);\n  const request = {payload, tag, action: submit ? 'submit' : 'check', work_id: body.idWorks?.[0],\n    followRedirects: false, requestTimeout: 45000,\n    headers: {'Content-Type': 'application/json', AppKey: key, AppSign: md5(md5(payload) + secret)}};\n  return submit ? [request, null, null] : [null, request, null];",
+    "outputs": 3,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "d63fcdf6c02a1a04",
+    "type": "http request",
+    "z": "d63fcdf6c02a1a00",
+    "name": "Submit full-frame Pro",
+    "x": 710,
+    "y": 90,
+    "wires": [
+      [
+        "d63fcdf6c02a1a06"
+      ]
+    ],
+    "method": "POST",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "https://api.zhaoli.com/v-w-c/gateway/ve/work/free",
+    "senderr": true,
+    "persist": false,
+    "headers": []
+  },
+  {
+    "id": "d63fcdf6c02a1a05",
+    "type": "http request",
+    "z": "d63fcdf6c02a1a00",
+    "name": "Look up work ID",
+    "x": 710,
+    "y": 155,
+    "wires": [
+      [
+        "d63fcdf6c02a1a06"
+      ]
+    ],
+    "method": "POST",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "https://api.zhaoli.com/v-w-c/gateway/ve/work/status",
+    "senderr": true,
+    "persist": false,
+    "headers": []
+  },
+  {
+    "id": "d63fcdf6c02a1a08",
+    "type": "catch",
+    "z": "d63fcdf6c02a1a00",
+    "name": "Connection error",
+    "x": 710,
+    "y": 225,
+    "wires": [
+      [
+        "d63fcdf6c02a1a06"
+      ]
+    ],
+    "scope": [
+      "d63fcdf6c02a1a04",
+      "d63fcdf6c02a1a05"
+    ],
+    "uncaught": false
+  },
+  {
+    "id": "d63fcdf6c02a1a06",
+    "type": "function",
+    "z": "d63fcdf6c02a1a00",
+    "name": "Read job result",
+    "x": 990,
+    "y": 145,
+    "wires": [
+      [
+        "d63fcdf6c02a1a07"
+      ]
+    ],
+    "func": "const submit = msg.action === 'submit';\n  const failure = message => ({payload: {state: 'attention', message: message + (submit ? ' Check your Weydub history before submitting again.' : '')}});\n  if (msg.error || msg.statusCode !== 200) return failure('The service did not confirm the request.');\n  const data = msg.payload;\n  if (data?.code !== 1000) return failure('Weydub rejected the request. Check the credentials and account balance.');\n  if (submit) {\n    const id = String(data.body?.dataList?.[0]?.id || '');\n    if (!/^[1-9]\\d*$/.test(id)) return failure('No work ID was returned.');\n    flow.set('lastSubmission', {tag: msg.tag, id});\n    return {payload: {state: 'accepted', work_id: id, message: 'Save this ID. Click Check status to get the result.'}};\n  }\n  const id = msg.work_id;\n  const row = data.body?.content?.find(r => String(r.id) === id);\n  if (!row || !Number.isInteger(row.processStatus)) return failure('No matching work ID in this account.');\n  if (row.processStatus < 1) return {payload: {state: 'processing', work_id: id, message: 'Check the same ID again in a few minutes.'}};\n  if (row.processStatus !== 1) return {payload: {state: 'failed', work_id: id, message: 'Review this job in Weydub.'}};\n  let url;\n  try { url = new URL(row.videoUrl); } catch {}\n  if (!url || !['https:', 'http:'].includes(url.protocol) || url.username || url.password) return failure('The result has no usable download link.');\n  url.protocol = 'https:';\n  return {payload: {state: 'ready', work_id: id, download_url: url.href, message: 'Open the private download URL to save your MP4.'}};",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "d63fcdf6c02a1a07",
+    "type": "debug",
+    "z": "d63fcdf6c02a1a00",
+    "name": "Work ID, status or private download",
+    "x": 1000,
+    "y": 310,
+    "wires": [],
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg"
+  }
+]
