@@ -27,6 +27,8 @@ For MCP clients, [install the Weydub desktop extension and run your first job](m
 
 [See Pro remove captions from the top, middle and bottom of a clip](examples/full-frame-removal/). Download the input and actual output to compare them, or use the same input to test your integration.
 
+In Node-RED, [import the free subtitle removal flow](examples/node-red/) to submit an authorized local MP4 and download the cleaned video. The guide also includes a separate flow for your own Weydub API account.
+
 The [Pipedream Connect action source](integrations/pipedream/) and offline tests are available for developers. The app has been submitted for registry review and is not yet available in Pipedream's public catalog.
 
 To explore the four operations in a browser, [build the Gradio sample lab](integrations/huggingface/). It previews requests without credits and can run in a personal Hugging Face Space with owner-only processing.

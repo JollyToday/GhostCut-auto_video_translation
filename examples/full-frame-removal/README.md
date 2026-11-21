@@ -8,7 +8,7 @@ The first line sits across a man's forehead. The next is over the barista's apro
 
 Play both files and pause at the times shown above. Each pair is cropped around the same part of the shot, with both frames displayed at the same width. The input is 540 × 960, and the downloaded result is 536 × 960; both contain AAC audio. The output is the file returned by one sponsored full-frame Pro run, with no retouching. A clean reference from the Creator Kit was used to make the input, not shown as the output.
 
-**Try it yourself:** paste the input MP4 link into the [Dify workflow](../dify/) or the [Node-RED flow](../node-red/) and submit once with your Weydub account. To use a sponsored trial instead, download the input and follow the [agent skill instructions](../../plugins/weydub/skills/pro-subtitle-removal/SKILL.md). Watching or downloading the two sample files does not start a job.
+**Try it yourself:** download the input and run the free [Dify workflow](../dify/), [Node-RED flow](../node-red/) or [agent skill](../../plugins/weydub/skills/pro-subtitle-removal/SKILL.md) without a Weydub key. For a workflow that uses your own Weydub credits, use the separate account-based instructions in the Dify or Node-RED guide and supply the direct input URL. Watching or downloading the two sample files does not start a job.
 
 Choose [the area selector in Weydub](https://weydub.com/subtitle-removal/) when prices, signs or other text must stay. This example shows three fixed caption positions across successive shots; it does not test captions sliding continuously through a frame.
 

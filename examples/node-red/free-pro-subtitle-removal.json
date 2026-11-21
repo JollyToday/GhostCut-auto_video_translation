@@ -1,0 +1,186 @@
+[
+  {
+    "id": "89aa001f0c05bb00",
+    "type": "tab",
+    "label": "Weydub free subtitle removal",
+    "disabled": false,
+    "env": [
+      {
+        "name": "WEYDUB_TRIAL_FILE",
+        "type": "str",
+        "value": ""
+      }
+    ],
+    "info": "Set WEYDUB_TRIAL_FILE to a local MP4 in a private folder. Deploy, open Debug, then click Upload only if authorized to send the file to Weydub. Full-frame Pro can erase labels and prices. Check status to download. Preserve the adjacent .weydub-receipt file.\n\n[Setup and practice clip](https://github.com/JollyToday/GhostCut-auto_video_translation/tree/main/examples/node-red) | [Choose a smaller area in Weydub](https://weydub.com/subtitle-removal/)."
+  },
+  {
+    "id": "89aa001f0c05bb01",
+    "z": "89aa001f0c05bb00",
+    "type": "inject",
+    "name": "Upload my authorized MP4",
+    "x": 170,
+    "y": 100,
+    "wires": [
+      [
+        "89aa001f0c05bb03"
+      ]
+    ],
+    "props": [
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "topic": "upload",
+    "once": false,
+    "repeat": "",
+    "crontab": ""
+  },
+  {
+    "id": "89aa001f0c05bb02",
+    "z": "89aa001f0c05bb00",
+    "type": "inject",
+    "name": "Check status / get MP4",
+    "x": 170,
+    "y": 180,
+    "wires": [
+      [
+        "89aa001f0c05bb03"
+      ]
+    ],
+    "props": [
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "topic": "status",
+    "once": false,
+    "repeat": "",
+    "crontab": ""
+  },
+  {
+    "id": "89aa001f0c05bb03",
+    "z": "89aa001f0c05bb00",
+    "type": "function",
+    "name": "Read clip and reuse private receipt",
+    "x": 465,
+    "y": 140,
+    "wires": [
+      [
+        "89aa001f0c05bb04"
+      ],
+      [
+        "89aa001f0c05bb05"
+      ],
+      [
+        "89aa001f0c05bb07"
+      ]
+    ],
+    "outputs": 3,
+    "libs": [
+      {
+        "var": "fs",
+        "module": "fs"
+      },
+      {
+        "var": "paths",
+        "module": "path"
+      },
+      {
+        "var": "crypto",
+        "module": "crypto"
+      }
+    ],
+    "func": "const fail = message => [null, null, {payload:{state:'attention', message}}];\n  const file = env.get('WEYDUB_TRIAL_FILE');\n  if (!file || !paths.isAbsolute(file) || !/\\.mp4$/i.test(file)) {\n    return fail('Open the flow tab settings and set WEYDUB_TRIAL_FILE to the full local path of your MP4.');\n  }\n  const upload = msg.topic === 'upload';\n  if (!upload && msg.topic !== 'status') return fail('Choose upload or check status.');\n  const receiptPath = file + '.weydub-receipt';\n  let body;\n  try {\n    if (upload) {\n      const handle = await fs.promises.open(file, fs.constants.O_RDONLY | fs.constants.O_NONBLOCK);\n      try {\n        const stat = await handle.stat();\n        if (!stat.isFile() || stat.size < 16 || stat.size > 16777216) return fail('Choose a regular H.264 MP4 up to 16 MiB and 60 seconds.');\n        body = Buffer.alloc(stat.size);\n        for (let offset = 0; offset < body.length;) {\n          const {bytesRead} = await handle.read(body, offset, body.length - offset, offset);\n          if (!bytesRead) return fail('The video changed while reading. Close it and try again.');\n          offset += bytesRead;\n        }\n        if ((await handle.stat()).size !== body.length || body.toString('ascii', 4, 8) !== 'ftyp') return fail('Choose a complete H.264 MP4.');\n      } finally { await handle.close(); }\n      try {\n        await fs.promises.writeFile(receiptPath, crypto.randomBytes(32).toString('hex') + '\\n', {flag:'wx', mode:0o600});\n      } catch (e) { if (e.code !== 'EEXIST') throw e; }\n    }\n    const handle = await fs.promises.open(receiptPath, fs.constants.O_RDONLY | fs.constants.O_NONBLOCK | (fs.constants.O_NOFOLLOW || 0));\n    let token;\n    try {\n      const st = await handle.stat();\n      if (!st.isFile() || st.size < 64 || st.size > 66) return fail('Keep the original receipt. An upload is never retried with a new receipt automatically.');\n      token = (await handle.readFile('utf8')).trim();\n    } finally { await handle.close(); }\n    if (!/^[a-f0-9]{64}$/.test(token)) return fail('The saved receipt is invalid. Restore the original receipt.');\n    const headers = {'X-Trial-Receipt':token};\n    if (upload) headers['Content-Type'] = 'video/mp4';\n    const request = {headers, followRedirects:false, requestTimeout:90000, ...(upload ? {payload:body} : {})};\n    return upload ? [request,null,null] : [null,request,null];\n  } catch (e) {\n    if (e.code === 'ENOENT' && !upload) return fail('No receipt for this path. Upload the authorized clip once, or restore its original receipt.');\n    return fail('Check the MP4 path and file permissions on the Node-RED host. The flow needs to write a private receipt beside the clip.');\n  }"
+  },
+  {
+    "id": "89aa001f0c05bb04",
+    "z": "89aa001f0c05bb00",
+    "type": "http request",
+    "name": "Send to free Pro trial",
+    "x": 740,
+    "y": 90,
+    "wires": [
+      [
+        "89aa001f0c05bb06"
+      ]
+    ],
+    "method": "POST",
+    "url": "https://api.weydub.com/agent-trial/v1/removal",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "persist": false,
+    "senderr": true,
+    "headers": []
+  },
+  {
+    "id": "89aa001f0c05bb05",
+    "z": "89aa001f0c05bb00",
+    "type": "http request",
+    "name": "Look up receipt",
+    "x": 740,
+    "y": 160,
+    "wires": [
+      [
+        "89aa001f0c05bb06"
+      ]
+    ],
+    "method": "GET",
+    "url": "https://api.weydub.com/agent-trial/v1/removal",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "persist": false,
+    "senderr": true,
+    "headers": []
+  },
+  {
+    "id": "89aa001f0c05bb08",
+    "z": "89aa001f0c05bb00",
+    "type": "catch",
+    "name": "Connection error",
+    "x": 740,
+    "y": 230,
+    "wires": [
+      [
+        "89aa001f0c05bb06"
+      ]
+    ],
+    "scope": [
+      "89aa001f0c05bb04",
+      "89aa001f0c05bb05"
+    ],
+    "uncaught": false
+  },
+  {
+    "id": "89aa001f0c05bb06",
+    "z": "89aa001f0c05bb00",
+    "type": "function",
+    "name": "Read trial result",
+    "x": 990,
+    "y": 150,
+    "wires": [
+      [
+        "89aa001f0c05bb07"
+      ]
+    ],
+    "outputs": 1,
+    "libs": [],
+    "func": "const code = msg.statusCode, data = msg.payload;\n  const out = (state,message) => ({payload:{state,message}});\n  if (code === 429) return out('unavailable','Shared trial capacity is unavailable. Keep the receipt and try later; no paid job was started.');\n  if (code === 409) return out('attention','This receipt belongs to different video bytes. Restore the original clip to check its result.');\n  if (code === 404) return out('unknown','No job was found. After a timeout retry the identical clip with its existing receipt.');\n  if (code === 422 || code === 413 || code === 415) return out('rejected','Use an H.264 MP4, up to 60 seconds and 16 MiB, with optional AAC audio.');\n  if (code !== 200 && code !== 202) return out('attention','The request was not confirmed. Keep the receipt and use Check status.');\n  if (data?.state === 'ready' && data.videoUrl) {\n    let url;\n    try { url = new URL(data.videoUrl); } catch {}\n    if (!url || url.protocol !== 'https:' || url.username || url.password) return out('attention','No usable download link. Check status again.');\n    return {payload:{state:'ready',download_url:url.href,message:'Open the private download URL to save your cleaned MP4.'}};\n  }\n  if (['queued','submitting','processing','ready'].includes(data?.state)) {\n    const result = out(data.state,'Click Check status to get the private MP4 link.');\n    if (data.replayed === true) {\n      result.payload.replayed = true;\n      result.payload.message = 'The same clip was already accepted. Check status using its existing receipt.';\n    }\n    return result;\n  }\n  if (['failed','expired','needs_review'].includes(data?.state)) return out(data.state,'This job cannot be downloaded. Keep its receipt; do not start a replacement automatically.');\n  return out('attention','Unrecognized response. Keep your receipt and check status.');"
+  },
+  {
+    "id": "89aa001f0c05bb07",
+    "z": "89aa001f0c05bb00",
+    "type": "debug",
+    "name": "State or private MP4 link",
+    "x": 1000,
+    "y": 310,
+    "wires": [],
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg"
+  }
+]
