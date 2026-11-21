@@ -1,0 +1,6 @@
+*
+!package.json
+!package-lock.json
+!server.mjs
+!service.mjs
+!LICENSE
