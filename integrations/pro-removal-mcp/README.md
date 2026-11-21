@@ -6,11 +6,13 @@ Pro checks the **whole frame**. This can also remove a price, shop sign or logo.
 
 ## Run locally with Docker
 
-From this directory, build the local image:
+With Docker running, build the local image from this directory:
 
 ```sh
 docker build -t weydub-pro-removal:1.0.0 .
 ```
+
+Using Cline? Follow the [Cline CLI installation and free preview](llms-install.md). It includes the source checkout command and uses Cline's setup wizard to preserve your other servers.
 
 For a client that accepts `mcpServers` JSON, add:
 
