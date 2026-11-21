@@ -17,6 +17,7 @@ jobs:
           set -eu
           node integrations/build-contract.mjs --check
           node integrations/huggingface/stage.mjs "$RUNNER_TEMP/space"
+          python -m pip install --disable-pip-version-check -r "$RUNNER_TEMP/space/requirements.txt"
           python -m pip install --disable-pip-version-check pytest
           cd "$RUNNER_TEMP/space"
           python -B - <<'PY'
