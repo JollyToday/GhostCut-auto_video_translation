@@ -1,9 +1,45 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {run as trial} from './skills/pro-subtitle-removal/trial.mjs';
 import {preview,service} from './service.mjs';
 
 const sample='https://example.org/sample.mp4?signature=private';
+test('a refused trial never falls back to paid; delivery keeps the receipt off the CDN and preserves existing files',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'weydub-trial-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const input=join(dir,'input.mp4'), receipt=join(dir,'receipt'), out=join(dir,'clean.mp4');
+  await writeFile(input,Buffer.alloc(20));
+  let requests=0;
+  async function unavailable(url,opts) {
+    requests++;
+    assert.equal(url,'https://api.weydub.com/agent-trial/v1/removal');
+    assert.deepEqual(Object.keys(opts.headers).sort(),['Content-Type','X-Trial-Receipt']);
+    return Response.json({},{status:429});
+  }
+  await assert.rejects(trial(['submit',input,receipt],unavailable),/Confirm permission/);
+  assert.equal(requests,0);
+  await assert.rejects(trial(['submit',input,receipt,'--confirm-upload'],unavailable),/No paid job/);
+  assert.equal(requests,1);
+  const issued=(await readFile(receipt,'utf8')).trim();
+  async function ready(url,opts) {
+    if (typeof url==='string') {
+      assert.equal(opts.method,'GET'); assert.deepEqual(opts.headers,{'X-Trial-Receipt':issued});
+      return Response.json({state:'ready',videoUrl:'https://gc70.cdn.izhaoli.cn/example.mp4'});
+    }
+    assert.equal(opts.headers,undefined); assert.equal(opts.redirect,'error');
+    return new Response('fixture',{headers:{'Content-Type':'video/mp4'}});
+  }
+  await trial(['download',receipt,out],ready);
+  await writeFile(out,'existing');
+  await assert.rejects(trial(['download',receipt,out],ready),{code:'EEXIST'});
+  assert.equal(await readFile(out,'utf8'),'existing');
+  await assert.rejects(trial(['download',receipt,out],async()=>Response.json({
+    state:'ready',videoUrl:'https://elsewhere.invalid/example.mp4'})),/unconfigured media host/);
+});
 test('preview exposes only a hostname, and an unconfirmed submit makes no request',async()=>{
   let calls=0;
   const api=service({request:()=>{calls++;}});

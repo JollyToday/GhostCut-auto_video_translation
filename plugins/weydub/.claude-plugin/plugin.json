@@ -1,12 +1,12 @@
 {
   "name": "weydub",
-  "version": "1.1.0",
-  "description": "Remove burned-in subtitles from the whole frame of a video, then download the cleaned MP4.",
+  "version": "1.2.0",
+  "description": "Try full-frame Pro subtitle removal on a short local MP4 without a key, or use your Weydub account for a video URL.",
   "author": {"name": "Weydub", "email": "niumo@weydub.com"},
   "homepage": "https://weydub.com/subtitle-removal/",
   "repository": "https://github.com/JollyToday/GhostCut-auto_video_translation",
   "license": "MIT",
-  "network": {"hosts": ["api.zhaoli.com"]},
+  "network": {"hosts": ["api.zhaoli.com", "api.weydub.com", "gc70.cdn.izhaoli.cn"]},
   "userConfig": {
     "app_key": {"type":"string","title":"Weydub App Key","description":"Your own Weydub API account key for processing and retrieving clips.","sensitive":true,"required":false},
     "app_secret": {"type":"string","title":"Weydub App Secret","description":"Used locally to sign your processing and status requests.","sensitive":true,"required":false}

@@ -3,7 +3,7 @@ import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js';
 import {z} from 'zod';
 import {preview, service} from './service.mjs';
 
-const server = new McpServer({name:'weydub-pro-removal', version:'1.1.0'});
+const server = new McpServer({name:'weydub-pro-removal', version:'1.2.0'});
 const configured = value => typeof value === 'string' && value.trim() && !value.includes('${') ? value : undefined;
 const api = service({key:configured(process.env.WEYDUB_CONFIGURED_KEY),secret:configured(process.env.WEYDUB_CONFIGURED_SECRET)});
 const url = z.string().max(8192).describe('Direct HTTPS link to a video you own or have permission to process.');
