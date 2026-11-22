@@ -1,6 +1,6 @@
 {
   "name": "weydub",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Try full-frame Pro subtitle removal on a short local MP4 without a key, or use your Weydub account for a video URL.",
   "author": {"name": "Weydub", "email": "niumo@weydub.com"},
   "homepage": "https://weydub.com/subtitle-removal/",

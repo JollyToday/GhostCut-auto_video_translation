@@ -1,6 +1,6 @@
 {
   "name": "weydub-claude-subtitle-removal",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Full-frame Pro burned-in subtitle removal for MCP clients",
   "type": "module",
   "private": true,

@@ -1,5 +1,5 @@
 import {randomBytes} from 'node:crypto';
-import {open, readFile, stat, writeFile, unlink} from 'node:fs/promises';
+import {open, readFile, realpath, stat, writeFile, unlink} from 'node:fs/promises';
 import {Readable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import {parseArgs} from 'node:util';
@@ -59,7 +59,7 @@ export async function run(args, send = fetch) {
   }
   return {state:'downloaded',file:second};
 }
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+if (process.argv[1] && pathToFileURL(await realpath(process.argv[1])).href === import.meta.url) {
   try { console.log(JSON.stringify(await run(process.argv.slice(2)))); }
   catch (err) { console.error(err.message); process.exitCode=1; }
 }

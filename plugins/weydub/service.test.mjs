@@ -1,13 +1,22 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
+import {mkdtemp,readFile,rm,symlink,writeFile} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {run as trial} from './skills/pro-subtitle-removal/trial.mjs';
 import {preview,service} from './service.mjs';
 
 const sample='https://example.org/sample.mp4?signature=private';
+test('Claude can launch the installed skill through a symlink',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'weydub-entry-'));
+  t.after(()=>rm(dir,{recursive:true,force:true}));
+  const alias=join(dir,'installed.mjs');
+  await symlink(fileURLToPath(new URL('./skills/pro-subtitle-removal/trial.mjs',import.meta.url)),alias);
+  assert.match(JSON.parse(execFileSync(process.execPath,[alias,'--help'],{encoding:'utf8'})).usage,/confirm-upload/);
+});
 test('a refused trial never falls back to paid; delivery keeps the receipt off the CDN and preserves existing files',async t=>{
   const dir=await mkdtemp(join(tmpdir(),'weydub-trial-'));
   t.after(()=>rm(dir,{recursive:true,force:true}));
