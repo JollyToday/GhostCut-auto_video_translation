@@ -10,6 +10,10 @@ Have a finished video with captions baked into the picture? Upload one short cli
 2. Open **Try subtitle removal**. Under **Basic Auth**, create or select a username and password for **your n8n form**. These stay with n8n. Do not enter your Weydub or n8n account password here.
 3. Click **Execute Workflow** and open the test form. For another form submission in test mode, start the workflow again. A team running a private published copy can reopen its **Production URL** instead.
 
+![Imported n8n workflow: the private form branches to receipt creation, clip upload or result lookup.](workflow-canvas.webp)
+
+The red indicator on **Try subtitle removal** in this fresh import means the form's Basic Auth credential has not been selected yet.
+
 ## Clean your clip
 
 | In the form | What to do |

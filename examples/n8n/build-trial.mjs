@@ -5,6 +5,7 @@ const actions=['Create a private receipt','Upload my authorized MP4','Check my r
 const endpoint='https://api.weydub.com/agent-trial/v1/removal';
 const node=(n,name,type,typeVersion,x,y,parameters)=>({id:`982d91c1-d24e-41aa-afb5-${String(n).padStart(12,'0')}`,
   name,type:'n8n-nodes-base.'+type,typeVersion,position:[x,y],parameters});
+const note=(n,name,x,y,width,height,color,content)=>node(n,name,'stickyNote',1,x,y,{width,height,color,content});
 function validate() {
   const {action,receipt=''}=$json;
   const key=String(receipt??'').trim();
@@ -62,7 +63,13 @@ const nodes=[
   node(8,'Read processing status','code',2,960,120,fn(describe)),
   node(9,'Ready to download?','switch',3.2,1190,120,switcher(2,'={{ $json.ready ? 0 : 1 }}')),
   node(10,'Open cleaned MP4','form',1,1430,40,{operation:'completion',respondWith:'redirect',redirectUrl:'={{ $json.url }}'}),
-  node(11,'Show next step','form',1,1430,310,{operation:'completion',respondWith:'text',completionTitle:'={{ $json.title }}',completionMessage:'={{ $json.message }}'})
+  node(11,'Show next step','form',1,1430,310,{operation:'completion',respondWith:'text',completionTitle:'={{ $json.title }}',completionMessage:'={{ $json.message }}'}),
+  note(12,'Start here',-80,-170,380,235,4,
+    '## Open your private form\nIn **Try subtitle removal**, set a Basic Auth username and password just for this form. No Weydub key is needed.\n\nChoose **Execute Workflow** to open the test form. Restart it for each visit, or use the production form in a private, published workflow.'),
+  note(13,'Before sending a clip',600,-465,490,200,5,
+    '## Save a receipt first\nChoose **Create a private receipt** with both fields empty. No video is sent and no trial slot is used.\n\nNext, reopen the form and choose **Upload my authorized MP4**. Only this action sends video to Weydub: H.264 MP4, up to 60 seconds and 16 MiB. Full-frame removal may also erase signs or prices.'),
+  note(14,'Get the finished video',1220,-260,360,220,6,
+    '## Check back with the same receipt\nChoose **Check my result** and leave the file field empty. A ready result opens in your browser; use the player to download it.\n\nIf an upload was interrupted, check before starting over. Keep the receipt private: anyone who has it can retrieve the video.')
 ];
 const routes={1:[2],2:[3],3:[4,6,7,11],4:[5],6:[8],7:[8],8:[9],9:[10,11]};
 const connections=Object.fromEntries(Object.entries(routes).map(([from,outputs])=>[nodes[from-1].name,

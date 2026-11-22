@@ -264,6 +264,54 @@
         "completionTitle": "={{ $json.title }}",
         "completionMessage": "={{ $json.message }}"
       }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000012",
+      "name": "Start here",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -170
+      ],
+      "parameters": {
+        "width": 380,
+        "height": 235,
+        "color": 4,
+        "content": "## Open your private form\nIn **Try subtitle removal**, set a Basic Auth username and password just for this form. No Weydub key is needed.\n\nChoose **Execute Workflow** to open the test form. Restart it for each visit, or use the production form in a private, published workflow."
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000013",
+      "name": "Before sending a clip",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        600,
+        -465
+      ],
+      "parameters": {
+        "width": 490,
+        "height": 200,
+        "color": 5,
+        "content": "## Save a receipt first\nChoose **Create a private receipt** with both fields empty. No video is sent and no trial slot is used.\n\nNext, reopen the form and choose **Upload my authorized MP4**. Only this action sends video to Weydub: H.264 MP4, up to 60 seconds and 16 MiB. Full-frame removal may also erase signs or prices."
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000014",
+      "name": "Get the finished video",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        -260
+      ],
+      "parameters": {
+        "width": 360,
+        "height": 220,
+        "color": 6,
+        "content": "## Check back with the same receipt\nChoose **Check my result** and leave the file field empty. A ready result opens in your browser; use the player to download it.\n\nIf an upload was interrupted, check before starting over. Keep the receipt private: anyone who has it can retrieve the video."
+      }
     }
   ],
   "connections": {
