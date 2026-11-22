@@ -14,7 +14,7 @@ With Docker running, build the local image from this directory:
 docker build -t weydub-pro-removal:1.0.0 .
 ```
 
-Using Cline? Follow the [Cline CLI installation and free preview](llms-install.md). It includes the source checkout command and uses Cline's setup wizard to preserve your other servers.
+Using Cline? Follow the [Cline installation and free preview](llms-install.md). It includes the source checkout, a noninteractive CLI command, and an alternative for the editor extension. No Weydub key is needed for the preview.
 
 For a client that accepts `mcpServers` JSON, add:
 

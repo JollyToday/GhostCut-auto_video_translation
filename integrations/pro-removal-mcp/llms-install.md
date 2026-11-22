@@ -9,13 +9,13 @@ Use this installation to check that Cline can reach the server. No Weydub accoun
    docker build -t weydub-pro-removal:1.0.0 GhostCut-auto_video_translation/integrations/pro-removal-mcp
    ```
 
-2. In an interactive terminal, run:
+2. Register the local server. On Cline CLI 3.0.75 this command works without opening a wizard. If you already configured `weydub-pro-removal`, inspect that entry with `cline mcp` before running the command again; it may contain settings you want to keep.
 
    ```sh
-   cline mcp install weydub-pro-removal -- docker run --rm -i --read-only --cap-drop=ALL --security-opt=no-new-privileges -e WEYDUB_APP_KEY -e WEYDUB_APP_SECRET weydub-pro-removal:1.0.0
+   cline mcp install weydub-pro-removal --yes --json -- docker run --rm -i --read-only --cap-drop=ALL --security-opt=no-new-privileges -e WEYDUB_APP_KEY -e WEYDUB_APP_SECRET weydub-pro-removal:1.0.0
    ```
 
-   Accept the name, **Local** server type and Docker command. Leave the final environment field empty. The wizard should say it added `weydub-pro-removal`. If it already exists, use `cline mcp` to inspect or edit that entry instead of adding another. For a Cline edition without this CLI wizard, merge the single server entry from the [README](README.md) into the MCP settings using the app.
+   Look for `"name":"weydub-pro-removal"` and `"status":"installed"` in the response. This registers the command; the preview in the next step checks that the server actually starts. If `cline mcp install --help` does not list `--yes`, omit `--yes --json` and follow the interactive wizard. Accept the name, **Local** server type and Docker command; leave the final environment field empty. For the editor extension without the CLI, merge just the server entry from the [README](README.md) into the MCP settings in the app.
 
 3. Open a new Cline session and ask: **“Use `preview_removal` only with `https://example.com/sample.mp4`. What settings would be used?”** The expected answer is Pro, full frame, with no charge. This example link does not need to host a video. Preview checks its format, not whether the file is reachable. This finishes the installation test.
 
