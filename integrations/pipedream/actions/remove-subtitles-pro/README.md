@@ -2,6 +2,10 @@
 
 Use **Remove Burned-In Subtitles (Full-Frame Pro)** when captions are part of the picture and appear in different places across a clip. Pro can erase a shop sign, a price or a product label too. To keep those details, [choose a smaller area in the Weydub editor](https://weydub.com/subtitle-removal/).
 
+# Example Use Cases
+
+A creator wants to add English captions to a vertical video, but the original subtitles move from the top of one shot to the middle of the next. Try the [before-and-after clip](https://github.com/JollyToday/GhostCut-auto_video_translation/tree/c4d72c4/examples/full-frame-removal) first. Compare the same frames to see which text disappeared before sending your own video.
+
 # Getting Started
 
 1. Choose your Weydub API connection. Enter a direct HTTPS link to video you have permission to edit. To try a known input, use the [15-second captioned MP4](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/input.mp4).

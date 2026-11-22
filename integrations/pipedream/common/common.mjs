@@ -103,7 +103,11 @@ export function action(op) {
     options: [{ label: "Any available file", value: "any" }, { label: "Video (MP4)", value: "mp4" }, { label: "Original subtitles (SRT)", value: "source-srt" }],
   };
   return {
-    key: `weydub-${slug}`, name, description: `${description} ${docs}`, type: "action", version: "0.0.1", props,
+    name,
+    description: `${description} ${lookup ? "" : "Preview is free. Submitting sends the file URL to Weydub and spends account credits. "}${docs}`,
+    type: "action",
+    annotations: {destructiveHint: !lookup, openWorldHint: !lookup, readOnlyHint: lookup},
+    props,
     async run({ $ }) {
       const body = makeBody(op, this);
       if (!lookup && this.submit !== true) {

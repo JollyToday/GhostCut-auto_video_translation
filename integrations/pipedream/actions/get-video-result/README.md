@@ -1,6 +1,10 @@
 # Overview
 
-Use **Get Video or OCR Result** to retrieve a cleaned clip, an English dub or a subtitle file. Looking up the same job again does not start another processing job.
+Use **Get Video or OCR Result** to retrieve a cleaned clip, a dubbed video or a subtitle file. Looking up the same job again does not start another processing job.
+
+# Example Use Cases
+
+For a batch of episodes, keep each episode name alongside its job ID. If episode 4 is still processing while episode 5 is ready, download episode 5 and check episode 4 later with its original ID. After OCR, select **Original subtitles (SRT)** so a video link alone cannot mark the episode as delivered.
 
 # Getting Started
 

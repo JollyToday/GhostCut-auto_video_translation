@@ -1,7 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readdir } from "node:fs/promises";
+import { copyFile, mkdir, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 
 const actions = {};
 for (const name of await readdir(new URL("./actions/", import.meta.url))) {
@@ -12,6 +15,46 @@ const props = { source: "zh", target: "en", mediaUrl: "https://example.org/clip?
 const run = (key, fields) => actions[key].run.call(fields, { $: { export() {} } });
 const ok = (body) => Response.json({ code: 1000, body });
 const md5 = (text) => createHash("md5").update(text).digest("hex");
+
+test("the registry's static version check and path-based publisher agree with the runtime actions", async () => {
+  for (const [slug, action] of Object.entries(actions)) {
+    const source = await readFile(new URL(`./actions/${slug}/${slug}.mjs`, import.meta.url), "utf8");
+    const literal = field => source.match(new RegExp(`${field}:\\s*["']([^"']+)["']`))?.[1];
+    assert.equal(literal("key"), `weydub-${slug}`);
+    assert.equal(literal("key"), action.key);
+    assert.match(literal("version") ?? "", /^\d+\.\d+\.\d+$/);
+    assert.equal(literal("version"), action.version);
+    const readOnly = slug.startsWith("get-");
+    assert.deepEqual(action.annotations, {destructiveHint: !readOnly, openWorldHint: !readOnly, readOnlyHint: readOnly});
+  }
+});
+
+test("the first registry handoff loads independently and only publishes Pro and its lookup", async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), "weydub-registry-"));
+  t.after(() => rm(dir, {recursive: true, force: true}));
+  const root = new URL("./", import.meta.url);
+  const files = (await readFile(new URL("registry-files.txt", root), "utf8")).trim().split(/\r?\n/);
+  const slugs = ["get-video-result", "remove-subtitles-pro"];
+  assert.deepEqual(files.filter(f => /\.[cm]?js$/.test(f) && !f.startsWith("common/")).sort(), slugs.map(s => `actions/${s}/${s}.mjs`));
+  await copyFile(new URL("weydub.app.mjs", root), join(dir, "weydub.app.mjs"));
+  for (const f of files) {
+    assert.match(f, /^(?:common|actions)\/[\w./-]+$/);
+    assert.ok(!f.includes(".."));
+    await mkdir(dirname(join(dir, f)), {recursive: true});
+    await copyFile(new URL(f, root), join(dir, f));
+  }
+  const [lookup, pro] = await Promise.all(slugs.map(async s => (await import(pathToFileURL(join(dir, "actions", s, `${s}.mjs`)))).default));
+  const poll = t.mock.method(globalThis, "fetch", async (url, request) => {
+    assert.equal(new URL(url).pathname, "/v-w-c/gateway/ve/work/status");
+    assert.deepEqual(JSON.parse(request.body), {idWorks: ["13"]});
+    return ok({content: [{id: 13, processStatus: 1, videoUrl: "https://example.org/output.mp4"}]});
+  });
+  const ctx = {$: {export() {}}};
+  assert.equal((await pro.run.call({mediaUrl: props.mediaUrl}, ctx)).state, "preview");
+  assert.equal(poll.mock.callCount(), 0);
+  assert.equal((await lookup.run.call({weydub: creds, jobId: "13", expectedOutput: "mp4"}, ctx)).videoUrl, "https://example.org/output.mp4");
+  assert.equal(poll.mock.callCount(), 1);
+});
 
 test("all five create actions preview offline without exposing private media URLs", async (t) => {
   const fetch = t.mock.method(globalThis, "fetch", () => { throw Error("unexpected network request"); });
