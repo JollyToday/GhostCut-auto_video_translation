@@ -8,10 +8,17 @@ To see the effect without connecting an account, [play the original and cleaned 
 
 ## Run locally with Docker
 
-With Docker running, build the local image from this directory:
+With Docker running in Linux container mode, download the image and its matching `.sha256` file from [Weydub's Docker release](https://github.com/JollyToday/GhostCut-auto_video_translation/releases/tag/weydub-pro-container-v1.0.0). Use `arm64` on Apple Silicon or ARM Linux; use `amd64` on Intel/AMD. No repository checkout or API account is needed. In the directory with the downloads, run the commands for your architecture. For example, on Apple Silicon:
 
 ```sh
-docker build -t weydub-pro-removal:1.0.0 .
+shasum -a 256 -c weydub-pro-removal-linux-arm64.tar.gz.sha256
+docker load --input weydub-pro-removal-linux-arm64.tar.gz
+```
+
+On Linux you can use `sha256sum -c`. On Windows compare `Get-FileHash .\weydub-pro-removal-linux-amd64.tar.gz -Algorithm SHA256` with the matching checksum before loading. Both archives load the tag `weydub/pro-subtitle-removal:1.0.0`. To build from source instead, run this in the adapter directory:
+
+```sh
+docker build -t weydub/pro-subtitle-removal:1.0.0 .
 ```
 
 Using Cline? Follow the [Cline installation and free preview](llms-install.md). It includes the source checkout, a noninteractive CLI command, and an alternative for the editor extension. No Weydub key is needed for the preview.
@@ -24,10 +31,10 @@ For a client that accepts `mcpServers` JSON, add:
     "weydub-pro-removal": {
       "command": "docker",
       "args": [
-        "run", "--rm", "-i", "--read-only", "--cap-drop=ALL",
+        "run", "--rm", "-i", "--pull=never", "--read-only", "--cap-drop=ALL",
         "--security-opt=no-new-privileges",
         "-e", "WEYDUB_APP_KEY", "-e", "WEYDUB_APP_SECRET",
-        "weydub-pro-removal:1.0.0"
+        "weydub/pro-subtitle-removal:1.0.0"
       ]
     }
   }

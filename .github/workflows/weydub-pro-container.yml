@@ -1,0 +1,70 @@
+name: Release Weydub Pro Docker images
+on:
+  push:
+    tags: ['weydub-pro-container-v*']
+permissions: {}
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - {arch: amd64, runner: ubuntu-24.04}
+          - {arch: arm64, runner: ubuntu-24.04-arm}
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build and verify an installation from the compressed archive
+        working-directory: integrations/pro-removal-mcp
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          set -euo pipefail
+          version="$(node -p 'require("./package.json").version')"
+          test "$GITHUB_REF_NAME" = "weydub-pro-container-v$version"
+          image="weydub/pro-subtitle-removal:$version"
+          file="weydub-pro-removal-linux-$ARCH.tar.gz"
+          npm ci --ignore-scripts --no-fund --no-audit
+          npm test
+          docker build --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.url=https://weydub.com/subtitle-removal/" -t "$image" .
+          test "$(docker image inspect --format '{{.Architecture}}/{{.Config.User}}' "$image")" = "$ARCH/node"
+          docker save "$image" | gzip -n > "$RUNNER_TEMP/$file"
+          docker image rm "$image"
+          docker load --input "$RUNNER_TEMP/$file"
+          node check-image.mjs "$image"
+          cd "$RUNNER_TEMP"
+          sha256sum "$file" > "$file.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pro-${{ matrix.arch }}
+          path: ${{ runner.temp }}/weydub-pro-removal-linux-*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: pro-*
+          merge-multiple: true
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for arch in amd64 arm64; do sha256sum -c "weydub-pro-removal-linux-$arch.tar.gz.sha256"; done
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --latest=false \
+            --title "Weydub Pro Subtitle Removal for Docker ${GITHUB_REF_NAME#weydub-pro-container-v}" \
+            --notes "Download the image for your Docker engine and its SHA-256 file. Installation and MCP configuration: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_SHA/integrations/pro-removal-mcp . Full-frame Pro preview needs no credentials. Processing uses your connected Weydub credits: https://weydub.com/subtitle-removal/" \
+            weydub-pro-removal-linux-*.tar.gz*
