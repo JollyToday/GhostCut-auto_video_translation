@@ -43,7 +43,9 @@ async function run() {
   const result = new URL(data.videoUrl);
   if (result.protocol !== 'https:' || result.username || result.password) throw Error('Invalid result link.');
   const media = await fetch(result,{redirect:'error',signal:AbortSignal.timeout(120000)});
-  if (!media.ok || !media.body) throw Error(`Download failed (${media.status}). Reuse this receipt.`);
+  const type = media.headers.get('content-type') || '';
+  if (!media.ok || !media.body || !/^video\/(?:mp4|iso\.segment|quicktime)(?:;|$)/i.test(type))
+    throw Error(`Download failed (${media.status}, ${type || 'unknown content type'}). Reuse this receipt.`);
   const file = await open(second,'wx',0o600);
   try {
     await pipeline(Readable.fromWeb(media.body),file.createWriteStream());
