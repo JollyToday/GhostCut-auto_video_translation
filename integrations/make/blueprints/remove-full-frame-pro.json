@@ -1,0 +1,38 @@
+{
+  "name": "Weydub - Remove captions anywhere in a video with Pro",
+  "flow": [
+    {
+      "id": 1,
+      "module": "util:SetVariables",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "variables": [
+          {"name": "videoUrl", "value": "https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/input.mp4"},
+          {"name": "approvedVideoUrl", "value": ""}
+        ],
+        "scope": "roundtrip"
+      },
+      "metadata": {"designer": {"x": 0, "y": 0, "name": "Select a clip (preview by default)"}}
+    },
+    {
+      "id": 2,
+      "module": "app#weydub-media-4geufd:makeApiCall",
+      "version": 1,
+      "parameters": {},
+      "filter": {
+        "name": "Only process the exact approved HTTPS clip",
+        "conditions": [[
+          {"a": "{{1.videoUrl}}", "o": "text:startwith", "b": "https://"},
+          {"a": "{{1.approvedVideoUrl}}", "o": "text:equal", "b": "{{1.videoUrl}}"}
+        ]]
+      },
+      "mapper": {
+        "path": "{{if(ifempty(1.approvedVideoUrl; \"NO APPROVAL\") = 1.videoUrl; \"/work/free\"; emptystring)}}",
+        "jsonBody": "{\"urls\":[\"{{escapeJSON(1.videoUrl)}}\"],\"needChineseOcclude\":1,\"videoInpaintLang\":\"all\",\"extraOptions\":\"{\\\"extra_inpaint_config\\\":{\\\"model\\\":\\\"advanced_full\\\"}}\"}"
+      },
+      "metadata": {"designer": {"x": 320, "y": 0, "name": "Submit full-frame Pro using Weydub credits"}}
+    }
+  ],
+  "metadata": {"version": 1, "instant": false, "designer": {"orphans": []}}
+}

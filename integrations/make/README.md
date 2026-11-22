@@ -4,6 +4,17 @@
 
 Four actions submit a single file: remove lower-frame burned-in captions with Lite, extract visible subtitles with full-frame OCR, translate and dub speech, or translate text inside an image. For OCR, enter the language you see on screen. For dubbing, choose the language you hear and the language you want to deliver. Supply a directly downloadable HTTPS file you have permission to process.
 
+## Remove subtitles anywhere in the frame with Pro
+
+In the [15-second example](../../examples/full-frame-removal/), the first caption sits across a forehead, the second on an apron and the third near the bottom. Watch the input and processed MP4 side by side before spending credits. Pro searches the whole frame, so it can also remove signs or product labels. If some text must stay, [select an area in Weydub](https://weydub.com/subtitle-removal/) instead.
+
+1. Download the [full-frame Pro blueprint](blueprints/remove-full-frame-pro.json) using **Download raw file**. Install the Weydub app from the invitation above. In a blank Make scenario, open **More → Import blueprint**, import the JSON, select your Weydub connection in the second module and save. Leave scheduling off.
+2. Click **Run once** with `approvedVideoUrl` empty. The first module shows the selected `videoUrl`; the filter passes zero bundles. This preview uses a Make operation. It creates no Weydub job or output video.
+3. To process a clip, set `videoUrl` to the sample or your own direct HTTPS file, then copy that **exact URL** to `approvedVideoUrl`. Save and click **Run once**. This submits a billable Pro job on the connected Weydub account. In the second module's output, expand **Body → body → dataList → first item → id**. Keep that ID. Clear `approvedVideoUrl` and save before another run: Make remembers the value and a second run with the same approval can create a second job.
+4. In a separate blank scenario import [Get a Video or Subtitle Result](blueprints/check-dubbed-clip.json). Despite the file name, it works for erasure as well as dubbing. Choose the same connection, enter the ID and run **only the result scenario**. At **Processing status** `1`, download **Video URL**. With the sample, compare the same frames at **2.31**, **6.55** and **12.18** seconds.
+
+If submission times out, check the connected account's job history before sending the clip again. For status `73` or `83`, see the credit and recovery instructions below. This workflow uses the existing **Make an API call** module; the named Lite action still processes only the bottom 18%.
+
 ## Try dubbing with a sample
 
 Download the two JSON blueprints below (use **Download raw file** on GitHub). After installing the app, create a **new blank scenario for each file**. In the scenario editor open **More → Import blueprint**. Choose your own Weydub connection in the imported module, save, and leave scheduling off.
