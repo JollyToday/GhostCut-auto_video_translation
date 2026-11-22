@@ -1,0 +1,15 @@
+{
+  "name": "Weydub - Look up an English voice for classic dubbing",
+  "flow": [{
+    "id": 1,
+    "module": "app#weydub-media-4geufd:makeApiCall",
+    "version": 1,
+    "parameters": {},
+    "mapper": {
+      "path": "/voicecharacter/aggregate/list",
+      "jsonBody": "{\"id\":10709,\"voiceCharacterLanguage\":\"en\"}"
+    },
+    "metadata": {"designer": {"x": 0, "y": 0}}
+  }],
+  "metadata": {"version": 1, "instant": false, "designer": {"orphans": []}}
+}

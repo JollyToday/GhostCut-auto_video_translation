@@ -36,6 +36,8 @@ Import one blueprint into each blank scenario as above. The three creation examp
 
 ## Module reference
 
+To try **Make an API call** without uploading a file, [import the public voice lookup](blueprints/look-up-public-voice.json), select your Weydub connection, save the module and click **Run once**. It asks for one English voice by its public catalog ID. Expand **Body → body → first item** and look for `voiceCharacterNameEn`; the sample returned **Confident female voice**. Under `supportLanguageList`, `voiceCharacterLocale` identifies the accent and `demoUrl` is the listening sample. This lookup uses a Make operation and creates no Weydub media job. Public voice selection is for classic dubbing; the **Translate and Dub a Video** action uses high-emotion cloning and does not need this ID.
+
 The app also includes **Make an API call**, a signed JSON POST module for advanced workflows. Enter a leading-slash path such as `/point/query` and a JSON object; the module sends it to Weydub's fixed media gateway with the connection credentials. It accepts paths and bodies only, does not follow redirects, and never accepts a full URL. Use the four named modules when they cover your workflow because their fields and result checks are safer and easier to map. The universal module is for a Weydub endpoint documented in the [developer guide](https://weydub.com/docs/api/), not for arbitrary third-party URLs.
 
 Keep your own Weydub App Key and App Secret in a Make connection. The connection checks access with a balance query. A RapidAPI key uses a different authentication method.
