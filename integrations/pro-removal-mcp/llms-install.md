@@ -2,19 +2,19 @@
 
 Use this installation to check that Cline can reach the server. No Weydub account or video is needed to install it. Processing takes place on Weydub only when you later submit a job.
 
-1. Start Docker. In a new directory, run this as **one shell command**. It gets just the adapter and builds its image. Wait for the build to finish successfully before registering the server; Cline can save a registration even when the image is missing.
+1. Start Docker. [Download and load the image for your computer](README.md#run-locally-with-docker), then go straight to step 2. To build the same adapter from source instead, run this as **one shell command** in a new directory. Wait for the load or build to finish before registering the server; Cline can save a registration even when the image is missing.
 
    ```sh
    git clone --depth 1 --filter=blob:none --no-checkout https://github.com/JollyToday/GhostCut-auto_video_translation.git && \
    git -C GhostCut-auto_video_translation sparse-checkout set --no-cone '/integrations/pro-removal-mcp/' && \
    git -C GhostCut-auto_video_translation checkout && \
-   docker build -t weydub-pro-removal:1.0.0 GhostCut-auto_video_translation/integrations/pro-removal-mcp
+   docker build -t weydub/pro-subtitle-removal:1.0.0 GhostCut-auto_video_translation/integrations/pro-removal-mcp
    ```
 
 2. Register the local server. On Cline CLI 3.0.75 this command works without opening a wizard. If you already configured `weydub-pro-removal`, inspect that entry with `cline config mcp` before running the command again; it may contain settings you want to keep.
 
    ```sh
-   cline mcp install weydub-pro-removal --yes --json -- docker run --rm -i --read-only --cap-drop=ALL --security-opt=no-new-privileges -e WEYDUB_APP_KEY -e WEYDUB_APP_SECRET weydub-pro-removal:1.0.0
+   cline mcp install weydub-pro-removal --yes --json -- docker run --rm -i --pull=never --read-only --cap-drop=ALL --security-opt=no-new-privileges -e WEYDUB_APP_KEY -e WEYDUB_APP_SECRET weydub/pro-subtitle-removal:1.0.0
    ```
 
    Look for `"name":"weydub-pro-removal"` and `"status":"installed"` in the response. This registers the command; the preview in the next step checks that the server actually starts. If `cline mcp install --help` does not list `--yes`, omit `--yes --json` and follow the interactive wizard. Accept the name, **Local** server type and Docker command; leave the final environment field empty. For the editor extension without the CLI, merge just the server entry from the [README](README.md) into the MCP settings in the app.
