@@ -69,7 +69,9 @@ const nodes=[
   note(13,'Before sending a clip',600,-465,490,200,5,
     '## Save a receipt first\nChoose **Create a private receipt** with both fields empty. No video is sent and no trial slot is used.\n\nNext, reopen the form and choose **Upload my authorized MP4**. Only this action sends video to Weydub: H.264 MP4, up to 60 seconds and 16 MiB. Full-frame removal may also erase signs or prices.'),
   note(14,'Get the finished video',1220,-260,360,220,6,
-    '## Check back with the same receipt\nChoose **Check my result** and leave the file field empty. A ready result opens in your browser; use the player to download it.\n\nIf an upload was interrupted, check before starting over. Keep the receipt private: anyone who has it can retrieve the video.')
+    '## Check back with the same receipt\nChoose **Check my result** and leave the file field empty. A ready result opens in your browser; use the player to download it.\n\nIf an upload was interrupted, check before starting over. Keep the receipt private: anyone who has it can retrieve the video.'),
+  note(15,'When the download is not ready',920,515,460,210,3,
+    '## No download yet?\n**Queued or processing:** reopen the form, choose **Check my result**, and paste the same receipt. Leave the file empty; there is no need to upload again.\n\n**Trial capacity reached:** anonymous tools share 100 sponsored uploads per UTC month. The form stops here. It will not switch to paid processing.')
 ];
 const routes={1:[2],2:[3],3:[4,6,7,11],4:[5],6:[8],7:[8],8:[9],9:[10,11]};
 const connections=Object.fromEntries(Object.entries(routes).map(([from,outputs])=>[nodes[from-1].name,

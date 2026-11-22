@@ -21,7 +21,9 @@ Set `WEYDUB_APP_KEY` and `WEYDUB_APP_SECRET` locally for live calls. Save the re
 
 In [Apify Store, open the Weydub Actor](https://apify.com/weydub/weydub-media-localization) and run the default image example with **Submit a billable media job** off. Its dataset shows the request without spending Weydub credits. To translate your own image, enter its URL and your Weydub credentials, turn submission on, then choose **Check an image job** and enter the returned job ID to get the download link. Apify platform usage is separate.
 
-To build a workflow without writing code, [install Weydub in your Make organization by invitation](https://www.make.com/en/hq/app-invitation/a4e2ee19d928e181b5dbbbd59c10a8ed) and [try one product image](integrations/make/README.md), or [install the release on self-hosted n8n](integrations/n8n/README.md). Use your own Weydub App Key and App Secret for live jobs. Make is available through the invite rather than the reviewed directory. The n8n package is for self-hosted installations; it is not a verified n8n Cloud node.
+**In n8n:** [Import the free subtitle-removal form](examples/n8n/) to try full-frame Pro on one of your own MP4s, up to 60 seconds and 16 MiB. The form uses built-in nodes: you do not need a Weydub key, payment method or community node. Save the private receipt to download your result. For recurring batch jobs, [install the self-hosted node](integrations/n8n/README.md) and use your Weydub API credentials.
+
+**In Make:** [Install Weydub in your organization by invitation](https://www.make.com/en/hq/app-invitation/a4e2ee19d928e181b5dbbbd59c10a8ed) and [try one product image](integrations/make/README.md). A preview uses no Weydub processing credits; submitting a live job uses your connected Weydub account's credits.
 
 For MCP clients, [install the Weydub desktop extension and run your first job](mcp/README.md). Start by previewing a request, then use the returned job ID to download your SRT, processed video, or translated image.
 

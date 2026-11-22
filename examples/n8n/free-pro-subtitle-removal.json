@@ -318,7 +318,10 @@
       "name": "When the download is not ready",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [920, 515],
+      "position": [
+        920,
+        515
+      ],
       "parameters": {
         "width": 460,
         "height": 210,
