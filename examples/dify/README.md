@@ -10,7 +10,9 @@ Use a trusted workspace: its run history can include the receipt, file and priva
 
 ## Use your own Weydub credits
 
-Download [`subtitle-removal-0.1.1.difypkg`](subtitle-removal-0.1.1.difypkg). In a Dify 1.20.0 or later workspace that permits local packages, open **Plugins → Install Plugin → Local Package** and select the download. This is a direct installation package; it does not carry a Dify Marketplace signature. Workspaces that require a verified signature may not install it.
+In a Dify 1.20.0 or later workspace that accepts unsigned plugins, go to **Plugins → Install Plugin → GitHub**. Enter `https://github.com/JollyToday/GhostCut-auto_video_translation`, choose `weydub-dify-v0.1.1`, then select `subtitle-removal-0.1.1.difypkg`. Check that the preview says **Weydub Pro Subtitle Removal** before installing.
+
+If your version selector does not show that tag yet, [download the package directly](https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-dify-v0.1.1/subtitle-removal-0.1.1.difypkg) and choose **Local Package**. Both routes use the same unsigned file. If your workspace requires a Marketplace signature, use the sponsored Studio workflow above where workspace policy allows it.
 
 Already using the 0.1.0 local package? Check the version under **Installed Plugins** after uploading. In Community Edition 1.20.0 an upload can finish while 0.1.0 remains active. In that case, schedule the change when no workflows are running, keep your configuration and saved work IDs, uninstall the old package, then install 0.1.1. Confirm the installed version and check an existing work ID before submitting another clip.
 

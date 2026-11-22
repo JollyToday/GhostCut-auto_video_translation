@@ -1,0 +1,39 @@
+name: Publish Weydub package for Dify
+on:
+  push:
+    tags: ['weydub-dify-v*']
+permissions: {}
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify the package against the tagged source and publish it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          version="${GITHUB_REF_NAME#weydub-dify-v}"
+          package="examples/dify/subtitle-removal-${version}.difypkg"
+          python3 - "$version" "$package" <<'PY'
+          import re, subprocess, sys, zipfile
+          from pathlib import Path
+          version, package = sys.argv[1:]
+          root = Path("integrations/dify")
+          assert re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version)
+          assert f"version: {version}" in (root / "manifest.yaml").read_text().splitlines()
+          tracked = subprocess.check_output(["git", "ls-files", "-z", str(root)]).decode().split("\0")
+          sources = {Path(p).relative_to(root).as_posix(): Path(p) for p in tracked if p}
+          with zipfile.ZipFile(package) as archive:
+              assert sorted(archive.namelist()) == sorted(sources), "Unexpected or missing package files"
+              for name, source in sources.items():
+                  assert archive.read(name) == source.read_bytes(), f"Source mismatch: {name}"
+          PY
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --latest=false \
+            --title "Weydub Pro Subtitle Removal for Dify ${version}" \
+            --notes 'Install from GitHub in a Dify workspace that accepts unsigned plugins. This package uses your own Weydub credits. For the separate sponsored workflow and installation instructions, see https://github.com/JollyToday/GhostCut-auto_video_translation/tree/main/examples/dify. Compare results in the Weydub editor: https://weydub.com/subtitle-removal/.' \
+            "$package"
