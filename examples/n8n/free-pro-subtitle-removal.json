@@ -1,0 +1,394 @@
+{
+  "name": "Weydub: try full-frame Pro subtitle removal",
+  "id": "WeydubSponsoredPro",
+  "active": false,
+  "nodes": [
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000001",
+      "name": "Try subtitle removal",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.4,
+      "position": [
+        0,
+        180
+      ],
+      "parameters": {
+        "authentication": "basicAuth",
+        "formTitle": "Remove burned-in subtitles",
+        "formDescription": "Use an H.264 MP4 you may share, up to 60 seconds and 16 MiB. Pro scans the whole picture, including signs and prices. First create and save a private receipt. Only the upload action sends your clip to Weydub.",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "action",
+              "fieldLabel": "Action",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Create a private receipt"
+                  },
+                  {
+                    "option": "Upload my authorized MP4"
+                  },
+                  {
+                    "option": "Check my result"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldName": "receipt",
+              "fieldLabel": "Private receipt",
+              "fieldType": "password"
+            },
+            {
+              "fieldName": "clip",
+              "fieldLabel": "Your MP4 (upload only)",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".mp4"
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {
+          "buttonLabel": "Continue",
+          "appendAttribution": false
+        }
+      },
+      "webhookId": "15475c47-42a0-48d7-a931-f43f35f48900"
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000002",
+      "name": "Check the form",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        230,
+        180
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\n  const {action,receipt=''}=$json;\n  const key=String(receipt??'').trim();\n  const file=$binary?.clip;\n  const stop=message=>({json:{route:3,title:'Check your form',message}});\n  if(action==='Create a private receipt' && !file && !key)return {json:{route:0}};\n  if(action==='Create a private receipt')return stop('Leave the receipt and file empty to create a receipt. To resume, choose Check my result.');\n  if(!/^[a-f0-9]{64}$/.test(key))return stop('Paste the complete 64-character receipt. Create one first if you are starting a new clip.');\n  if(action==='Check my result' && !file)return {json:{route:2,receipt:key}};\n  if(action==='Check my result')return stop('Remove the selected file to check your result. Nothing was sent to Weydub.');\n  if(action!=='Upload my authorized MP4' || !file)return stop('Select the upload action and choose one H.264 MP4 that you may send to Weydub.');\n  if(!/\\.mp4$/i.test(file.fileName??''))return stop('Choose an MP4 file. Nothing was sent to Weydub.');\n  return {json:{route:1,receipt:key},binary:{clip:file}};\n"
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000003",
+      "name": "Choose action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        460,
+        180
+      ],
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 4,
+        "output": "={{ $json.route }}"
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000004",
+      "name": "Generate receipt locally",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 1,
+      "position": [
+        710,
+        -180
+      ],
+      "parameters": {
+        "action": "generate",
+        "encodingType": "hex",
+        "stringLength": 64,
+        "dataPropertyName": "receipt"
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000005",
+      "name": "Save your receipt",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -180
+      ],
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "text",
+        "completionTitle": "Save your private receipt",
+        "completionMessage": "={{ \"Copy this receipt before uploading: \" + $json.receipt + \". Open the form again and choose Upload my authorized MP4. Anyone with the receipt can retrieve the result.\" }}"
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000006",
+      "name": "Upload authorized clip",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        710,
+        40
+      ],
+      "parameters": {
+        "url": "https://api.weydub.com/agent-trial/v1/removal",
+        "method": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Trial-Receipt",
+              "value": "={{ $json.receipt }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "video/mp4"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "clip",
+        "options": {
+          "timeout": 90000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000007",
+      "name": "Check saved receipt",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        710,
+        230
+      ],
+      "parameters": {
+        "url": "https://api.weydub.com/agent-trial/v1/removal",
+        "method": "GET",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Trial-Receipt",
+              "value": "={{ $json.receipt }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 90000,
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000008",
+      "name": "Read processing status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        120
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\n  const code=$json.statusCode, data=$json.body??{};\n  const show=(title,message)=>({json:{title,message,ready:false}});\n  if(code===429)return show('Trial capacity unavailable','No paid job was started. Keep your receipt and try again later.');\n  if(code===404)return show('No clip on this receipt','Check the receipt you pasted. If you have not submitted the clip, use Upload my authorized MP4.');\n  if(code===409)return show('This receipt belongs to another clip','Check the original receipt. Use a new one only for a different video.');\n  if([413,415,422].includes(code))return show('Check your video','Use an H.264 MP4 of up to 60 seconds and 16 MiB, with AAC audio or no audio.');\n  if(![200,202].includes(code))return show('Request not confirmed','Keep the same receipt and check your result before retrying.');\n  if(data.state==='ready' && data.videoUrl) {\n    if(/^https:\\/\\/[a-z0-9.-]+\\/[^\\s\\\\<>\"]+$/i.test(data.videoUrl))return {json:{ready:true,url:data.videoUrl}};\n    return show('Download unavailable','Keep your receipt and check again later.');\n  }\n  if(['queued','submitting','processing','ready'].includes(data.state))return show(\n    data.replayed?'This clip was already submitted':(data.state==='ready'?'Your clip is ready':'Your clip is being processed'),\n    'Open the form again, select Check my result and use the same receipt. Leave the file field empty.');\n  return show('This result is unavailable','Keep your receipt. Processing may have failed or the download may have expired.');\n"
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000009",
+      "name": "Ready to download?",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1190,
+        120
+      ],
+      "parameters": {
+        "mode": "expression",
+        "numberOutputs": 2,
+        "output": "={{ $json.ready ? 0 : 1 }}"
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000010",
+      "name": "Open cleaned MP4",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        1430,
+        40
+      ],
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "redirect",
+        "redirectUrl": "={{ $json.url }}"
+      }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000011",
+      "name": "Show next step",
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 1,
+      "position": [
+        1430,
+        310
+      ],
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "text",
+        "completionTitle": "={{ $json.title }}",
+        "completionMessage": "={{ $json.message }}"
+      }
+    }
+  ],
+  "connections": {
+    "Try subtitle removal": {
+      "main": [
+        [
+          {
+            "node": "Check the form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check the form": {
+      "main": [
+        [
+          {
+            "node": "Choose action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Choose action": {
+      "main": [
+        [
+          {
+            "node": "Generate receipt locally",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload authorized clip",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check saved receipt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show next step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate receipt locally": {
+      "main": [
+        [
+          {
+            "node": "Save your receipt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload authorized clip": {
+      "main": [
+        [
+          {
+            "node": "Read processing status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check saved receipt": {
+      "main": [
+        [
+          {
+            "node": "Read processing status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read processing status": {
+      "main": [
+        [
+          {
+            "node": "Ready to download?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ready to download?": {
+      "main": [
+        [
+          {
+            "node": "Open cleaned MP4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show next step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": false,
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none"
+  },
+  "pinData": {}
+}

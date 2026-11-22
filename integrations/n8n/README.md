@@ -1,5 +1,7 @@
 # Weydub Media for n8n
 
+To try one short MP4 without a Weydub key or a community-node installation, [open the free subtitle-removal workflow](../../examples/n8n/). It processes your clip with full-frame Pro and opens the result in your browser.
+
 On self-hosted n8n, install the versioned GitHub release in the `nodes` folder of your n8n user directory. Run these commands as the account that runs n8n (the default user directory is `~/.n8n`), then restart n8n:
 
 ```sh
