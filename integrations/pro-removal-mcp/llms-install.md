@@ -2,14 +2,16 @@
 
 Use this installation to check that Cline can reach the server. No Weydub account or video is needed to install it. Processing takes place on Weydub only when you later submit a job.
 
-1. Start Docker. In a new directory, get the published adapter and build its local image:
+1. Start Docker. In a new directory, get the adapter without downloading the repository's example videos, then build its local image:
 
    ```sh
-   git clone --depth 1 https://github.com/JollyToday/GhostCut-auto_video_translation.git
+   git clone --depth 1 --filter=blob:none --no-checkout https://github.com/JollyToday/GhostCut-auto_video_translation.git
+   git -C GhostCut-auto_video_translation sparse-checkout set --no-cone '/integrations/pro-removal-mcp/'
+   git -C GhostCut-auto_video_translation checkout
    docker build -t weydub-pro-removal:1.0.0 GhostCut-auto_video_translation/integrations/pro-removal-mcp
    ```
 
-2. Register the local server. On Cline CLI 3.0.75 this command works without opening a wizard. If you already configured `weydub-pro-removal`, inspect that entry with `cline mcp` before running the command again; it may contain settings you want to keep.
+2. Register the local server. On Cline CLI 3.0.75 this command works without opening a wizard. If you already configured `weydub-pro-removal`, inspect that entry with `cline config mcp` before running the command again; it may contain settings you want to keep.
 
    ```sh
    cline mcp install weydub-pro-removal --yes --json -- docker run --rm -i --read-only --cap-drop=ALL --security-opt=no-new-privileges -e WEYDUB_APP_KEY -e WEYDUB_APP_SECRET weydub-pro-removal:1.0.0
