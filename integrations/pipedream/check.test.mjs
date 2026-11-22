@@ -69,7 +69,7 @@ test("lookups call only read endpoints, match work IDs, and handle stringified i
     const body = JSON.parse(req.body);
     if (url.endsWith("/work/status")) {
       assert.deepEqual(body.idWorks, ["51"]);
-      return ok({ content: [{ id: 50, processStatus: 1, videoUrl: "other" }, { id: 51, processStatus: 1, srcSrtUrl: "captions.srt" }] });
+      return ok({ content: [{ id: 50, processStatus: 1, videoUrl: "https://example.org/other.mp4" }, { id: 51, processStatus: 1, srcSrtUrl: "https://example.org/captions.srt" }] });
     }
     assert.ok(url.endsWith("/image/translate/query"));
     assert.equal(body.id, 51);
@@ -77,7 +77,7 @@ test("lookups call only read endpoints, match work IDs, and handle stringified i
   });
   const input = { weydub: creds, jobId: "51" };
   const video = await run("get-video-result", input);
-  assert.equal(video.sourceSrtUrl, "captions.srt");
+  assert.equal(video.sourceSrtUrl, "https://example.org/captions.srt");
   assert.equal(video.videoUrl, null);
   assert.equal((await run("get-image-result", input)).imageUrl, null);
   assert.equal((await run("get-image-result", input)).imageUrl, "translated.webp");
@@ -96,6 +96,29 @@ test("wrong or incomplete image results cannot be delivered; credit states prese
     assert.equal(result.jobId, "51");
     assert.equal(result.videoUrl, null);
   }
+});
+
+test("a completed lookup must include the selected deliverable, without starting another job", async (t) => {
+  let result = {};
+  const fn = t.mock.method(globalThis, "fetch", async (url, req) => {
+    assert.ok(url.endsWith("/work/status"));
+    assert.deepEqual(JSON.parse(req.body), { idWorks: ["51"] });
+    return ok({ content: [{ id: 51, processStatus: 1, ...result }] });
+  });
+  const lookup = (expectedOutput) => run("get-video-result", { weydub: creds, jobId: "51", expectedOutput });
+  await assert.rejects(lookup(), /Job 51.*no download link/);
+  result = {videoUrl: "pending", srcSrtUrl: "not-a-link"};
+  await assert.rejects(lookup("mp4"), /no MP4 link/);
+  result = {srcSrtUrl: "https://example.org/source.srt"};
+  await assert.rejects(lookup("mp4"), /no MP4 link/);
+  assert.equal((await lookup("source-srt")).sourceSrtUrl, result.srcSrtUrl);
+  assert.equal((await lookup()).sourceSrtUrl, result.srcSrtUrl);
+  result = {videoUrl: "https://example.org/clean.mp4"};
+  await assert.rejects(lookup("source-srt"), /no source SRT link/);
+  assert.equal((await lookup("mp4")).videoUrl, result.videoUrl);
+  result = {processStatus: 0};
+  assert.equal((await lookup("mp4")).status, 0);
+  assert.equal(fn.mock.callCount(), 8);
 });
 
 test("bad input cannot submit; an uncertain or unfunded job is never replayed", async (t) => {

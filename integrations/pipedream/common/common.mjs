@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import app from "./weydub.app.mjs";
+import app from "../weydub.app.mjs";
 import contract from "./contract.mjs";
 
 const docs = "[See the documentation](https://weydub.com/docs/api/)";
@@ -28,6 +28,13 @@ function media(value) {
   try { url = new URL(value); } catch { /* Report a helpful field error below. */ }
   if (!url || url.protocol !== "https:" || url.username || url.password) throw Error("Use a downloadable HTTPS file URL without embedded credentials.");
   return value;
+}
+function downloadLink(value) {
+  if (typeof value !== "string") return null;
+  try {
+    const url = new URL(value);
+    return ["https:", "http:"].includes(url.protocol) && !url.username && !url.password ? value : null;
+  } catch { return null; }
 }
 function makeBody(op, props) {
   if (op === "erase-pro") return {
@@ -65,7 +72,17 @@ function unpack(op, props, reply) {
       73: "Processing has not started. Check the connected Weydub account's processing credits before retrying.",
       83: "Processing finished but the output is locked. Resolve the balance on the connected Weydub account and check this job again; do not create a new one.",
     }[item.processStatus];
-    return { jobId: id, status: item.processStatus, ...(creditMessage && {statusMessage: creditMessage}), videoUrl: ready && item.videoUrl || null, sourceSrtUrl: ready && item.srcSrtUrl || null, translatedSrtUrl: ready && item.tgtSrtUrl || null };
+    const outputs = {
+      videoUrl: ready ? downloadLink(item.videoUrl) : null,
+      sourceSrtUrl: ready ? downloadLink(item.srcSrtUrl) : null,
+      translatedSrtUrl: ready ? downloadLink(item.tgtSrtUrl) : null,
+    };
+    const required = {mp4: ["videoUrl", "MP4"], "source-srt": ["sourceSrtUrl", "source SRT"]}[props.expectedOutput];
+    if (ready && !(required ? outputs[required[0]] : Object.values(outputs).some(Boolean))) {
+      const missing = required?.[1] ?? "download";
+      throw Error(`Job ${id} is marked complete, but no ${missing} link was returned. Verify the job ID and output type. Check the same ID again or contact Weydub support; do not submit the clip again.`);
+    }
+    return { jobId: id, status: item.processStatus, ...(creditMessage && {statusMessage: creditMessage}), ...outputs };
   }
   return { state: "accepted", jobId: jobId(op === "image" ? b : b?.dataList?.[0]?.id), nextAction: op === "image" ? "weydub-get-image-result" : "weydub-get-video-result" };
 }
@@ -80,6 +97,11 @@ export function action(op) {
     if (["dub", "image"].includes(op)) props.target = { type: "string", label: "Target Language", description: "Language code of the output, for example en." };
     props.submit = { type: "boolean", label: "Submit Billable Job", description: "Leave off to preview. Turn on to spend this connected account's processing credits on one file.", default: false };
   }
+  if (op === "video-status") props.expectedOutput = {
+    type: "string", label: "Expected Output", optional: true, default: "any",
+    description: "Choose MP4 after removal or dubbing, or source SRT after OCR. A completed job must include the selected file.",
+    options: [{ label: "Any available file", value: "any" }, { label: "Video (MP4)", value: "mp4" }, { label: "Original subtitles (SRT)", value: "source-srt" }],
+  };
   return {
     key: `weydub-${slug}`, name, description: `${description} ${docs}`, type: "action", version: "0.0.1", props,
     async run({ $ }) {

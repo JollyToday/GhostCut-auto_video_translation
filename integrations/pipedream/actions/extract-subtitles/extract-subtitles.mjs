@@ -1,2 +1,2 @@
-import { action } from "../../common.mjs";
+import { action } from "../../common/common.mjs";
 export default action("ocr");

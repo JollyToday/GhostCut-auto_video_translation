@@ -1,4 +1,4 @@
-import contract from "../pipedream/contract.mjs";
+import contract from "../pipedream/common/contract.mjs";
 
 const origin = "https://api.zhaoli.com";
 const valid = {condition: "{{body.code === 1000}}", message: "Weydub {{body.code}}: {{body.msg}} (trace {{body.trace}}). Check your job before submitting it again."};
