@@ -312,6 +312,19 @@
         "color": 6,
         "content": "## Check back with the same receipt\nChoose **Check my result** and leave the file field empty. A ready result opens in your browser; use the player to download it.\n\nIf an upload was interrupted, check before starting over. Keep the receipt private: anyone who has it can retrieve the video."
       }
+    },
+    {
+      "id": "982d91c1-d24e-41aa-afb5-000000000015",
+      "name": "When the download is not ready",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [920, 515],
+      "parameters": {
+        "width": 460,
+        "height": 210,
+        "color": 3,
+        "content": "## No download yet?\n**Queued or processing:** reopen the form, choose **Check my result**, and paste the same receipt. Leave the file empty; there is no need to upload again.\n\n**Trial capacity reached:** anonymous tools share 100 sponsored uploads per UTC month. The form stops here. It will not switch to paid processing."
+      }
     }
   ],
   "connections": {
