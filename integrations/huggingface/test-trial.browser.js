@@ -7,7 +7,7 @@ async page => {
   const send = panel.getByRole('button', {name: 'Remove subtitles', exact: true});
   const check = panel.getByRole('button', {name: 'Check status'});
   let posts = 0, saved, exhausted = true;
-  await page.route('**/sponsored-removal', async route => {
+  await page.route('**/gradio_api/sponsored-removal', async route => {
     const request = route.request(), receipt = request.headers()['x-trial-receipt'];
     if (!/^[0-9a-f]{64}$/.test(receipt) || (saved && saved !== receipt)) throw Error('Receipt changed');
     saved = receipt;

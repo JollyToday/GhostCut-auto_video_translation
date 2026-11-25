@@ -74,4 +74,6 @@ async def relay(request):
 
 
 def routes():
-    return [Route("/sponsored-removal", relay, methods=["GET", "POST"])]
+    # Gradio SSR proxies ordinary paths to its frontend renderer. Keep the
+    # relay under Gradio's internal API prefix so GET and POST reach Starlette.
+    return [Route("/gradio_api/sponsored-removal", relay, methods=["GET", "POST"])]

@@ -12,7 +12,7 @@ short_description: Preview subtitle removal, OCR, dubbing and image translation
 
 # Weydub Media Localization Lab
 
-Compare [Weydub](https://weydub.com/) examples, inspect a signed-API request body without submitting it, or run one of four operations in your own Space. This is a client for a hosted service; it does not distribute model weights.
+Compare [Weydub](https://weydub.com/) examples, inspect a signed-API request body without submitting it, or run one of four operations in your own Space. The official public demo is [Weydub Media Localization](https://huggingface.co/spaces/iniu/weydub-media-localization). This is a client for a hosted service; it does not distribute model weights.
 
 | Operation | Input | Output |
 | --- | --- | --- |

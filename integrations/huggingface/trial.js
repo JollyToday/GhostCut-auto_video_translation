@@ -36,7 +36,7 @@ async function run(submit) {
   const headers = {'X-Trial-Receipt': receipt.value};
   if (submit) Object.assign(headers, {'Content-Type':'video/mp4', 'X-Confirm-Upload':'yes'});
   try {
-    const res = await fetch(new URL('sponsored-removal', document.baseURI), {
+    const res = await fetch(new URL('gradio_api/sponsored-removal', document.baseURI), {
       method:submit?'POST':'GET', headers, body:submit?file:undefined, credentials:'omit',
       redirect:'error', cache:'no-store', signal:AbortSignal.timeout(90000)
     });

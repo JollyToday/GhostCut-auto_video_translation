@@ -112,18 +112,20 @@ def test_trial_excludes_personal_copies(personal_space, monkeypatch):
     assert not app.sponsor_visible()
     monkeypatch.setenv("SPACE_ID", "weydub/media-localization")
     assert app.sponsor_visible() and not app.live_configured()
+    monkeypatch.setenv("SPACE_ID", "iniu/weydub-media-localization")
+    assert app.sponsor_visible()
 
 
 def test_upload_requires_permission_and_a_bounded_mp4(monkeypatch):
     client = TestClient(Starlette(routes=sponsored.routes()))
     monkeypatch.setattr(sponsored.httpx, "AsyncClient", lambda **kw: pytest.fail("Unexpected upstream call"))
     headers = {"x-trial-receipt": "a" * 64, "content-type": "video/mp4"}
-    assert client.get("/sponsored-removal").status_code == 400
-    assert client.post("/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 400
+    assert client.get("/gradio_api/sponsored-removal").status_code == 400
+    assert client.post("/gradio_api/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 400
     headers["x-confirm-upload"] = "yes"
-    assert client.post("/sponsored-removal", headers=headers, content=b"a").status_code == 413
+    assert client.post("/gradio_api/sponsored-removal", headers=headers, content=b"a").status_code == 413
     headers["content-type"] = "application/json"
-    assert client.post("/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 415
+    assert client.post("/gradio_api/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 415
 
 
 def test_sponsor_relay_preserves_receipt_but_never_forwards_credentials(monkeypatch):
@@ -144,8 +146,8 @@ def test_sponsor_relay_preserves_receipt_but_never_forwards_credentials(monkeypa
 
     real_client = httpx.AsyncClient
     monkeypatch.setattr(sponsored.httpx, "AsyncClient", lambda **kw: real_client(transport=httpx.MockTransport(gateway), **kw))
-    assert client.post("/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 202
-    assert client.get("/sponsored-removal", headers=headers).json()["videoUrl"] == "https://example.org/out.mp4"
-    assert client.post("/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 429
+    assert client.post("/gradio_api/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 202
+    assert client.get("/gradio_api/sponsored-removal", headers=headers).json()["videoUrl"] == "https://example.org/out.mp4"
+    assert client.post("/gradio_api/sponsored-removal", headers=headers, content=b"a" * 32).status_code == 429
     for _ in range(2):
-        assert client.get("/sponsored-removal", headers=headers).status_code == 502
+        assert client.get("/gradio_api/sponsored-removal", headers=headers).status_code == 502

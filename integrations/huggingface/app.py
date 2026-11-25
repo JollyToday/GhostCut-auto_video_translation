@@ -14,6 +14,7 @@ from sponsored import routes
 HERE = Path(__file__).parent
 OPS = {"Remove subtitles": Erase, "Extract subtitles": OCR, "Dub video": Dub, "Translate image": Image}
 DEFAULT = "Remove subtitles"
+OFFICIAL_PUBLIC_SPACES = {"weydub/media-localization", "iniu/weydub-media-localization"}
 SPACE_CONTRACT = {**CONTRACT, "erase": {"path": CONTRACT["erase"]["path"], "body": {
     "needChineseOcclude": 1, "videoInpaintLang": "all",
     "extraOptions": json.dumps({"extra_inpaint_config": {"model": "advanced_full"}}, separators=(",", ":"))
@@ -42,8 +43,8 @@ def require_owner(profile: gr.OAuthProfile | None) -> None:
 
 
 def sponsor_visible():
-    sid = os.environ.get("SPACE_ID", "")
-    return not sid or sid.partition("/")[0].lower() == "weydub"
+    sid = os.environ.get("SPACE_ID", "").strip().lower()
+    return not sid or sid in OFFICIAL_PUBLIC_SPACES
 
 
 def arguments(name: str, url: str, source: str, target: str) -> dict:
