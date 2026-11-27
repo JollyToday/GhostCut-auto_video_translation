@@ -7,6 +7,8 @@ Use Node.js 20+ and `scripts/remove.mjs` relative to this skill's directory. The
 
 ### Try a local clip without a key
 
+To see what full-frame removal does before uploading anything, compare the [15-second original, cleaned MP4 and three matching frames](https://github.com/JollyToday/GhostCut-auto_video_translation/tree/c4d72c4/examples/full-frame-removal). The captions change position between shots.
+
 Use `scripts/trial.mjs` for a sponsored full-frame Pro job. Ask which local file to upload and confirm that the user has permission to send it to Weydub. Accept an H.264 MP4 with optional AAC audio, up to 60 seconds and 16 MiB. Use a new, private receipt file outside the project for each clip. Keep that same receipt for all retries. Never share its contents; it grants access to the result.
 
 ```sh

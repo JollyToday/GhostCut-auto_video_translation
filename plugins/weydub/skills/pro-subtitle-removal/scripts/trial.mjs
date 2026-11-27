@@ -38,10 +38,14 @@ async function run() {
   if (submit) headers['Content-Type']='video/mp4';
   const response = await fetch(endpoint,{method:submit?'POST':'GET',headers,body,redirect:'error',signal:AbortSignal.timeout(90000)});
   const data = await response.json().catch(()=>({}));
+  if (response.status === 429) throw Error('Sponsored capacity is unavailable. Keep your receipt. No paid job was started.');
   if (!response.ok) throw Error(`Weydub ${response.status}: ${data.error || 'Check status using the same receipt file.'}`);
+  if (!['queued','submitting','processing','ready','failed','needs_review','expired'].includes(data.state))
+    throw Error('Weydub did not confirm the state. Check status with the same receipt.');
   if (action !== 'download' || data.state !== 'ready') return {state:data.state,...(data.replayed?{replayed:true}:{})};
   const result = new URL(data.videoUrl);
-  if (result.protocol !== 'https:' || result.username || result.password) throw Error('Invalid result link.');
+  if (result.origin !== 'https://gc70.cdn.izhaoli.cn' || result.username || result.password)
+    throw Error('The result is on an unconfigured media host. Keep your receipt and contact Weydub.');
   const media = await fetch(result,{redirect:'error',signal:AbortSignal.timeout(120000)});
   const type = media.headers.get('content-type') || '';
   if (!media.ok || !media.body || !/^video\/(?:mp4|iso\.segment|quicktime)(?:;|$)/i.test(type))
