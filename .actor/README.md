@@ -1,6 +1,6 @@
-# Weydub Video and Image Localization
+# Weydub Media Localization
 
-Turn the subtitles in a video into an SRT file, remove burned-in captions, dub spoken dialogue, or translate the text in a product image. This Actor uses your own [Weydub API account](https://weydub.com/docs/api/).
+Need the words from a video? Choose OCR to download timed subtitles. Need the words gone from the picture? Choose Lite removal to clean captions in the bottom 18% of the frame. On a paid Apify account you can process a file without a Weydub key. The Actor also supports Weydub account credits in runs outside Store billing.
 
 | Operation | Source | Result |
 |---|---|---|
@@ -11,11 +11,19 @@ Turn the subtitles in a video into an SRT file, remove burned-in captions, dub s
 
 **Try a preview.** Leave the default image and keep **Submit a billable media job** off. Run the Actor and inspect `preview` in the dataset. This makes no Weydub API request. For a video, replace the sample image URL with your own video URL.
 
-**Process one file with your own account.** Enter your Weydub credentials in the two secret fields, turn on submission and run once. Save the returned `jobId` and `nextOperation`. Submitting a second time creates another job. Weydub processing uses your own account's [credits and rates](https://weydub.com/vip/pricing-detail/); your Apify plan governs the Actor run.
+## Pay through Apify: download from your original run
 
-**Process one file through Apify Store billing.** In an Apify Store paid run, leave both Weydub secret fields empty, provide a stable **Request key for Store billing**, choose a processing operation and turn on submission. The Actor detects the paid Store run and sends the file through Weydub's merchant gateway; the stable key lets a restarted run resume the same job instead of creating another charge. Preview and status operations remain read-only. Store pricing and the final output charge are controlled by the published Actor pricing.
+1. Leave both Weydub key fields empty. Choose one of the four processing operations above. Supply a direct HTTPS file link from Apify storage, Amazon S3, Alibaba OSS or the Weydub library. If your video is on your computer, upload it to your own storage first. A social post or a GitHub page is not a media link.
+2. Enter a **Request key for Store billing**, for example `episode-17-ocr`, and turn on **Submit a billable media job**. Use that reference for just this file and operation. Store video input is one H.264 MP4 up to 60 seconds and 16 MiB.
+3. Open the original run's **Storage → Key-value store** and download the `MEDIA` record. It contains the video, subtitle file or image itself. If the run stopped, check that same store for `MEDIA` before doing anything else. A new run cannot take over the first run's request key. The two job-ID lookup operations below are for Weydub account jobs.
 
-**Get the file in this run.** Turn on **Wait for my download link** when submitting. Open the resulting dataset row: `sourceSubtitles` downloads the SRT, `video` opens a cleaned or dubbed MP4, and `output` opens the translated image. Waiting uses Apify runtime. If the file is still processing when the Actor stops waiting, the row includes the original `jobId`.
+See the [Actor's current pricing](https://apify.com/weydub/weydub-media-localization/pricing) for the completed-output events. A preview does not create a media job.
+
+## Use Weydub credits: keep the job ID
+
+For a run outside paid Apify Store billing, enter your [Weydub API credentials](https://weydub.com/docs/api/) in the two secret fields. Turn on submission and run once. Save the `jobId`; a second submission can spend credits again. See [Weydub account rates](https://weydub.com/vip/pricing-detail/).
+
+**Get the file in this run.** Turn on **Wait for my download link** when submitting. Open the resulting dataset row: `sourceSubtitles` downloads the SRT, `video` opens a cleaned or dubbed MP4, and `output` opens the translated image. If the file is still processing when the Actor stops waiting, the row includes the original `jobId`.
 
 **Check later.** Leave waiting off to return the job ID immediately. To retrieve an existing result, start a run with **Check a video or subtitle job** or **Check an image job**. Replace the source URL with the numeric job ID and use the same Weydub credentials. The dataset tells you what to do next:
 

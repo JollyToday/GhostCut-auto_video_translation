@@ -27,3 +27,5 @@ Run `node --test check.test.mjs` here to test previews, request signing, removal
 ## Registry handoff
 
 The [Pipedream contribution process](https://pipedream.com/docs/components/contributing) starts after Pipedream provisions the app. Confirm its actual slug, app module and credential names before opening a PR. The first review covers only the Pro submit and video result actions. [The file list](registry-files.txt) names the two entry points, their guides and the shared runtime. Stage just those files in a clean directory, review them against the provisioned app, and keep Pipedream's app module and package metadata. `weydub.app.mjs` here is a local stand-in. Do not copy this whole directory: the registry publisher can treat a root-level JavaScript test as a component.
+
+Pipedream's [custom tools](https://pipedream.com/docs/connect/components/custom-tools) are published to one Business workspace. Installing one there does not add Weydub to the public Connect registry. Follow the provider integration request for public availability.
