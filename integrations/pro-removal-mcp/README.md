@@ -6,6 +6,8 @@ Pro checks the **whole frame**. This can also remove a price, shop sign or logo.
 
 Compare the [original and actual Pro output](../../examples/full-frame-removal/) where captions appear in three positions across cuts. In version 1.1.0 you can try a local clip in your MCP client without a Weydub key. The original account-based tools still accept direct HTTPS links.
 
+**Using Cline?** [Install with Node.js and try your first MP4](https://github.com/JollyToday/GhostCut-auto_video_translation/blob/weydub-pro-cli-v1.1.1/integrations/pro-removal-mcp/llms-install.md). The native 1.1.1 adapter needs no Docker image, repository checkout or Weydub account. It puts the result next to your input in `Weydub-Trial` under your home folder.
+
 ## Run locally with Docker
 
 With Docker running in Linux container mode, download the image and its matching `.sha256` file from [Weydub's Docker release](https://github.com/JollyToday/GhostCut-auto_video_translation/releases/tag/weydub-pro-container-v1.1.0). Use `arm64` on Apple Silicon or ARM Linux; use `amd64` on Intel/AMD. No repository checkout or API account is needed. In the directory with the downloads, run the commands for your architecture. For example, on Apple Silicon:
@@ -15,7 +17,7 @@ shasum -a 256 -c weydub-pro-removal-linux-arm64.tar.gz.sha256
 docker load --input weydub-pro-removal-linux-arm64.tar.gz
 ```
 
-On Linux you can use `sha256sum -c`. On Windows compare `Get-FileHash .\weydub-pro-removal-linux-amd64.tar.gz -Algorithm SHA256` with the matching checksum before loading. Both archives load the tag `weydub/pro-subtitle-removal:1.1.0`. To build from source instead, run this in the adapter directory:
+On Linux you can use `sha256sum -c`. On Windows compare `Get-FileHash .\weydub-pro-removal-linux-amd64.tar.gz -Algorithm SHA256` with the matching checksum before loading. Both archives load the tag `weydub/pro-subtitle-removal:1.1.0`. To build that image from source, use the adapter directory at Git tag `weydub-pro-container-v1.1.0`:
 
 ```sh
 docker build -t weydub/pro-subtitle-removal:1.1.0 .

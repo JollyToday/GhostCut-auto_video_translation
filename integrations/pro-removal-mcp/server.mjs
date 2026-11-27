@@ -3,9 +3,13 @@ import {StdioServerTransport} from '@modelcontextprotocol/sdk/server/stdio.js';
 import {z} from 'zod';
 import {preview, service} from './service.mjs';
 import {trialService} from './trial.mjs';
+import {pathToFileURL} from 'node:url';
+import {readFileSync} from 'node:fs';
 
-const server = new McpServer({name:'weydub-pro-removal', version:'1.1.0'});
-const trial = trialService(process.argv.length===3 ? process.argv[2] : null);
+export async function startServer(folder) {
+const {version} = JSON.parse(readFileSync(new URL('./package.json',import.meta.url)));
+const server = new McpServer({name:'weydub-pro-removal', version});
+const trial = trialService(folder);
 const api = service({key:process.env.WEYDUB_APP_KEY,secret:process.env.WEYDUB_APP_SECRET});
 const url = z.string().max(8192).describe('Direct HTTPS link to a video you own or have permission to process.');
 function answer(action) {
@@ -42,3 +46,7 @@ server.registerTool('save_trial_result',{
   inputSchema:{}, annotations:{readOnlyHint:false,destructiveHint:false,openWorldHint:true}
 },answer(()=>trial.save()));
 await server.connect(new StdioServerTransport());
+}
+
+if (process.argv[1] && pathToFileURL(process.argv[1]).href===import.meta.url)
+  await startServer(process.argv.length===3 ? process.argv[2] : null);

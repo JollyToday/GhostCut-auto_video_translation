@@ -1,7 +1,8 @@
 import {randomBytes, randomUUID} from 'node:crypto';
 import {constants} from 'node:fs';
 import {link, lstat, open, unlink} from 'node:fs/promises';
-import {isAbsolute, join} from 'node:path';
+import path, {join} from 'node:path';
+import {homedir} from 'node:os';
 import {Readable, Transform} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 
@@ -9,11 +10,24 @@ const endpoint='https://api.weydub.com/agent-trial/v1/removal';
 const states=new Set(['queued','submitting','processing','failed','needs_review','expired','ready']);
 const limit=16*1024*1024;
 
+export function clipFolder(value,paths=path,home=homedir()) {
+  const error='Choose one dedicated clip folder using an absolute path. Put your authorized video there as input.mp4.';
+  if (!value || !paths.isAbsolute(value) || (paths.sep==='\\' && !paths.parse(value).root.includes(':') && !value.startsWith('\\\\'))) throw Error(error);
+  const dir=paths.resolve(value);
+  if (!paths.relative(paths.parse(dir).root,dir) || !paths.relative(home,dir)) throw Error(error);
+  return dir;
+}
+export async function checkFolder(dir) {
+  if (!(await lstat(dir)).isDirectory()) throw Error('Select a real clip folder rather than a file or symbolic link.');
+}
+
 async function readRegular(path,max) {
+  const before=await lstat(path);
+  if(!before.isFile()) throw Error('Expected a regular file, not a link.');
   const file=await open(path,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);
   try {
     const info=await file.stat();
-    if (!info.isFile() || info.size<1 || info.size>max) throw Error('Expected a regular file within the size limit.');
+    if (!info.isFile() || info.dev!==before.dev || info.ino!==before.ino || info.size<1 || info.size>max) throw Error('Expected a regular file within the size limit.');
     const bytes=Buffer.alloc(info.size+1);
     let size=0;
     while (size<bytes.length) {
@@ -39,7 +53,8 @@ async function publishFile(dir,name,write) {
 
 export function trialService(dir,send=fetch) {
   async function request(submit) {
-    if (!dir || !isAbsolute(dir) || dir==='/') throw Error('Choose one dedicated clip folder in the Docker configuration. Put your authorized video there as input.mp4.');
+    dir=clipFolder(dir);
+    await checkFolder(dir);
     let body;
     if (submit) {
       body=await readRegular(join(dir,'input.mp4'),limit).catch(e=>{

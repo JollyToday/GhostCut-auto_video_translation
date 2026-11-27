@@ -1,11 +1,27 @@
 # Install Weydub Pro Subtitle Removal in Cline
 
-Use this installation to check that Cline can reach the server. No Weydub account or video is needed to install it. Processing takes place on Weydub only when you later submit a job.
+## With Node.js (no Docker)
+
+With Node.js 22 or newer and Cline CLI installed, run:
+
+```sh
+cline mcp install weydub-pro-removal --yes --json -- npx -y --package https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-pro-cli-v1.1.1/weydub-pro-removal-mcp-1.1.1.tgz weydub-pro-removal
+```
+
+For the Cline extension, use `npx` as the MCP command, with four arguments: `-y`, `--package`, the complete `.tgz` URL above, and `weydub-pro-removal`. The archive includes its runtime dependencies. If you already have a working Docker registration with this name, keep it or edit the existing entry; you only need one installation.
+
+1. Reconnect Cline. In your home folder, open `Weydub-Trial` and put the clip you may process there as `input.mp4`. Use H.264 MP4, optional AAC audio, up to 60 seconds and 16 MiB.
+2. Tell Cline: **“I have permission to send input.mp4 to Weydub. Use `submit_trial_clip` to remove its burned-in subtitles, then use `save_trial_result`.”** The trial uses full-frame Pro. Text on signs, prices or logos may also be removed. Compare [before and after](https://weydub.com/subtitle-removal/) before choosing full-frame processing.
+3. When the tool reports `downloaded`, open `cleaned.mp4` beside the input. If the job is still processing or Cline restarts, ask for `save_trial_result` again. Keep that folder and its private receipt together. Downloads never replace an existing file.
+
+For another clip, append the absolute path of a different, existing dedicated folder as the final `npx` argument. The trial is shared across anonymous integrations (100 clips per UTC month); a full pool never spends your credits. Use the [Weydub editor](https://weydub.com/subtitle-removal/) for batches, longer clips or a specific caption area. To use account credits from Cline, see the instructions below.
+
+## With Docker
 
 1. Start Docker. [Download and load the image for your computer](README.md#run-locally-with-docker), then go straight to step 2. To build the same adapter from source instead, run this as **one shell command** in a new directory. Wait for the load or build to finish before registering the server; Cline can save a registration even when the image is missing.
 
    ```sh
-   git clone --depth 1 --filter=blob:none --no-checkout https://github.com/JollyToday/GhostCut-auto_video_translation.git && \
+   git clone --branch weydub-pro-container-v1.1.0 --depth 1 --filter=blob:none --no-checkout https://github.com/JollyToday/GhostCut-auto_video_translation.git && \
    git -C GhostCut-auto_video_translation sparse-checkout set --no-cone '/integrations/pro-removal-mcp/' && \
    git -C GhostCut-auto_video_translation checkout && \
    docker build -t weydub/pro-subtitle-removal:1.1.0 GhostCut-auto_video_translation/integrations/pro-removal-mcp

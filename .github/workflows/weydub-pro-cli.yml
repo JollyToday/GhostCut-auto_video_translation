@@ -1,0 +1,51 @@
+name: Release Weydub Pro for Node.js
+on:
+  push:
+    tags: ['weydub-pro-cli-v*']
+permissions: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - working-directory: integrations/pro-removal-mcp
+        run: |
+          set -euo pipefail
+          version="$(node -p 'require("./package.json").version')"
+          test "$GITHUB_REF_NAME" = "weydub-pro-cli-v$version"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm test
+          archive="$(npm pack --silent --ignore-scripts --pack-destination "$RUNNER_TEMP")"
+          node check-native.mjs "$RUNNER_TEMP/$archive"
+          cd "$RUNNER_TEMP"
+          sha256sum "$archive" > "$archive.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native
+          path: ${{ runner.temp }}/weydub-pro-removal-mcp-*.tgz*
+          if-no-files-found: error
+          retention-days: 1
+  publish:
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: native
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha256sum -c *.tgz.sha256
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --latest=false \
+            --title "Weydub Pro Subtitle Removal for Cline ${GITHUB_REF_NAME#weydub-pro-cli-v}" \
+            --notes "Install the Node.js adapter without Docker or an API key. Installation and local clip instructions: https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_SHA/integrations/pro-removal-mcp/llms-install.md . Compare original and cleaned frames: https://weydub.com/subtitle-removal/" *.tgz *.tgz.sha256

@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import {mkdtemp,readFile,readdir,rm,symlink,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
-import {join} from 'node:path';
+import {join,posix,win32} from 'node:path';
 import test from 'node:test';
-import {trialService} from './trial.mjs';
+import {trialService,clipFolder} from './trial.mjs';
 
 const sample=await readFile(new URL('../../examples/api-market/practice-6s.mp4',import.meta.url));
 async function folder(t) {
@@ -19,8 +19,13 @@ test('consent, exact input and no file following before upload',async t=>{
   await assert.rejects(api.save(),/No trial receipt/);
   await symlink('other.mp4',join(dir,'input.mp4'));
   await writeFile(join(dir,'other.mp4'),sample);
-  await assert.rejects(api.submit(true),{code:'ELOOP'});
+  await assert.rejects(api.submit(true),/regular file/);
   assert.deepEqual((await readdir(dir)).sort(),['input.mp4','other.mp4']);
+});
+test('dedicated folder cannot be a root or the entire home',()=>{
+  for(const p of ['/tmp/..','/','/home/qa/.','clip']) assert.throws(()=>clipFolder(p,posix,'/home/qa'),/dedicated/);
+  for(const p of ['C:\\','C:\\data\\..','\\\\host\\share\\','\\clip','C:clip','C:\\USERS\\qa']) assert.throws(()=>clipFolder(p,win32,'C:\\Users\\QA'),/dedicated/);
+  assert.equal(clipFolder('C:\\Users\\QA\\clip\\.',win32,'C:\\Users\\QA'),'C:\\Users\\QA\\clip');
 });
 test('receipt survives concurrent retries, restart, quota refusal and broken download',async t=>{
   const dir=await folder(t),receipts=new Set();
