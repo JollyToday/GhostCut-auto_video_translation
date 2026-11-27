@@ -26,6 +26,7 @@ The origin reports zero units for issuing, uploading and checking; the first cla
 Use Node.js 22+ and set `API_MARKET_BUYER_KEY` privately in your environment. Run these commands from this example's directory, keeping the receipt, download link and output in a private directory outside the repository:
 
 ```sh
+node buyer.mjs usage
 mkdir -m 700 "$HOME/weydub-test"
 node buyer.mjs receipt "$HOME/weydub-test/receipt.txt"
 node buyer.mjs upload "$HOME/weydub-test/receipt.txt" practice-6s.mp4
@@ -33,6 +34,8 @@ node buyer.mjs status "$HOME/weydub-test/receipt.txt"
 node buyer.mjs claim-link "$HOME/weydub-test/receipt.txt" "$HOME/weydub-test/download.txt" --confirm-claim
 node buyer.mjs download "$HOME/weydub-test/download.txt" "$HOME/weydub-test/cleaned.mp4"
 ```
+
+`usage` reads this product's [API.market subscriber counters](https://docs.api.market/api.market-usage-api-documentation) without uploading or claiming a file. If no subscription is found, check the plan before starting. To verify the six-second test, read `usage` before upload, when ready, after the first claim, and after one deliberate repeat claim. Compare readings from the same billing cycle and an otherwise idle test subscription. If you just need the video again, use `download` on the saved link instead.
 
 **If the download breaks:** rerun only `download` using the saved link. It needs no subscriber key and does not call the metered endpoint. Anyone with the link can retrieve the video until it expires. If the claim response itself was lost before the link was saved, keep the original receipt and check your subscriber usage before retrying. The one-command `claim RECEIPT_FILE NEW_OUTPUT.mp4 --confirm-claim` still works in existing scripts.
 

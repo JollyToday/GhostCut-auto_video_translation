@@ -4,9 +4,11 @@ import {pipeline} from 'node:stream/promises';
 import {pathToFileURL} from 'node:url';
 
 const base = 'https://prod.api.market/api/v1/weydub/pro-subtitle-removal';
+const usageEndpoint = 'https://prod.api.market/api/v1/user/usage/weydub/pro-subtitle-removal/';
 const states = new Set(['queued','submitting','processing','ready','failed','needs_review','expired']);
 const receiptPattern = /^[0-9a-f]{64}\.[0-9a-f]{64}$/;
 const help = `Set API_MARKET_BUYER_KEY to your subscribed test key. Use one receipt file per video.
+  node buyer.mjs usage
   node buyer.mjs receipt RECEIPT_FILE
   node buyer.mjs upload RECEIPT_FILE INPUT.mp4
   node buyer.mjs status RECEIPT_FILE
@@ -41,6 +43,19 @@ async function download(url,output,send) {
 export async function run(args, {key=process.env.API_MARKET_BUYER_KEY, send=fetch}={}) {
   if (!args.length || args[0] === '--help') return help;
   const [mode, file, media, confirm] = args;
+  if (mode==='usage' && args.length===1) {
+    if (!key?.trim()) throw Error('Set API_MARKET_BUYER_KEY to your own API.market subscriber key.');
+    const response=await send(usageEndpoint,{method:'GET',headers:{'x-api-market-key':key,Accept:'application/json'},
+      redirect:'error',cache:'no-store',signal:AbortSignal.timeout(15000)});
+    if (response.status===401) throw Error('API.market did not accept the subscriber key.');
+    if (response.status===404) throw Error('API.market found no subscription for this key and product. Check the plan in your buyer dashboard.');
+    if (!response.ok) throw Error(`API.market usage lookup returned HTTP ${response.status}. No media request was made.`);
+    const d=await response.json();
+    if (d?.apiName!=='weydub/pro-subtitle-removal' || !Number.isSafeInteger(d.apiCallsMade) || d.apiCallsMade<0 ||
+        !Number.isSafeInteger(d.apiCallsLeft) || typeof d.startDate!=='string' || !Number.isFinite(Date.parse(d.startDate)))
+      throw Error('API.market did not return recognizable counters for this product. Check Account Usage in your dashboard.');
+    return `API.market usage for ${d.apiName} since ${new Date(d.startDate).toISOString()}: used ${d.apiCallsMade}, remaining ${d.apiCallsLeft}.`;
+  }
   if (args.length !== ({receipt:2,upload:3,status:2,claim:4,'claim-link':4,download:3})[mode] || !file ||
       ((mode==='claim'||mode==='claim-link') && confirm!=='--confirm-claim')) throw Error(help);
   if (mode==='download') {

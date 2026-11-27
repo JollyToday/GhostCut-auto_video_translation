@@ -7,6 +7,19 @@ import {run} from './buyer.mjs';
 
 const base='https://prod.api.market/api/v1/weydub/pro-subtitle-removal';
 const token='a'.repeat(64)+'.'+'b'.repeat(64);
+test('usage checks only this subscription; missing, expired and unrelated responses cannot look like a successful lookup',async()=>{
+  const endpoint='https://prod.api.market/api/v1/user/usage/weydub/pro-subtitle-removal/';
+  const snapshot={apiName:'weydub/pro-subtitle-removal',apiCallsLeft:0,apiCallsMade:1,startDate:'2026-11-01T00:00:00Z'};
+  const check=(status,body)=>run(['usage'],{key:'qa-key',send:async(url,opts)=>{
+    assert.equal(url,endpoint);assert.equal(opts.method,'GET');assert.equal(opts.redirect,'error');
+    assert.equal(opts.headers['x-api-market-key'],'qa-key');assert.equal(opts.body,undefined);
+    return Response.json(body,{status});
+  }});
+  assert.match(await check(200,snapshot),/used 1, remaining 0/);
+  await assert.rejects(check(401,{}),/did not accept/);
+  await assert.rejects(check(404,{}),/no subscription/);
+  await assert.rejects(check(200,{...snapshot,apiName:'other/product'}),/recognizable counters/);
+});
 test('a single receipt survives every step; only an explicit ready claim reaches delivery',async t=>{
   const dir=await mkdtemp(join(tmpdir(),'market-'));
   t.after(()=>rm(dir,{recursive:true,force:true}));
