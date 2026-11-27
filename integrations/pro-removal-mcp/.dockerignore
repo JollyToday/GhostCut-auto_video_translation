@@ -3,4 +3,5 @@
 !package-lock.json
 !server.mjs
 !service.mjs
+!trial.mjs
 !LICENSE

@@ -66,5 +66,5 @@ jobs:
           for arch in amd64 arm64; do sha256sum -c "weydub-pro-removal-linux-$arch.tar.gz.sha256"; done
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --latest=false \
             --title "Weydub Pro Subtitle Removal for Docker ${GITHUB_REF_NAME#weydub-pro-container-v}" \
-            --notes "Download the image for your Docker engine and its SHA-256 file. Installation and MCP configuration: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_SHA/integrations/pro-removal-mcp . Full-frame Pro preview needs no credentials. Processing uses your connected Weydub credits: https://weydub.com/subtitle-removal/" \
+            --notes "Try a local MP4 with full-frame Pro and no API key (up to 60 seconds and 16 MiB), or use your own Weydub credits for video URLs. Download the image for your Docker engine and its SHA-256 file. Setup: https://github.com/$GITHUB_REPOSITORY/tree/$GITHUB_SHA/integrations/pro-removal-mcp . Examples: https://weydub.com/subtitle-removal/" \
             weydub-pro-removal-linux-*.tar.gz*

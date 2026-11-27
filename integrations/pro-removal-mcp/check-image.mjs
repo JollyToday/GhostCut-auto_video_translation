@@ -11,7 +11,7 @@ try {
     '--security-opt=no-new-privileges', image,
   ]}));
   const {tools} = await client.listTools();
-  assert.deepEqual(tools.map(t=>t.name).sort(), ['check_removal','preview_removal','submit_removal']);
+  assert.deepEqual(tools.map(t=>t.name).sort(), ['check_removal','preview_removal','save_trial_result','submit_removal','submit_trial_clip']);
   const result = await client.callTool({name:'preview_removal',arguments:{video_url:'https://example.com/clip.mp4'}});
   assert.deepEqual(result.structuredContent, {
     state:'preview', source_host:'example.com', model:'Pro', region:'full frame', billable:false,
