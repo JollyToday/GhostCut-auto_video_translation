@@ -10,14 +10,47 @@ const help = `Set API_MARKET_BUYER_KEY to your subscribed test key. Use one rece
   node buyer.mjs receipt RECEIPT_FILE
   node buyer.mjs upload RECEIPT_FILE INPUT.mp4
   node buyer.mjs status RECEIPT_FILE
+  node buyer.mjs claim-link RECEIPT_FILE NEW_PRIVATE_LINK_FILE --confirm-claim
+  node buyer.mjs download PRIVATE_LINK_FILE NEW_OUTPUT.mp4
   node buyer.mjs claim RECEIPT_FILE NEW_OUTPUT.mp4 --confirm-claim
-Only claim can consume delivery units. Use status after a timeout; keep the receipt private.`;
+Claiming a ready clip can consume delivery units. Downloading a saved link never calls the marketplace.`;
+
+function resultUrl(text) {
+  const url=new URL(text);
+  if (url.origin!=='https://gc70.cdn.izhaoli.cn' || url.username || url.password)
+    throw Error('Unrecognized result address. Keep your receipt and contact Weydub.');
+  return url;
+}
+
+async function download(url,output,send) {
+  const response=await send(url,{redirect:'error',signal:AbortSignal.timeout(120000)});
+  if (response.status!==200 || !response.body || response.headers.has('content-range') ||
+      !/^(?:video\/mp4|application\/octet-stream)(?:\s*;|$)/i.test(response.headers.get('content-type')||''))
+    throw Error('Could not download a complete MP4. Keep the saved link or receipt.');
+  let prefix=Buffer.alloc(0);
+  const mp4=new Transform({transform(chunk,_,done){
+    if (prefix.length<8) {
+      prefix=Buffer.concat([prefix,chunk.subarray(0,8-prefix.length)]);
+      if (prefix.length===8 && prefix.toString('ascii',4)!=='ftyp') return done(Error('Download was not an MP4.'));
+    }
+    done(null,chunk);
+  },flush(done){done(prefix.length<8 ? Error('Download ended before the MP4 header.') : null);}});
+  await pipeline(Readable.fromWeb(response.body),mp4,output.createWriteStream());
+}
 
 export async function run(args, {key=process.env.API_MARKET_BUYER_KEY, send=fetch}={}) {
   if (!args.length || args[0] === '--help') return help;
   const [mode, file, media, confirm] = args;
-  if (args.length !== ({receipt:2,upload:3,status:2,claim:4})[mode] || !file ||
-      (mode === 'claim' && confirm !== '--confirm-claim')) throw Error(help);
+  if (args.length !== ({receipt:2,upload:3,status:2,claim:4,'claim-link':4,download:3})[mode] || !file ||
+      ((mode==='claim'||mode==='claim-link') && confirm!=='--confirm-claim')) throw Error(help);
+  if (mode==='download') {
+    const url=resultUrl((await readFile(file,'utf8')).trim());
+    const output=await open(media,'wx',0o600);
+    try { await download(url,output,send); }
+    catch (error) { await output.close(); await unlink(media); throw error; }
+    finally { await output.close(); }
+    return `MP4 downloaded to ${media}. No marketplace call made.`;
+  }
   if (!key?.trim()) throw Error('Set API_MARKET_BUYER_KEY to your subscribed API.market key.');
 
   const call = async (method, route, receipt, body) => {
@@ -27,6 +60,8 @@ export async function run(args, {key=process.env.API_MARKET_BUYER_KEY, send=fetc
     const r = await send(base+route, {method,headers,body,redirect:'error',signal:AbortSignal.timeout(90000)});
     const data = await r.json().catch(()=>null);
     if (!r.ok) {
+      if (r.status===400 && [data,data?.message,data?.error,data?.error?.message].includes('No active Subscription'))
+        throw Error('No active API.market subscription for this product. Check the subscribed buyer account before retrying.');
       const hint = {receipt_access:'the Weydub origin rejected receipt access',
         media_access:'the Weydub origin rejected access to this media operation',
         receipt_method:'use POST to issue a receipt'}[data?.code];
@@ -62,20 +97,13 @@ export async function run(args, {key=process.env.API_MARKET_BUYER_KEY, send=fetc
   const output=await open(media,'wx',0o600);
   try {
     const result=await call('POST','/delivery',receipt);
-    const url=new URL(result?.videoUrl);
-    if (result.state!=='ready' || url.protocol!=='https:' || url.username || url.password) throw Error('No valid download URL. Keep your receipt.');
-    const response=await send(url,{redirect:'error',signal:AbortSignal.timeout(120000)});
-    if (!response.ok || !response.body || !/^(?:video\/mp4|application\/octet-stream)(?:\s*;|$)/i.test(response.headers.get('content-type')||''))
-      throw Error('Could not download an MP4. Keep the original receipt.');
-    let prefix=Buffer.alloc(0);
-    const mp4=new Transform({transform(chunk,_,done){
-      if (prefix.length<8) {
-        prefix=Buffer.concat([prefix,chunk.subarray(0,8-prefix.length)]);
-        if (prefix.length===8 && prefix.toString('ascii',4)!=='ftyp') return done(Error('Download was not an MP4.'));
-      }
-      done(null,chunk);
-    },flush(done){done(prefix.length<8 ? Error('Download ended before the MP4 header.') : null);}});
-    await pipeline(Readable.fromWeb(response.body),mp4,output.createWriteStream());
+    if (result?.state!=='ready' || typeof result.videoUrl!=='string') throw Error('No valid download URL. Keep your receipt.');
+    const url=resultUrl(result.videoUrl);
+    if (mode==='claim-link') {
+      await output.writeFile(url.href+'\n'); await output.sync();
+      return 'Private download link saved. Use the download command to get the MP4.';
+    }
+    await download(url,output,send);
     return `MP4 downloaded to ${media}.`;
   } catch(error) {
     await output.close(); await unlink(media);

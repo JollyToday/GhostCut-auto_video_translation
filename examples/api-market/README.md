@@ -17,22 +17,27 @@ Open **API Playground** for the subscribed product. The route prefix is `https:/
 | 1. Get a receipt | `POST /receipts` | No body. Save the returned `receipt` privately. For steps 2–4 set `X-Removal-Receipt` to this same value. |
 | 2. Upload the file | `POST /removal` | Select a **binary** body, `Content-Type: video/mp4`, and choose `practice-6s.mp4`. Do not paste a URL or send multipart form data. A new job returns `202` and `unitsOnDelivery: 1` for this clip. |
 | 3. Check this job | `GET /removal` | No body. While `queued`, `submitting` or `processing`, repeat **only step 3**. `ready` means the result is available; status does not claim it. |
-| 4. Claim and save | `POST /delivery` | No body. The first successful claim is the metered operation. Open the private `videoUrl`, download the MP4 and check the same frame. Keep the receipt for a retry if the download is interrupted. |
+| 4. Claim and save | `POST /delivery` | No body. The first successful claim is the metered operation. Save the private `videoUrl` immediately, open it to download the MP4 and check the same frame. While that link is valid, you can download again without making another API.market request. |
 
 The origin reports zero units for issuing, uploading and checking; the first claim reports one unit per started 30 seconds and repeat claims on the same receipt report zero. Record the **subscriber** usage before the upload, before the first claim, after the claim and after one repeat. For this clip the expected changes are `0, 1, 0`. The origin response is not proof of what the marketplace charged.
 
 ## From a terminal
 
-Use Node.js 22+ and set `API_MARKET_BUYER_KEY` privately in your environment. Run these commands from this example's directory, keeping `receipt.txt` and the output in a private directory outside the repository:
+Use Node.js 22+ and set `API_MARKET_BUYER_KEY` privately in your environment. Run these commands from this example's directory, keeping the receipt, download link and output in a private directory outside the repository:
 
 ```sh
 mkdir -m 700 "$HOME/weydub-test"
 node buyer.mjs receipt "$HOME/weydub-test/receipt.txt"
 node buyer.mjs upload "$HOME/weydub-test/receipt.txt" practice-6s.mp4
 node buyer.mjs status "$HOME/weydub-test/receipt.txt"
-node buyer.mjs claim "$HOME/weydub-test/receipt.txt" "$HOME/weydub-test/cleaned.mp4" --confirm-claim
+node buyer.mjs claim-link "$HOME/weydub-test/receipt.txt" "$HOME/weydub-test/download.txt" --confirm-claim
+node buyer.mjs download "$HOME/weydub-test/download.txt" "$HOME/weydub-test/cleaned.mp4"
 ```
 
-Upload accepts one H.264 MP4 up to 60 seconds and 16 MiB. The client refuses to overwrite an existing receipt or MP4 and never prints the receipt, key or signed URL. If a claim's response is lost, keep the same receipt. After `failed`, `needs_review` or `expired`, check with support before sending the file again.
+**If the download breaks:** rerun only `download` using the saved link. It needs no subscriber key and does not call the metered endpoint. Anyone with the link can retrieve the video until it expires. If the claim response itself was lost before the link was saved, keep the original receipt and check your subscriber usage before retrying. The one-command `claim RECEIPT_FILE NEW_OUTPUT.mp4 --confirm-claim` still works in existing scripts.
+
+Upload accepts one H.264 MP4 up to 60 seconds and 16 MiB. The client refuses to overwrite existing output files and never prints the receipt, key or signed URL. After `failed`, `needs_review` or `expired`, check with support before sending the file again.
+
+**`400 No active Subscription` before you get a receipt?** Check that the account owning the buyer key has an active subscription to this specific product. Signing in and opening the Playground does not activate a plan. There is no clip or receipt to submit again at this point.
 
 **A 403 before you see a receipt?** If the response includes `receipt_access`, the request reached Weydub but the origin rejected receipt access. `media_access` on a later operation means the origin rejected that media operation. Give support the operation, HTTP status and diagnostic code; don't send your key or receipt. A generic HTML 403 doesn't identify which system rejected the request.

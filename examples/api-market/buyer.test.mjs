@@ -24,7 +24,7 @@ test('a single receipt survives every step; only an explicit ready claim reaches
     calls.push([opts.method,path]);
     if (path==='/receipts') return Response.json({receipt:token});
     assert.equal(opts.headers['X-Removal-Receipt'],token);
-    if (path==='/delivery') return Response.json({state:'ready',videoUrl:'https://media.example/test.mp4'});
+    if (path==='/delivery') return Response.json({state:'ready',videoUrl:'https://gc70.cdn.izhaoli.cn/test.mp4'});
     if (opts.method==='POST') {
       assert.deepEqual(opts.body,bytes); assert.equal(opts.headers['Content-Type'],'video/mp4');
     }
@@ -53,9 +53,41 @@ test('a single receipt survives every step; only an explicit ready claim reaches
   assert.equal(await readFile(receipt,'utf8'),token+'\n');
 });
 
+test('one-unit buyer can retry an interrupted CDN download without another claim or subscriber key',async t=>{
+  const dir=await mkdtemp(join(tmpdir(),'market-one-unit-')); t.after(()=>rm(dir,{recursive:true,force:true}));
+  const receipt=join(dir,'receipt'), link=join(dir,'private-link'), out=join(dir,'clean.mp4');
+  await writeFile(receipt,token,{mode:0o600});
+  const url='https://gc70.cdn.izhaoli.cn/qa.mp4?sig=private-fixture';
+  const calls=[];
+  const buyer={key:'fixture',send:async (u,opts)=>{
+    calls.push([opts.method,u]);
+    return Response.json(u===base+'/delivery'?{state:'ready',videoUrl:url}:{state:'ready'});
+  }};
+  assert.ok(!(await run(['claim-link',receipt,link,'--confirm-claim'],buyer)).includes('private-fixture'));
+  assert.deepEqual(calls,[['GET',base+'/removal'],['POST',base+'/delivery']]);
+  assert.equal((await stat(link)).mode & 0o777,0o600);
+  await assert.rejects(run(['claim-link',receipt,link,'--confirm-claim'],buyer),{code:'EEXIST'});
+  assert.equal(calls.filter(([m])=>m==='POST').length,1);
+  const bytes=await readFile(new URL('./pro-6s.mp4',import.meta.url));
+  let interrupted=true;
+  const cdn={key:'',send:async(u,opts)=>{
+    assert.equal(u.href,url);assert.equal(opts.headers,undefined);assert.equal(opts.redirect,'error');
+    return new Response(interrupted?bytes.subarray(0,100):bytes,{status:interrupted?206:200,headers:{'content-type':'video/mp4'}});
+  }};
+  await assert.rejects(run(['download',link,out],cdn),/complete MP4/);
+  await assert.rejects(stat(out),{code:'ENOENT'});
+  interrupted=false;await run(['download',link,out],cdn);
+  assert.deepEqual(await readFile(out),bytes);
+  await writeFile(link,'https://unknown.example/qa.mp4');
+  await assert.rejects(run(['download',link,join(dir,'new.mp4')],{send:()=>assert.fail('unexpected fetch')}),/Unrecognized result/);
+});
+
 test('distinguish marked origin errors from generic marketplace rejection; never log the response',async t=>{
   const dir=await mkdtemp(join(tmpdir(),'market-refused-'));
   t.after(()=>rm(dir,{recursive:true,force:true}));
+  await assert.rejects(run(['receipt',join(dir,'receipt')],{key:'example',send:async()=>
+    Response.json({error:{message:'No active Subscription'}},{status:400})}),/Check the subscribed buyer account/);
+  await assert.rejects(stat(join(dir,'receipt')),{code:'ENOENT'});
   for (const [code,expect] of [['receipt_access',/origin rejected receipt access/],['arbitrary',/HTTP 403\. Check the subscription/]]) {
     await assert.rejects(run(['receipt',join(dir,'receipt')],{key:'example',send:async()=>
       Response.json({code,error:'private secret'},{status:403})}),e=>expect.test(e.message)&&!e.message.includes('private secret'));
