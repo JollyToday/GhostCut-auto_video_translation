@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../schemas/mcp.schema.json",
+  "id": "weydub-pro-removal",
+  "type": "mcp",
+  "name": "Weydub Pro Subtitle Removal",
+  "tagline": "Remove burned-in subtitles from a video and save the cleaned MP4 alongside your original.",
+  "description": "Localizing a product clip or a short drama? Try full-frame Pro on a clip you may send to Weydub. It looks for text throughout the picture, so signs and price labels can disappear too. Compare [original frames](https://weydub.com/creator-kit/comparison/comedy-original-grid.webp) with [the cleaned frames](https://weydub.com/creator-kit/comparison/comedy-clean-grid.webp). The sponsored trial accepts one H.264 MP4 per job, up to 60 seconds and 16 MiB, with optional AAC audio. Anonymous integrations share 100 clips per UTC month. For direct video links, you can use your own Weydub API credits and explicitly approve each paid submission.",
+  "author": {"name": "Weydub", "url": "https://weydub.com/"},
+  "homepage": "https://weydub.com/subtitle-removal/",
+  "repo": "https://github.com/JollyToday/GhostCut-auto_video_translation/tree/main/integrations/pro-removal-mcp",
+  "icon": "https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/21097cc4e9d73319e9257242c6215af7a1185f5f/integrations/pro-removal-mcp/weydub-400.png",
+  "tags": ["creative"],
+  "license": "MIT",
+  "verified": false,
+  "install": {
+    "args": ["weydub-pro-removal", "--", "npx", "-y", "--package", "https://github.com/JollyToday/GhostCut-auto_video_translation/releases/download/weydub-pro-cli-v1.1.1/weydub-pro-removal-mcp-1.1.1.tgz", "weydub-pro-removal"],
+    "notes": "Requires Node.js 22+. After connecting Cline, put input.mp4 in the Weydub-Trial folder under your home directory. Confirm permission to upload, then run submit_trial_clip. Use save_trial_result to check and download cleaned.mp4, even after a restart. The trial needs no credentials and never falls back to paid usage. For account-based jobs or a custom clip folder, see the repository's Cline installation guide."
+  }
+}
