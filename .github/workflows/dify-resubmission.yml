@@ -1,0 +1,69 @@
+name: Check Weydub's Dify Marketplace resubmission
+on:
+  push:
+    branches: [review/dify-0.1.1]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      PLUGIN: weydub/subtitle_removal/subtitle-removal-0.1.1.difypkg
+      HEAD_SHA: 7bf07064c862fbbb3d086583b6eda80729d3528c
+      BASE_SHA: 5b347bc5c31b04e9a5bd47527525e7cd1c702806
+      PACKAGE_HASH: 1342259d6ee67daf3785c5212eb63cdcaeb6400e3f62ce3266fbef56d2e65bfb
+      BODY: examples/dify/marketplace-submission.md
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check out Dify's validator
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: langgenius/dify-marketplace-toolkit
+          ref: 83ee707c1dde758678f94a311f15b42d74f8c402
+          path: toolkit
+          persist-credentials: false
+      - name: Reproduce the closed PR's file-scope rejection
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://api.github.com/repos/langgenius/dify-plugins/pulls/3880/files -o old.json
+          export PR_FILES="$(jq -ce '[.[] | {path: .filename, status}] | select(length == 14)' old.json)"
+          if python3 toolkit/validator/check-pkg-paths.py 2>old-errors.txt; then
+            echo 'Expected the old source-and-package diff to be rejected.' >&2
+            exit 1
+          fi
+          grep -F 'non-package files:' old-errors.txt
+      - name: Check the replacement branch and actual package
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://api.github.com/repos/langgenius/dify-plugins/compare/${BASE_SHA}...JollyToday:${HEAD_SHA}" -o candidate.json
+          jq -e --arg head "$HEAD_SHA" --arg base "$BASE_SHA" \
+            '.commits[-1].sha == $head and .merge_base_commit.sha == $base and .total_commits == 1' candidate.json
+          export PR_FILES="$(jq -ce '[.files[] | {path:.filename, status}] | select(length == 1 and .[0].status == "added")' candidate.json)"
+          test "$(python3 toolkit/validator/check-pkg-paths.py)" = "$PLUGIN"
+          mkdir -p "$(dirname "$PLUGIN")"
+          curl -fsSL "https://raw.githubusercontent.com/JollyToday/dify-plugins/$HEAD_SHA/$PLUGIN" -o "$PLUGIN"
+          echo "$PACKAGE_HASH  $PLUGIN" | sha256sum -c -
+          cmp "$PLUGIN" examples/dify/subtitle-removal-0.1.1.difypkg
+          yq --version
+          python3 toolkit/validator/validate-difypkg.py "$PLUGIN" --pr-body-file "$BODY" --output-dir "$RUNNER_TEMP/dify-checks"
+          python3 toolkit/validator/check-pr-body.py --pr-body-file "$BODY" --error-file "$RUNNER_TEMP/pr-errors.txt"
+          python3 toolkit/validator/check-pr-review-notes.py --pr-body-file "$BODY" --warning-file "$RUNNER_TEMP/pr-notes.txt"
+          unzip -q "$PLUGIN" -d "$RUNNER_TEMP/unpacked"
+          python3 toolkit/validator/check-version-update.py -d "$RUNNER_TEMP/unpacked" --package-path "$PLUGIN" \
+            --pr-body-file "$BODY" --error-file "$RUNNER_TEMP/version-errors.txt" --warning-file "$RUNNER_TEMP/version-notes.txt"
+      - name: Report scope and package findings
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "Publisher-side preflight of Dify submission \`$HEAD_SHA\`, package \`$PLUGIN\`."
+            echo 'Upstream PR creation, upstream CI, Marketplace approval and cloud installation are separate.'
+            if test -f "$RUNNER_TEMP/dify-checks/summary.md"; then
+              cat "$RUNNER_TEMP/dify-checks/summary.md"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
