@@ -6,7 +6,7 @@ Have a finished video with captions baked into the picture? Upload one short cli
 
 ## Open the form
 
-1. Download the [workflow JSON](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/main/examples/n8n/free-pro-subtitle-removal.json). In your private n8n workspace, open a blank workflow and choose **Import from File**.
+1. Open the [Weydub template in n8n's workflow directory](https://n8n.io/workflows/23415-remove-burned-in-subtitles-from-mp4-videos-with-weydub-trial-api/) and add it to your private workspace. For a file import instead, download the [workflow JSON](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/main/examples/n8n/free-pro-subtitle-removal.json), open a blank workflow and choose **Import from File**.
 2. Open **Try subtitle removal**. Under **Basic Auth**, create or select a username and password for **your n8n form**. These stay with n8n. Do not enter your Weydub or n8n account password here.
 3. Click **Execute Workflow** and open the test form. For another form submission in test mode, start the workflow again. A team running a private published copy can reopen its **Production URL** instead.
 
