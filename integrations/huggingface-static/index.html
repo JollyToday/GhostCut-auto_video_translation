@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer"><meta name="description" content="Remove burned-in subtitles from a short MP4 with Weydub Pro. Compare original and cleaned frames, try your own authorized clip, and download the result.">
+  <link rel="stylesheet" href="space.css"><title>Weydub Pro Subtitle Removal</title>
+</head>
+<body>
+<main>
+  <header><a href="https://weydub.com/" target="_blank" rel="noreferrer">Weydub</a><a href="https://weydub.com/docs/api/" target="_blank" rel="noreferrer">API documentation</a></header>
+  <h1>Remove burned-in subtitles</h1>
+  <p class="intro">Clean the words baked into your footage before adding the next language. Pro searches the whole frame, including signs and prices. To keep those, <a href="https://weydub.com/subtitle-removal/" target="_blank" rel="noreferrer">select a region in Weydub</a>.</p>
+  <section aria-labelledby="trial">
+    <div class="heading"><h2 id="trial">Try your clip</h2><span>Full-frame Pro</span></div>
+    <label for="clip">Video file</label><input id="clip" type="file" accept="video/mp4,.mp4" aria-describedby="limit"><small id="limit">H.264 MP4, up to 60 seconds and 16 MiB. Audio is optional (AAC).</small>
+    <label class="consent"><input id="consent" type="checkbox"> I have permission to send this clip to Weydub through its Hugging Face media lab.</label>
+    <div class="actions"><button id="submit" disabled>Remove subtitles</button><a id="download" hidden target="_blank" rel="noreferrer">Download cleaned MP4</a></div>
+    <p id="status" role="status" aria-live="polite"></p>
+    <p id="alternate" hidden><a href="https://huggingface.co/spaces/iniu/weydub-media-localization" rel="noreferrer" target="_blank">Open the working media lab</a>. Use the same receipt for a clip you already submitted.</p>
+    <details id="resume"><summary>Resume with a private receipt</summary>
+      <label for="receipt">Private receipt</label><input id="receipt" type="password" autocomplete="off" autocapitalize="none" spellcheck="false">
+      <small>Keep this code to retrieve your MP4 later. Anyone with the code can access the result.</small>
+      <div class="actions"><button id="check" disabled>Check status</button><button id="copy" disabled>Copy receipt</button><button id="fresh" disabled>Start another clip</button></div>
+    </details>
+    <small>The anonymous trial shares 100 clips per UTC month across integrations. No automatic charges.</small>
+  </section>
+  <section aria-labelledby="sample"><h2 id="sample">One clip, three caption positions</h2>
+    <figure><img src="comparison.webp" alt="Original and cleaned frames: top caption at 2.31 seconds, middle caption at 6.55, and bottom caption at 12.18." loading="lazy"><figcaption>Frames from the same shots before and after Pro removal.</figcaption></figure>
+    <div class="actions"><a href="https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/input.mp4" target="_blank" rel="noreferrer">Original MP4</a><a href="https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/pro-output.mp4" target="_blank" rel="noreferrer">Cleaned MP4</a></div>
+  </section>
+</main><script type="module" src="space.mjs"></script></body></html>

@@ -33,7 +33,9 @@ In Node-RED, [import the free subtitle removal flow](examples/node-red/) to subm
 
 The [Pipedream Connect action source](integrations/pipedream/) and offline tests are available for developers. The app has been submitted for registry review and is not yet available in Pipedream's public catalog.
 
-To explore the four operations in a browser, [build the Gradio sample lab](integrations/huggingface/). It previews requests without credits and can run in a personal Hugging Face Space with owner-only processing.
+**On Hugging Face:** [Open the Weydub media lab](https://huggingface.co/spaces/iniu/weydub-media-localization) to remove burned-in subtitles from your own short MP4. Select full-frame Pro, confirm you can send the clip, then keep the receipt to check progress and download the result. No Weydub key is needed for the shared sponsored trial (up to 60 seconds and 16 MiB per clip). The lab also previews extraction, dubbing and image translation; [source and self-hosting instructions](integrations/huggingface/).
+
+**In Dify:** [Import the free subtitle-removal workflow](examples/dify/) to upload an authorized short MP4 without an API key. For account-based batches, the same guide includes a Community Edition plugin and separate submit and result workflows. The plugin is not yet in the Dify Marketplace.
 
 OCR reads the full frame; choose the language visible on screen. The Lite removal example targets the bottom 18% of the picture. Dubbing translates speech and adds captions; original burned-in captions remain unless you remove them first. [API documentation](https://weydub.com/docs/api/) · [Credit rates](https://weydub.com/vip/pricing-detail/).
 
