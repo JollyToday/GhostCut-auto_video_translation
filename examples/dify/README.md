@@ -6,6 +6,8 @@
 2. Select **Submit my authorized clip to Weydub**, paste that receipt, choose your MP4 and run. Selecting the file stores it in your Dify workspace. Running this action sends it to Weydub. Full-frame Pro can also erase signs and prices.
 3. Select **Check my result**, paste the same receipt and run without a file. When it says *Your MP4 is ready*, open `download_url`. Use the same receipt after timeouts; resending identical bytes with it does not start a second job.
 
+If Studio says **No job found**, check that you pasted the original receipt; creating one does not upload a clip. If it says **Could not check this job**, keep the receipt and run **Check my result** later. A failed lookup is not a reason to upload again. If a finished job has no verified download link, contact `niumo@weydub.com` without including the receipt or private video URL.
+
 Use a trusted workspace: its run history can include the receipt, file and private result link. Anyone with the receipt can retrieve the output. The 100 sponsored slots per UTC month are shared across all anonymous channels. When the allowance is exhausted, the workflow stops; it will never switch to paid processing.
 
 ## Use your own Weydub credits

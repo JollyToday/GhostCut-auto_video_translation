@@ -131,12 +131,20 @@ workflow:
                 import json
                 try:
                     data = json.loads(body)
-                except ValueError:
+                except (TypeError, ValueError):
                     data = {}
-                if code not in (200, 202) or not data.get("state"):
-                    return {"state": "not_confirmed", "message": data.get("error") or "Could not confirm submission. Check your existing receipt before retrying."}
+                state = data.get("state") if isinstance(data, dict) else None
+                if code not in (200, 202) or state not in ("queued", "submitting", "processing", "ready", "failed", "needs_review", "expired"):
+                    hints = {409: "This receipt belongs to another clip. Check the original receipt for its result.",
+                             413: "Choose one MP4 no larger than 16 MiB and no longer than 60 seconds.",
+                             415: "Choose an H.264 MP4 with optional AAC audio.",
+                             422: "Check that the clip is a playable H.264 MP4 of up to 60 seconds and 16 MiB, with optional AAC audio.",
+                             429: "The shared trial is unavailable. Keep this receipt and try later. No paid job was started."}
+                    return {"state": "not_confirmed", "message": hints.get(code, "Upload not confirmed. Select Check my result with the same receipt before retrying.")}
+                if state in ("failed", "needs_review", "expired"):
+                    return {"state": state, "message": "The job on this receipt is not available for download. Check its result before submitting again."}
                 message = "This receipt already has a job." if data.get("replayed") else "Weydub accepted your clip."
-                return {"state": data["state"], "message": message + " Select Check my result and paste the same receipt."}
+                return {"state": state, "message": message + " Select Check my result and paste the same receipt."}
       - id: '510'
         type: custom
         position: {x: 1510, y: 30}
@@ -153,24 +161,39 @@ workflow:
           type: code
           title: Read status and private download link
           code_language: python3
-          variables: [{variable: body, value_selector: ['420', body]}]
+          variables:
+            - {variable: body, value_selector: ['420', body]}
+            - {variable: code, value_selector: ['420', status_code]}
           outputs:
             message: {type: string, children: null}
             download_url: {type: string, children: null}
           code: |
-            def main(body):
+            def main(body, code):
                 import json
                 from urllib.parse import urlsplit
-                data = json.loads(body)
-                state = data.get("state", "")
-                messages = {"queued": "Queued. Check again with this receipt.", "submitting": "Starting. Check again with this receipt.", "processing": "Processing. Check again with this receipt.", "failed": "Processing failed. Keep the receipt for support.", "needs_review": "This job needs review. Keep the receipt for support."}
-                url = ""
-                if state == "ready":
-                    url = data.get("videoUrl", "")
-                    parsed = urlsplit(url)
-                    if parsed.scheme != "https" or not parsed.hostname or parsed.username is not None:
-                        raise ValueError("Finished without a usable download URL. Keep the receipt for support.")
-                return {"message": "Your MP4 is ready." if url else messages.get(state, data.get("error") or "Unknown response. Keep your receipt."), "download_url": url}
+                def answer(text, link=""):
+                    return {"message": text, "download_url": link}
+                try:
+                    data = json.loads(body)
+                except (ValueError, TypeError):
+                    data = None
+                if code == 404 and isinstance(data, dict) and data.get("error") == "Unknown receipt.":
+                    return answer("No job found. Check the receipt you saved. If you have not submitted the clip, choose Submit my authorized clip to Weydub.")
+                if code != 200 or not isinstance(data, dict):
+                    return answer("Could not check this job. Keep your receipt and try Check my result again later.")
+                state = data.get("state")
+                if state != "ready":
+                    messages = {"queued": "Queued. Check again with this receipt.", "submitting": "Starting. Check again with this receipt.", "processing": "Processing. Check again with this receipt.", "failed": "Processing failed. Keep the receipt for support.", "needs_review": "This job needs review. Keep the receipt for support.", "expired": "The result has expired. Check your saved downloads before starting another job."}
+                    return answer(messages.get(state, "Unrecognized job status. Keep your receipt and check again later.") if isinstance(state, str) else "Could not read the job status. Try Check my result again later.")
+                link = data.get("videoUrl")
+                if isinstance(link, str) and not any(c.isspace() or ord(c) < 32 or c == "\\" for c in link):
+                    try:
+                        target = urlsplit(link)
+                        if target.scheme == "https" and target.netloc.lower() == "gc70.cdn.izhaoli.cn" and target.path.strip("/"):
+                            return answer("Your MP4 is ready.", link)
+                    except ValueError:
+                        pass
+                return answer("Your job finished, but the download link could not be verified. Keep the receipt and contact Weydub support.")
       - id: '620'
         type: custom
         position: {x: 1510, y: 190}
