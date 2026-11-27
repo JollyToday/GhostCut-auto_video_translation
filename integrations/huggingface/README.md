@@ -7,12 +7,21 @@ python_version: "3.12"
 hf_oauth: true
 colorFrom: indigo
 colorTo: blue
-short_description: Preview subtitle removal, OCR, dubbing and image translation
+short_description: Remove burned-in subtitles and download your cleaned MP4
+tags:
+  - subtitle-removal
+  - video-localization
+  - ocr
+  - dubbing
 ---
 
 # Weydub Media Localization Lab
 
-Compare [Weydub](https://weydub.com/) examples, inspect a signed-API request body without submitting it, or run one of four operations in your own Space. The official public demo is [Weydub Media Localization](https://huggingface.co/spaces/iniu/weydub-media-localization). This is a client for a hosted service; it does not distribute model weights.
+Have a clip with subtitles baked into the picture? [Open the lab](https://huggingface.co/spaces/iniu/weydub-media-localization), choose **Remove subtitles** and try your own short MP4 without a Weydub key. You can also preview OCR, dubbing and image translation, or connect a private copy to your own [Weydub](https://weydub.com/) account.
+
+**See what Pro removes before uploading.** In this 15-second scene, the caption starts over a forehead, moves to an apron after a cut, then appears near the bottom. Compare the [captioned MP4](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/input.mp4) with the [actual Pro output](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/pro-output.mp4). Pause at **2.31 s**, **6.55 s** and **12.18 s**, or look at the [paired frames and sample terms](https://github.com/JollyToday/GhostCut-auto_video_translation/tree/c4d72c4/examples/full-frame-removal). Viewing the example uses no trial slot.
+
+![Three pairs of frames before and after removal: caption at the top, middle and bottom in successive shots.](https://raw.githubusercontent.com/JollyToday/GhostCut-auto_video_translation/c4d72c4/examples/full-frame-removal/comparison.webp)
 
 | Operation | Input | Output |
 | --- | --- | --- |
